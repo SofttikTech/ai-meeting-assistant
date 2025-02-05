@@ -1,0 +1,68 @@
+
+.splash-screen {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-position: top center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    margin: 0 auto;
+    background-image: url('../../static/images/splash-bg-desktop.jpg');
+}
+
+
+.splash-screen .logo-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.splash-screen .logo-area img {
+    width: 13%;
+    margin: 0 auto;
+}
+
+.splash-screen .logo-area {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.splash-screen .logo-area img {
+    width: 13%;
+    margin: 0 auto;
+}
+
+.splash-screen .spiner-loader {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 89px;
+}
+
+.splash-screen .spiner-loader .text-counter {
+    position: absolute;
+    bottom: 31px;
+    color: #fff;
+    right: 24px;
+    font-family: "Poppins", serif;
+    font-weight: 600;
+    font-size: 14px;
+}
+@media screen and (max-width: 1400px) {
+    .splash-screen .logo-area img {
+        width: 9%;
+    }
+}
+@media screen and (max-width: 600px) {
+    
+    .splash-screen {
+        background-image: url('../../static/images/splash-bg.jpg');
+    }
+}

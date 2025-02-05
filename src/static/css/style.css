@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+  margin:0px;
+	padding:0px;
+	border:none;
+	outline:none;
+	font-size: 100%;
+}
+body {
+ 
+  font-family: "Poppins", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size:16px;
+  color: #fff;
+	line-height: 30px;
+	font-weight:400;
+	background:#01af8d;
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+}
+code {
+  font-family: "Poppins", serif;
+}
+
+
+.auto-container{
+	position:static;
+	max-width:1440px;
+	padding:0px 15px;
+	margin:0 auto;
+}
+
+
+h1,h2,h3,h4,h5,h6 {
+	position:relative;
+	font-weight:normal;
+	margin:0px;
+	background:none;
+	line-height:1.2em;
+	font-family: "Poppins", serif;
+}
+
+textarea{
+	overflow:hidden;	
+	resize: none;
+}
+
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+p, .text{
+	font-size:16px;
+	line-height: 30px;
+	font-weight: 400;
+	color: #fff;
+	margin: 0;
+  font-family: "Poppins", serif;
+}
+
+ul,li{
+	list-style:none;
+	padding:0px;
+	margin:0px;	
+}
+
+img{
+  display:inline-block;
+  max-width:100%;
+  height:auto;  
+}
+::-webkit-input-placeholder{color: inherit;}
+::-moz-input-placeholder{color: inherit;}
+::-ms-input-placeholder{color: inherit;}
+
+.app-text {
+  text-align: center;
+  color: #fff;
+}
+  
+.emotional-health-counselling-page {
+  background-color: #01af8d;
+}
+/* width */
+::-webkit-scrollbar {
+	width: 6px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+	background: #222 ;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+	background: #f5f5f5;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+	background: #f5f5f5;
+  }
+
+
+  @media(max-width: 1500px){
+    .auto-container{
+      max-width: 1186px;
+    }
+  }

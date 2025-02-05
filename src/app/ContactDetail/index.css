@@ -1,0 +1,453 @@
+.landing-screen .contact-details {
+    position: relative;
+    padding: 140px 20px 40px;
+}
+
+.landing-screen .contact-details h3 {
+    text-align: center;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.landing-screen .contact-details h3 span {
+    text-align: center;
+    font-size: 25px;
+    color: #fff;
+    font-weight: 600;
+    position: relative;
+}
+
+.landing-screen .contact-details h3::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 129px;
+    background-position: top center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-image: url('../../static/images/heading-shadow.png');
+}
+
+
+.landing-screen .contact-details .slick-slider {
+    position: relative;
+    padding: 0 25px 40px;
+}
+
+.landing-screen .contact-details .slick-slider .contact-box {
+    padding: 60px;
+    position: relative;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: top center;
+    transition: all 0.3s ease-in-out;
+    background-image: url('../../static/images/contact-box.png');
+}
+
+.landing-screen .contact-details .slick-slider {
+    position: relative;
+}
+
+.landing-screen .contact-details .slick-slider .contact-box:hover {
+    transform: scale(1.05);
+}
+
+.content-img-area {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.content-img-area .img-box {
+    width: 137px;
+}
+
+.content-img-area .img-box img {
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    border: 2px solid #27279f;
+}
+
+.content-img-area .left-text-area {
+    position: relative;
+    padding-left: 23px;
+    width: 57%;
+}
+
+.content-img-area .group-form {
+    position: relative;
+    margin-bottom: 14px;
+}
+
+.landing-screen .contact-details .slick-slider .contact-box .group-form {
+    position: relative;
+}
+
+.content-img-area .group-form label,
+.landing-screen .contact-details .slick-slider .contact-box .group-form label {
+    display: block;
+    color: #fff;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+
+
+.content-img-area .group-form .MuiFormControl-root,
+.landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root {
+    position: relative;
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.content-img-area .group-form .MuiFormControl-root .MuiInputBase-root,
+.landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root {
+    position: relative;
+    background-color: #000047;
+    border-radius: 55px;
+    border: 1px solid #3b3bc3;
+    width: 100%;
+    color: #b2d3ff;
+    padding: 1px 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.content-img-area .group-form .MuiFormControl-root .MuiInputBase-root input,
+.landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root input {
+    text-align: center;
+}
+
+.content-img-area .group-form .MuiFormControl-root .MuiInputBase-root::placeholder,
+.landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root::placeholder {
+    color: #b2d3ff50;
+}
+
+.content-img-area .group-form .MuiFormControl-root .MuiInputBase-root::before,
+.content-img-area .group-form .MuiFormControl-root .MuiInputBase-root::after,
+.landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root::before,
+.landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root::after {
+    display: none;
+}
+
+.slick-next:before,
+.slick-prev:before {
+    display: none !important;
+}
+
+.landing-screen .contact-details .slick-slider .slick-next,
+.landing-screen .contact-details .slick-slider .slick-prev {
+    background-image: url('../../static/images/arrow.png');
+    width: 15px;
+    height: 25px;
+    background-size: 100% 100%;
+    opacity: 0.7;
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .contact-details .slick-slider .slick-next:hover,
+.landing-screen .contact-details .slick-slider .slick-prev:hover {
+    opacity: 1;
+}
+
+.landing-screen .contact-details .slick-slider .slick-prev {
+    transform: rotate(180deg);
+}
+
+.landing-screen .contact-details .slick-slider .slick-dots {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.landing-screen .contact-details .slick-slider .slick-dots li button {
+    width: 14px;
+    height: 14px;
+    background-color: #5555ff50;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .contact-details .slick-slider .slick-dots li.slick-active button,
+.landing-screen .contact-details .slick-slider .slick-dots li:hover button {
+    background-color: #5555ff;
+}
+
+.landing-screen .contact-details .slick-slider .slick-dots li button::before {
+    display: none;
+}
+
+.landing-screen .contact-details .confirm-btn {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin-top: 90px;
+}
+
+.landing-screen .contact-details .confirm-btn .btn-from {
+    color: #fff;
+    background: rgb(66, 66, 255);
+    background: linear-gradient(90deg, rgba(66, 66, 255, 1) 67%, rgba(106, 66, 255, 1) 90%);
+    padding: 10px 60px;
+    font-weight: 600;
+    border-radius: 26px;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+.landing-screen .contact-details .confirm-btn .btn-from:hover {
+    background: rgba(106, 66, 255, 1);
+    background: linear-gradient(90deg, rgba(106, 66, 255, 1) 0%, rgba(66, 66, 255, 1) 67%);
+}
+
+.landing-screen .contact-details .logo-area {
+    margin: 0;
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .contact-details .logo-area:hover {
+    animation: bounce 1.2s ease-in-out infinite;
+}
+
+.landing-screen .contact-details .logo-area img {
+    width: 50px;
+}
+
+
+.landing-screen .caling-app {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.landing-screen .caling-app img {
+    width: 61%;
+    margin: 0 auto;
+}
+
+
+@media screen and (max-width: 1610px) {
+    .content-img-area .left-text-area {
+        width: 50%;
+    }
+
+    .landing-screen .contact-details {
+        padding: 85px 20px 40px;
+    }
+
+    .landing-screen .talk-area .left-area .image-box h4 {
+        font-size: 16px;
+        min-width: 143px;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .content-img-area .img-box {
+        width: 100px;
+    }
+
+    .content-img-area .img-box img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 2px solid #27279f;
+    }
+
+    .content-img-area .left-text-area {
+        width: 57%;
+    }
+
+    .landing-screen .contact-details .slick-slider .contact-box {
+        padding: 35px 45px;
+        zoom: 0.9;
+    }
+
+    .content-img-area .group-form .MuiFormControl-root .MuiInputBase-root,
+    .landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root {
+        height: 31px;
+        font-size: 11px;
+    }
+
+    .landing-screen .contact-details .slick-slider {
+        padding: 0 25px 19px;
+    }
+
+    .landing-screen .contact-details {
+        padding: 64px 20px 40px;
+    }
+
+    .content-img-area .group-form label,
+    .landing-screen .contact-details .slick-slider .contact-box .group-form label {
+        font-size: 12px;
+    }
+
+    .landing-screen .caling-app img {
+        width: 41%;
+        margin: 0 auto;
+    }
+
+    .landing-screen .talk-area .left-area .layers-area {
+        zoom: 0.8;
+    }
+
+}
+
+@media screen and (max-width: 1300px) {
+    .content-img-area .img-box {
+        width: 60%;
+        position: absolute;
+        left: 0;
+    }
+
+    .content-img-area .img-box img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .content-img-area .left-text-area {
+        width: 54%;
+        left: 42%;
+    }
+
+    .content-img-area {
+        align-items: center;
+    }
+
+    .landing-screen .contact-details .slick-slider {
+        position: relative;
+        padding: 0 0 40px;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .content-img-area .img-box img {
+        width: 111px;
+        height: 111px;
+    }
+
+    .content-img-area .group-form .MuiFormControl-root .MuiInputBase-root,
+    .landing-screen .contact-details .slick-slider .contact-box .group-form .MuiFormControl-root .MuiInputBase-root,
+    .content-img-area .group-form label,
+    .landing-screen .contact-details .slick-slider .contact-box .group-form label {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 0.8;
+    }
+}
+
+@media screen and (max-width: 999px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 0.6;
+    }
+}
+
+@media screen and (max-width: 610px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 1;
+    }
+
+    .landing-screen .contact-details h3::before {
+        width: 500px;
+    }
+
+    .landing-screen .contact-details h3 {
+        width: 50%;
+        margin: 0 auto 30px;
+    }
+
+    .landing-screen .contact-details {
+        padding: 158px 20px 40px;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 1;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 0.8;
+    }
+
+    .landing-screen .contact-details h3 {
+        text-align: center;
+        position: relative;
+        margin-bottom: 40px;
+        width: 50%;
+        margin: 0 auto 30px;
+        text-align: center;
+    }
+
+    .landing-screen .contact-details h3::before {
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .landing-screen .contact-details h3 span {
+        font-size: 20px;
+    }
+
+    .landing-screen .contact-details .logo-area img {
+        width: 30px;
+    }
+}
+
+@media screen and (max-width: 425px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 0.6;
+    }
+
+    .landing-screen .contact-details h3 {
+        width: 66%;
+    }
+
+    .content-img-area .img-box img {
+        width: 111px;
+        height: 111px;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    .landing-screen .contact-details .slick-slider .contact-box {
+        zoom: 0.4;
+    }
+
+    .landing-screen .contact-details h3 {
+        width: 76%;
+    }
+
+    .landing-screen .contact-details .confirm-btn .btn-from {
+        padding: 8px 40px;
+        font-size: 14px;
+    }
+
+    .landing-screen .contact-details .slick-slider .slick-dots li button {
+        width: 10px;
+        height: 10px;
+    }
+
+    .landing-screen .contact-details h3 span {
+        font-size: 17px;
+    }
+
+    .landing-screen .contact-details h3::before {
+        width: 349px;
+        height: 112px;
+    }
+}

@@ -1,0 +1,436 @@
+.landing-screen .back-btn {
+    position: absolute;
+    left: 15px;
+    top: 37px;
+    z-index: 99;
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .back-btn:hover {
+    animation: bounce 1.2s ease-in-out infinite;
+}
+
+.landing-screen .back-btn img {
+    width: 60px;
+}
+
+.landing-screen .talk-area {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 54px 50px;
+}
+
+.landing-screen .talk-area .left-area {
+    position: relative;
+    width: calc(50% - 15px);
+}
+
+.landing-screen .talk-area .left-area .image-box {
+    position: relative;
+    text-align: center;
+}
+
+.landing-screen .talk-area .left-area .image-box::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-image: url('../../static/images/img-bg.png');
+}
+
+.landing-screen .talk-area .left-area .image-box h4 {
+    position: relative;
+    color: #fff;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    min-width: 200px;
+    width: auto;
+    max-width: fit-content;
+    margin: 0 auto 25px;
+    text-transform: uppercase;
+    padding: 10px;
+    background-image: url('../../static/images/text-bg.png');
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .talk-area .left-area .image-box h4:hover {
+    color: #b2d3ff;
+    transform: scale(1.1);
+}
+
+.landing-screen .talk-area .left-area .image-box .shadow-area {
+    position: relative;
+}
+
+.landing-screen .talk-area .left-area .image-box .shadow-area img {
+    width: 47%;
+    height: 47%;
+    border-radius: 50%;
+    border: 5px solid #499aff;
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .talk-area .left-area .image-box .shadow-area img:hover {
+    filter: drop-shadow(0 0 15px #499aff80);
+}
+
+.landing-screen .talk-area .left-area .layers-area {
+    margin-top: 56px;
+}
+
+.landing-screen .talk-area .left-area .image-box .arrow-left {
+    position: absolute;
+    left: 114px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.landing-screen .talk-area .left-area .image-box .arrow-right {
+    position: absolute;
+    right: 114px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+.landing-screen .talk-area .left-area .image-box .shadow-area {}
+
+.landing-screen .talk-area .left-area .layers-area {
+    margin-top: 56px;
+}
+
+.landing-screen .talk-area .left-area .image-box .arrow-left {
+    position: absolute;
+    left: 114px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.landing-screen .talk-area .right-area {
+    position: relative;
+    width: calc(50% - 15px);
+    margin-top: 62px;
+    text-align: center;
+}
+
+.landing-screen .talk-area .right-area h3 {
+    font-size: 34px;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 90px;
+}
+
+.landing-screen .talk-area .right-area .speak-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: -78px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    zoom: 0.8;
+}
+
+.landing-screen .talk-area .right-area .speak-area .speak-btn {
+    background-color: transparent;
+    position: relative;
+    width: 450px;
+}
+
+.landing-screen .talk-area .right-area .speak-area .speak-btn::after {
+    content: "";
+    width: 537px;
+    height: 537px;
+    opacity: 0.6;
+    z-index: -1;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-image: url('../../static/images/speak-area-shadow.png');
+    left: -8.3%;
+    top: -61%;
+}
+
+.landing-screen .talk-area .right-area .speak-area .speak-btn:hover::after {
+    animation-name: spin;
+    animation-duration: 5000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.landing-screen .talk-area .right-area .speak-area .speak-btn:before {
+    content: "";
+    width: 300px;
+    height: 300px;
+    opacity: 0.2;
+    z-index: -1;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-image: url('../../static/images/speak-area-bg.png');
+    left: 13.7%;
+    top: -16%;
+
+}
+
+.landing-screen .talk-area .right-area .speak-area .speak-btn:hover:before {
+    animation: bounce 1.2s ease-in-out infinite;
+}
+
+.landing-screen .talk-area .left-area .layers-area canvas {
+    background: none !important;
+    width: 100%;
+}
+
+/* Stylingthe last h2 tag by giving margin bottom */
+.progress-bar-container:not(:last-child) {
+    margin-bottom: 50px;
+}
+
+/* Styling the h2 tag by giving color, 
+letter spacing, font-size etc.*/
+.progress-bar-container h2 {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #eee;
+    letter-spacing: 1px;
+    font-size: 20px;
+}
+
+/* Styling the border and box
+effect of the progress bar*/
+.progress-bar {
+    width: 100%;
+    height: 161px;
+    margin-top: 10px;
+    border: none;
+    background-repeat: no-repeat;
+    background-color: transparent !important;
+    background-image: url('../../static/images/layers.png');
+}
+
+/* Stylingthe background color of each 
+animation and border radius */
+.percentage {
+    display: block;
+    height: 100%;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-image: url('../../static/images/layers-active.png');
+    animation: progress 5s ease-in 1;
+}
+
+/* Animating the progress bar by 
+initially starting from 0*/
+@keyframes progress {
+    from {
+        width: 0;
+    }
+}
+
+@keyframes bounce {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.2);
+    }
+
+    75% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.2);
+    }
+}
+
+.landing-screen .talk-area .right-area .speak-area .cc-area,
+.landing-screen .talk-area .right-area .speak-area .cross-area {
+    background-color: #05056f;
+    border: 2px solid #ffffff50;
+    width: 74px;
+    height: 74px;
+    line-height: 37px;
+    color: #fff;
+    font-size: 30px;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+}
+
+.landing-screen .talk-area .right-area .speak-area .cc-area:hover,
+.landing-screen .talk-area .right-area .speak-area .cross-area:hover {
+    animation: bounce 1.2s ease-in-out infinite;
+}
+
+.wave-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.wave {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-image: url('../../static/images/layers.png');
+    /* Replace with actual path */
+    background-size: cover;
+    background-repeat: repeat-x;
+    animation: waveAnimation 5s linear infinite;
+}
+
+/* Keyframes for sliding the background image to create movement */
+@keyframes waveAnimation {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media screen and (max-width: 1610px) {
+    .landing-screen .talk-area .left-area .image-box .shadow-area img {
+        width: 40%;
+        height: 40%;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-right img,
+    .landing-screen .talk-area .left-area .image-box .arrow-left img {
+        width: 56%;
+    }
+    .landing-screen .talk-area .right-area .speak-area {
+        zoom: 0.6;
+    }
+}
+
+@media screen and (max-width: 1410px) {
+    .landing-screen .talk-area .left-area .image-box .shadow-area img {
+        width: 30%;
+        height: 30%;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-right img,
+    .landing-screen .talk-area .left-area .image-box .arrow-left img {
+        width: 46%;
+    }
+}
+
+@media screen and (max-width: 1199px) {
+
+    .landing-screen .talk-area .right-area,
+    .landing-screen .talk-area .left-area {
+        zoom: 0.8;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+
+    .landing-screen .talk-area .right-area,
+    .landing-screen .talk-area .left-area {
+        zoom: 1;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 610px) {
+    .landing-screen .back-btn img {
+        width: 39px;
+    }
+
+    .landing-screen .back-btn {
+        top: 13px;
+    }
+
+    .landing-screen .talk-area {
+        padding: 14px 5px;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-left,
+    .landing-screen .talk-area .left-area .image-box .arrow-right {
+        top: 64%;
+    }
+
+    .landing-screen .talk-area .right-area h3 {
+        font-size: 23px;
+        color: #fff;
+        font-weight: 600;
+        margin-bottom: 193px;
+    }
+    
+}
+
+@media screen and (max-width: 510px) {
+    .landing-screen .talk-area .left-area .image-box .shadow-area img {
+        width: 43%;
+        height: 43%;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-left {
+        left: 56px;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-right {
+        right: 56px;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .landing-screen .talk-area .left-area .image-box .arrow-left {
+        left: 36px;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-right {
+        right: 36px;
+    }
+
+    .landing-screen .talk-area .right-area .speak-area {
+        zoom: 0.4;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .landing-screen .talk-area .left-area .image-box .arrow-left {
+        left: 16px;
+    }
+
+    .landing-screen .talk-area .left-area .image-box .arrow-right {
+        right: 16px;
+    }
+
+    .landing-screen .talk-area .left-area .image-box h4 {
+        font-size: 11px;
+        min-width: 115px;
+    }
+
+    .landing-screen .talk-area .right-area h3 {
+        font-size: 17px;
+        color: #fff;
+        font-weight: 600;
+        margin-bottom: 193px;
+    }
+}

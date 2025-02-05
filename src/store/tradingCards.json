@@ -1,0 +1,82 @@
+[
+    {
+        "show": true,
+        "tokenId": 1,
+        "name": "Zkittlez #1",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/1_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/1_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/1.mp4"
+    },
+    {
+        "tokenId": 2,
+        "show": true,
+        "name": "WhiteWidow #2",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/2_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/2_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/2.mp4"
+    },
+    {
+        "tokenId": 3,
+        "show": true,
+        "name": "TrainWreck #3",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/3_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/3_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/3.mp4"
+    },
+    {
+        "tokenId": 4,
+        "show": true,
+        "name": "SweetTooth #4",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/4_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/4_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/4.mp4"
+    },
+    {
+        "tokenId": 5,
+        "show": true,
+        "name": "SuperSkunk #5",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/5_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/5_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/5.mp4"
+    },
+    {
+        "tokenId": 6,
+        "show": true,
+        "name": "SourDiesel #6",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/6_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/6_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/6.mp4"
+    },
+    {
+        "tokenId": 7,
+        "show": true,
+        "name": "PurpleHaze #7",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/7_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/7_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/7.mp4"
+    },
+    {
+        "tokenId": 8,
+        "show": true,
+        "name": "NorthernLights #8",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/8_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/8_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/8.mp4"
+    },
+    {
+        "tokenId": 9,
+        "show": true,
+        "name": "GorillaGlue #9",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/9_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/9_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/9.mp4"
+    },
+    {
+        "tokenId": 10,
+        "show": true,
+        "name": "BruceBanner #10",
+        "frontImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/10_Front.png",
+        "backImage": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/10_Back.png",
+        "animation_url": "https://nft-trading-cards.s3.us-east-2.amazonaws.com/10.mp4"
+    }
+]
