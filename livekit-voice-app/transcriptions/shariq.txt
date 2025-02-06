@@ -1,0 +1,140 @@
+[2025-01-17 16:30:16.384253] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:30:26.582290] USER :
+I'm feeling sad.
+
+
+[2025-01-17 16:30:32.946501] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you feel sad right now?
+
+
+[2025-01-17 16:34:23.218422] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:34:31.210778] USER :
+Uh, I think it's at
+
+
+[2025-01-17 16:34:34.456665] AGENT:
+ It's okay, take your time. I'm here whenever you're ready to share what's on your mind.
+
+
+[2025-01-17 16:34:45.822064] USER :
+I've clicked add
+
+
+[2025-01-17 16:34:57.363647] USER :
+I I'm seeing I'm setting set
+
+
+[2025-01-17 16:35:05.084962] AGENT:
+ It sounds like you might be trying to set something up and it's a bit confusing. It's okay to feel that way—would you like to talk through what you're trying to do? I'm here to help.
+
+
+[2025-01-17 16:35:11.939822] USER :
+Alex said
+
+
+[2025-01-17 16:35:19.964313] AGENT:
+ It sounds like you might be referencing something Alex mentioned. Would you like to talk more about what Alex said or how it relates to what you're experiencing? I'm here to listen.
+
+
+[2025-01-17 16:35:34.737180] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:35:41.883839] USER :
+Alright.
+
+
+[2025-01-17 16:35:45.827520] AGENT:
+ Take your time, and feel free to share whenever you're ready. I'm here to listen and support you.
+
+
+[2025-01-17 16:35:53.471518] USER :
+I'm feeling sad.
+
+
+[2025-01-17 16:36:00.930986] AGENT:
+ I'm sorry to hear that you're feeling sad. It's a natural emotion, and I'm here for you during this difficult time. Would you like to talk more about what's making you feel this way?
+
+
+[2025-01-17 16:40:07.425023] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:40:22.099796] AGENT:
+ It's okay if you need a moment before speaking. I'm here whenever you're ready to talk.
+
+
+[2025-01-17 16:40:37.943543] AGENT:
+ Take your time. Whenever you're ready to share, I'm here to listen and support you.
+
+
+[2025-01-17 16:41:04.963702] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-17 16:41:12.871302] AGENT:
+ I'm sorry to hear that you're feeling sad. It's a natural emotion, and it's okay to feel this way. Would you like to talk about what's making you sad? I'm here to listen.
+
+
+[2025-01-17 16:44:32.456046] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:44:39.850622] USER :
+Oh, brilliant. Happy to be
+
+
+[2025-01-17 16:44:42.304832] AGENT:
+ That's wonderful to hear! What’s bringing you happiness today?
+
+
+[2025-01-17 16:52:26.072245] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:52:33.442261] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-17 16:52:41.707807] AGENT:
+ I'm sorry to hear that you're feeling sad. It's a natural emotion, and it's okay to feel this way. Would you like to share more about what's making you sad? I'm here to listen.
+
+
+[2025-01-17 16:55:25.755772] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 16:55:32.942783] USER :
+Oh, I'm feeling sad today.
+
+
+[2025-01-17 16:55:40.836119] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you during this difficult time. Would you like to talk about what's been making you sad?
+
+
+[2025-01-17 16:55:57.464051] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 16:56:06.265821] USER :
+I'm feeling disappointed now.
+
+
+[2025-01-17 16:56:16.079014] AGENT:
+ Disappointment can be tough to deal with, and it's completely valid to feel upset about it. Would you like to share more about what led to this disappointment? I'm here to listen and help however I can.
+
+
+[2025-01-17 16:56:35.114220] USER :
+I'm feeling now guilty. I'm feeling now guilty.
+
+
+[2025-01-17 16:56:46.630669] AGENT:
+ Guilt can be a heavy weight to carry, often showing just how much we care about our actions. It's important to reflect on why you're feeling this way. Would it help to talk about what's causing these feelings of guilt? I'm here to listen and support you.
+
+

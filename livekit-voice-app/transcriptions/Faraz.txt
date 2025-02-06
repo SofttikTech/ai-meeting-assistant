@@ -1,0 +1,532 @@
+[2025-01-16 16:45:56.785241] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 16:46:04.083273] USER :
+Hello. How are you?
+
+
+[2025-01-16 16:46:07.003856] AGENT:
+ Hello! I'm here and ready to listen to you. How are you feeling today?
+
+
+[2025-01-16 16:46:18.413793] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-16 16:46:24.901245] AGENT:
+ I'm sorry to hear that you're feeling sad. It's perfectly okay to feel this way, and I'm here for you. Would you like to talk about what's been making you feel sad?
+
+
+[2025-01-16 16:47:37.697564] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 16:47:44.800483] USER :
+Uh, I'm getting sad today.
+
+
+[2025-01-16 16:47:52.068848] AGENT:
+ I'm sorry to hear that you're feeling sad today. It's okay to feel this way, and I'm here for you during this difficult time. Would you like to talk about what's making you sad?
+
+
+[2025-01-16 17:00:05.880765] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 17:00:11.589815] USER :
+Uh, I'm feeling happy today.
+
+
+[2025-01-16 17:03:58.522246] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 17:04:06.080248] USER :
+Hello. How are you?
+
+
+[2025-01-16 17:04:09.817590] AGENT:
+ Hello! I'm here and ready to listen. How can I support you today?
+
+
+[2025-01-16 17:04:25.891859] USER :
+I'm feeling very happy today.
+
+
+[2025-01-16 17:04:29.607971] AGENT:
+ That’s wonderful! I’m so happy to hear about your joy. What’s making you feel so happy today?
+
+
+[2025-01-16 17:04:41.938343] USER :
+Uh, no. I'm feeling sad now.
+
+
+[2025-01-16 17:04:47.708145] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to have those emotions, and I'm here for you. Would you like to talk about what's making you feel this way?
+
+
+[2025-01-16 17:05:41.420681] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 17:05:50.629819] USER :
+Uh, I'm feeling very happy today.
+
+
+[2025-01-16 17:05:55.318341] AGENT:
+ That’s wonderful! I’m so happy to hear about your joy. What’s made you feel so happy today?
+
+
+[2025-01-16 17:13:14.541495] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 17:13:20.777355] USER :
+Uh, I'm feeling happy today.
+
+
+[2025-01-16 17:13:25.024217] AGENT:
+ That’s wonderful! I’m so happy to hear about your joy. What’s making you feel this way?
+
+
+[2025-01-16 17:15:20.266958] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 17:15:36.624569] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-16 17:23:11.492472] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-16 17:23:28.754130] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 10:25:14.202354] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 10:25:25.525020] USER :
+Hello. I'm feeling sad today.
+
+
+[2025-01-17 10:25:31.656860] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you sad?
+
+
+[2025-01-17 10:25:48.588366] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 10:32:17.616206] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 10:32:26.068164] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-17 10:32:34.610826] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to have those feelings. I'm here for you during this difficult time—would you like to talk about what's making you feel this way?
+
+
+[2025-01-17 10:34:14.954085] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 10:34:23.343687] USER :
+Uh, I'm doing Saturday.
+
+
+[2025-01-17 10:34:31.423824] AGENT:
+ It sounds like you might have a lot planned for Saturday. Would you like to talk about what's happening then, or how you're feeling about it? I'm here to listen.
+
+
+[2025-01-17 10:34:39.544935] USER :
+Uh, no. I'm feeling sad.
+
+
+[2025-01-17 10:34:49.313862] AGENT:
+ I'm really sorry to hear that you're feeling sad. It's okay to feel this way—sadness is a natural emotion. Would you like to talk about what's making you feel this way? I'm here for you.
+
+
+[2025-01-17 10:35:06.069703] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 10:35:13.478546] USER :
+Uh, I'm feeling sad.
+
+
+[2025-01-17 10:35:26.842566] AGENT:
+ I'm really sorry to hear that you're feeling sad. It's completely okay to feel this way. I'm here to listen and support you. Would you like to talk about what's been going on?
+
+
+[2025-01-17 10:51:38.189069] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 10:51:50.837506] USER :
+I'm being sad.
+
+
+[2025-01-17 10:51:56.493884] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you sad?
+
+
+[2025-01-17 10:52:12.823409] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 10:52:19.602250] USER :
+Uh, I'm feeling happy now.
+
+
+[2025-01-17 10:52:23.859631] AGENT:
+ That's wonderful! I'm so happy to hear about your joy. What brought about this change in your emotions?
+
+
+[2025-01-17 10:52:40.192581] USER :
+Uh, I'm playing on the inside.
+
+
+[2025-01-17 10:52:47.174472] AGENT:
+ It sounds like there's a mix of emotions happening for you right now. It's okay to have complex feelings. Would you like to explore what you're feeling a bit more? I'm here to listen.
+
+
+[2025-01-17 10:52:54.492799] USER :
+Uh, no. I'm calling, sir.
+
+
+[2025-01-17 10:53:00.327832] AGENT:
+ It seems like you might be trying to express something specific. Can you share more about what you mean by "calling, sir"? I'm here to help with whatever you're experiencing.
+
+
+[2025-01-17 10:53:06.569870] USER :
+I am feeling sad.
+
+
+[2025-01-17 10:53:16.228569] AGENT:
+ I'm sorry to hear that you're feeling sad. It's completely natural to experience sadness, and I'm here to support you through it. Would you like to talk more about what's on your mind, or perhaps explore something comforting together?
+
+
+[2025-01-17 10:54:29.591368] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 10:54:36.865154] USER :
+I'm getting set up.
+
+
+[2025-01-17 10:54:42.158941] AGENT:
+ That's great to hear! Setting up can be a step towards something exciting or new. How is it going for you so far?
+
+
+[2025-01-17 10:57:24.418031] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 10:57:33.325254] USER :
+Uh, I'm feeling sad.
+
+
+[2025-01-17 10:57:39.416853] AGENT:
+ I'm really sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you feel this way?
+
+
+[2025-01-17 10:57:54.262070] USER :
+Uh, no. I have a party yesterday in my
+
+
+[2025-01-17 10:58:05.481775] AGENT:
+ It sounds like there might be some mixed emotions from the party yesterday. If you don't feel like discussing it now, that's absolutely fine. I'm here whenever you're ready to share. Would it help to focus on something comforting or enjoyable right now?
+
+
+[2025-01-17 10:58:22.078203] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 11:07:40.752240] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 11:07:50.709198] USER :
+What the hell is that?
+
+
+[2025-01-17 11:07:53.792371] AGENT:
+ It sounds like something might be bothering you. Would you like to talk about what's going on? I'm here to listen.
+
+
+[2025-01-17 11:11:31.129238] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 11:12:37.864923] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 11:46:31.769514] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 11:46:41.719413] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-17 11:46:48.731823] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you feel this way?
+
+
+[2025-01-17 11:47:05.018756] USER :
+Uh, no. I have a party straight at my house.
+
+
+[2025-01-17 11:47:15.387822] AGENT:
+ That's exciting! Having a party can bring a lot of joy and happiness. If it would help, we can talk about any aspects of the party that you're looking forward to. Let me know how I can support you.
+
+
+[2025-01-17 11:47:30.234124] USER :
+After 5
+
+
+[2025-01-17 11:47:38.240740] AGENT:
+ Sounds like you have a busy day ahead! If you want to chat more about how the party went or anything else on your mind afterward, I'll be here for you. Enjoy the celebration!
+
+
+[2025-01-17 11:47:46.922163] USER :
+Uh, it's very happy now.
+
+
+[2025-01-17 11:47:54.177273] AGENT:
+ I'm so glad to hear that you're feeling happy now! It's wonderful to be surrounded by joy. Is there anything specific about the party that's making you feel this way?
+
+
+[2025-01-17 11:48:06.799483] USER :
+Yes.
+
+
+[2025-01-17 11:48:13.625347] AGENT:
+ That's great! I'd love to hear more about what's making this moment so joyful for you.
+
+
+[2025-01-17 11:48:30.867841] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 11:48:39.378625] USER :
+Uh, yes. I'm feeling angry now.
+
+
+[2025-01-17 11:48:47.710918] AGENT:
+ I can see that you're really angry right now. It's okay to express that feeling. Would you like to talk about what triggered this anger? I'm here to listen and support you.
+
+
+[2025-01-17 11:49:05.590042] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 11:49:22.716327] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 12:07:00.139998] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 12:07:08.545692] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-17 12:07:15.159396] AGENT:
+ I'm really sorry to hear that you're feeling sad. It's important to acknowledge those feelings, and I'm here for you. Would you like to talk more about what's making you feel this way?
+
+
+[2025-01-17 12:07:31.443421] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 12:11:17.748036] AGENT:
+ Hi, I'm Lily. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 12:11:25.106207] USER :
+I'm feeling sad today.
+
+
+[2025-01-17 12:11:31.112240] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you sad?
+
+
+[2025-01-17 12:11:42.374858] USER :
+Uh, I'm feeling happy now.
+
+
+[2025-01-17 12:11:46.334722] AGENT:
+ That's wonderful! I'm so happy to hear about your joy. What made you feel happy?
+
+
+[2025-01-17 12:12:01.076477] USER :
+Uh, I'm feeling angry.
+
+
+[2025-01-17 12:12:08.039164] AGENT:
+ I can see that you're really angry right now. It's okay to express that feeling. What do you think triggered this anger? Let's try to understand it better together.
+
+
+[2025-01-17 12:12:20.226607] USER :
+I'm getting frustrated now.
+
+
+[2025-01-17 12:12:28.185677] AGENT:
+ It's okay to feel frustrated; it often means you're passionate about something. What specifically is frustrating you right now? Identifying it might help us find solutions.
+
+
+[2025-01-17 12:12:44.962914] USER :
+No. I'm telling you, Gilbert. I'm feeling guilty.
+
+
+[2025-01-17 12:12:55.315408] AGENT:
+ Guilt often means we care deeply about our actions and their impact on others. It's important to reflect on why you're feeling guilty—what lessons can be learned from this? If you feel comfortable, we can talk about it together.
+
+
+[2025-01-17 12:13:05.144197] USER :
+Uh, I'm getting sad.
+
+
+[2025-01-17 12:13:12.181055] AGENT:
+ It's okay to feel sad; sadness is a natural emotion that everyone experiences at times. I'm here for you. Would you like to share what's making you feel this way?
+
+
+[2025-01-17 12:13:28.638688] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-17 12:13:35.305075] USER :
+Uh, I'm feeling weird.
+
+
+[2025-01-17 12:13:48.788780] USER :
+No. No. I'm fine. I'm fine. Feared
+
+
+[2025-01-17 12:13:57.957046] USER :
+No. It feared. Fear. Here,
+
+
+[2025-01-17 12:14:05.786050] AGENT:
+ Fear can be quite overwhelming at times, but it shows that you're aware of potential risks. Let's explore what you're afraid of and see how we can tackle it together, one step at a time.
+
+
+[2025-01-17 12:14:16.866497] USER :
+Okay. I'm telling again, sir.
+
+
+[2025-01-17 12:14:22.862620] AGENT:
+ Take your time—I'm here to listen whenever you're ready. If you'd like to talk more about what's on your mind, I'm here to support you.
+
+
+[2025-01-17 12:14:30.745871] USER :
+I clicked set.
+
+
+[2025-01-17 12:14:35.995428] AGENT:
+ It seems like there might be a bit of confusion. Can you tell me more about what you're trying to do or what's on your mind? I'm here to help.
+
+
+[2025-01-17 12:14:43.647125] USER :
+I'm saying I'm feeling sad.
+
+
+[2025-01-17 12:14:52.219891] AGENT:
+ I'm sorry to hear that you're feeling sad. It's important to acknowledge those feelings. If you'd like, we can talk about what's been making you feel this way. I'm here to listen and support you.
+
+
+[2025-01-17 12:41:59.853765] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 12:42:07.637177] USER :
+I'm feeling disappointed today.
+
+
+[2025-01-17 12:42:17.244315] AGENT:
+ I'm sorry to hear that you're feeling disappointed. It's tough, and it's okay to feel upset about it. Would you like to talk about what led to this disappointment? Sometimes understanding it can help us find a way forward.
+
+
+[2025-01-17 12:43:06.578684] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 12:50:25.331790] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 12:50:32.314218] USER :
+Hello. How are you?
+
+
+[2025-01-17 12:50:35.360047] AGENT:
+ Hello! I'm here and ready to support you. How can I help you today?
+
+
+[2025-01-17 12:50:44.460463] USER :
+I'm getting sad.
+
+
+[2025-01-17 12:50:51.965243] AGENT:
+ I'm really sorry to hear that you're feeling this way. It's okay to feel sad sometimes, and I'm here for you. Would you like to talk about what's been making you feel this way?
+
+
+[2025-01-17 12:50:59.094556] USER :
+Uh, no. How are you?
+
+
+[2025-01-17 12:51:03.980753] AGENT:
+ I’m here to focus on you and offer support. So whenever you're ready, feel free to share anything that's on your mind.
+
+
+[2025-01-17 12:51:12.754974] USER :
+Disappointed today.
+
+
+[2025-01-17 12:51:23.177163] AGENT:
+ I'm sorry to hear that you're feeling disappointed. It's a tough emotion to deal with, and your feelings are completely valid. Would you like to talk about what led to this disappointment? Sometimes understanding it can help us move forward.
+
+
+[2025-01-17 12:51:41.352473] USER :
+Uh, no. I'm getting the
+
+
+[2025-01-17 12:51:50.972893] USER :
+Okay. I'm telling here.
+
+
+[2025-01-17 12:51:53.126263] AGENT:
+ Great! I'm here for you. What would you like to share?
+
+
+[2025-01-17 12:52:00.756867] USER :
+I'm calling to your
+
+
+[2025-01-17 12:52:14.515529] USER :
+Uh, I'm I'm I'm I'm getting frustrated.
+
+
+[2025-01-17 12:52:25.705715] AGENT:
+ It's okay to feel frustrated. Sometimes things just don't go as planned, and it's a natural reaction. Would you like to talk about what's specifically frustrating you right now? Identifying it might help us find some solutions together.
+
+
+[2025-01-17 12:53:35.761288] AGENT:
+ Hi, I'm Michael. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-17 12:53:52.395500] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+

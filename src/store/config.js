@@ -1,9 +1,11 @@
+import axios from 'axios';
+
 /* -- set app title --*/
 const AppTitle = 'Frontend Emotional-Health-Counselling-App NFT';
 
 /* -- set app mode -- */
 // const AppMode = [''];
-const AppMode = ['development'];
+const AppMode = [''];
 // const AppMode = ['production'];
 
 /* -- set API URLs --*/
@@ -44,5 +46,51 @@ switch (AppMode[0]) {
     break;
 };
 
+const BASE_URL = "https://timyung.dev/api";
+// const BASE_URL = "http://127.0.0.1:4000/api";
+
+const API = {
+    selectCard: `${BASE_URL}/select-card`,
+    connectionDetails: `${BASE_URL}/connection_details`
+};
+
+// API Methods
+
+const selectCard = async (cardNumber) => {
+    try {
+        const response = await axios.post(API.selectCard, { cardNumber }, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error sending card number:", error);
+        throw error;
+    }
+};
+
+const fetchConnectionDetails = async () => {
+    try {
+        const response = await fetch(API.connectionDetails, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch connection details');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Failed to fetch connection details:", error);
+        throw error;
+    }
+};
+
+
 let ApiUrl = `${baseURL}/api/`;
-export { AppTitle, ApiUrl, baseURL, env, network, networkId, message, opensea, stripeKey, URI, REACT_APP_TEMPLATE_CLIENT_ID };
+export { AppTitle, ApiUrl, baseURL, env, network, networkId, message, opensea, stripeKey, URI, REACT_APP_TEMPLATE_CLIENT_ID, selectCard, fetchConnectionDetails};

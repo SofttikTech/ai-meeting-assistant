@@ -1,16 +1,14 @@
-
 import EventBus from "eventing-bus";
-import Error from '@material-ui/icons/Error';
-import React, { useEffect, Suspense, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import CheckCircle from '@material-ui/icons/CheckCircle';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Error, CheckCircle } from '@material-ui/icons';
+import React, { useEffect, Suspense, useState, createContext } from 'react';
+import { BrowserRouter as Router, Switch, Route, useLocation } from "react-router-dom";
 
-import Home from './Home/index';
 import Talk from './Talk/index';
-import ContactDetail from './ContactDetail/index';
+import Home from './Home/index';
 import SplashScreen from './SplashScreen/index';
-import Preloader from '../components/preloader';
+import ContactDetail from './ContactDetail/index';
+import CallingAnimation from './Talk/callingAnimation';
 
 import '../static/css/style.css';
 import 'jquery/dist/jquery.min.js';
@@ -19,44 +17,82 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import "react-toastify/dist/ReactToastify.css";
 
+export const DataContext = createContext();
 
 const App = () => {
-
-  useEffect(() => {
-    EventBus.on('info', (e) => toast.info(() => <div> <Error /> {e}</div>));
-    EventBus.on('error', (e) => toast.error(() => <div> <Error /> {e}</div>));
-    EventBus.on('success', (e) => toast.success(() => <div> <CheckCircle /> {e}</div>));
-  }, []);
-
   const [isLoading, setIsLoading] = useState(true);
+  const [agent, setAgent] = useState({ name: "", image: "" });
 
   useEffect(() => {
-    // Simulate an API call
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 5000);
+    const infoListener = EventBus.on('info', (e) => toast.info(<div><Error /> {e}</div>));
+    const errorListener = EventBus.on('error', (e) => toast.error(<div><Error /> {e}</div>));
+    const successListener = EventBus.on('success', (e) => toast.success(<div><CheckCircle /> {e}</div>));
+
+    // Cleanup EventBus listeners
+    return () => {
+      infoListener();
+      errorListener();
+      successListener();
+    };
   }, []);
 
-  if (isLoading) {
-    return <SplashScreen />;
-  }
+  useEffect(() => {
+    const name = localStorage.getItem("name");
+    const image = localStorage.getItem("image");
+
+    if (name && image) {
+      setAgent({ name, image });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (agent.name && agent.image) {
+      localStorage.setItem("name", agent.name);
+      localStorage.setItem("image", agent.image);
+    }
+  }, [agent]);
 
   return (
     <div>
       <Suspense fallback={<SplashScreen />}>
         <ToastContainer closeOnClick position="bottom-left" />
-        <Router>
-          <Switch>
-            {/* {showSplash && (<SplashScreen  />)} */}
-            <Route exact path='/' component={props => <Home {...props} />} />
-            <Route exact path='/Home' component={props => <Home {...props} />} />
-            <Route exact path='/Talk' component={props => <Talk {...props} />} />
-            <Route exact path='/ContactDetail' component={props => <ContactDetail {...props} />} />
-          </Switch>
-        </Router>
+        <DataContext.Provider value={{ agent, setAgent }}>
+          <Router>
+            <RoutesWithLoader />
+          </Router>
+        </DataContext.Provider>
       </Suspense>
     </div>
   );
-}
+};
+
+// Routes and Loader Component
+const RoutesWithLoader = () => {
+  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 3000); // Simulate 2-second delay
+    return () => clearTimeout(timer); // Cleanup timer
+  }, [location.pathname]);
+
+  // Render specific loaders based on route
+  if (isLoading) {
+    if (location.pathname === "/Talk") {
+      return <CallingAnimation />;
+    }
+    return <SplashScreen />;
+  }
+
+  return (
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <Route exact path="/Home" component={Home} />
+      <Route exact path="/Talk" component={Talk} />
+      <Route exact path="/ContactDetail" component={ContactDetail} />
+    </Switch>
+  );
+};
 
 export default App;

@@ -1,0 +1,136 @@
+[2025-01-01 16:27:24.564985] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:27:35.307353] USER :
+Hello. How are you? Hello?
+
+
+[2025-01-01 16:27:37.564661] AGENT:
+ Hello! I'm here and ready to listen. What's going on with you today?
+
+
+[2025-01-01 16:27:45.628948] USER :
+I can accept the
+
+
+[2025-01-01 16:27:50.022547] AGENT:
+ It sounds like you might be going through a challenging moment. I'm here for you. Can you tell me more about what you're feeling?
+
+
+[2025-01-01 16:28:04.169074] USER :
+Yes. I'm very sad. So just mister boys, which I watch This is just
+
+
+[2025-01-01 16:28:12.494105] AGENT:
+ I'm really sorry to hear that you're feeling this way. It sounds like something or someone you're invested in might be causing you sadness. I'm here to listen if you want to share more about what's been happening.
+
+
+[2025-01-01 16:30:07.334065] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:30:19.234474] USER :
+Hello there. How are you?
+
+
+[2025-01-01 16:30:21.073000] AGENT:
+ Hello! I'm here and ready to support you. How are you feeling today?
+
+
+[2025-01-01 16:32:45.866605] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:32:54.055334] USER :
+Hello, Bobby.
+
+
+[2025-01-01 16:32:55.511792] AGENT:
+ Hello! I'm Daniel. How can I support you today?
+
+
+[2025-01-01 16:33:04.989267] USER :
+I'm pretty sad today.
+
+
+[2025-01-01 16:33:13.848333] AGENT:
+ I'm really sorry to hear that you're feeling this way. Sadness is a natural emotion, and it's okay to feel it. I'm here for you during this difficult time—would you like to share more about what's making you sad?
+
+
+[2025-01-01 16:34:18.490862] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:34:25.656565] USER :
+Hello.
+
+
+[2025-01-01 16:34:25.887041] AGENT:
+ Hello! How are you feeling today?
+
+
+[2025-01-01 16:34:35.069284] USER :
+I'm willing start to do 1.
+
+
+[2025-01-01 16:34:38.430828] AGENT:
+ That's great to hear you're ready to start something! Can you tell me more about what you're planning to do?
+
+
+[2025-01-01 16:34:55.715344] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-01 16:34:52.393737] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:34:59.077072] USER :
+I don't have a worry.
+
+
+[2025-01-01 16:35:06.797684] AGENT:
+ That's great to hear! If there's anything you'd like to talk about or explore, feel free to share. Whether it's something positive or just a casual chat, I'm here for you.
+
+
+[2025-01-01 16:35:24.581046] USER :
+I'm filling the
+
+
+[2025-01-01 16:35:29.269668] AGENT:
+ It sounds like you might have something on your mind. Take your time, and when you're ready, I'm here to listen and support you.
+
+
+[2025-01-01 16:45:53.939176] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:46:02.728217] USER :
+Hello. How are you?
+
+
+[2025-01-01 16:46:04.995518] AGENT:
+ Hello! I'm here and ready to listen. How are you feeling today?
+
+
+[2025-01-01 16:51:06.251580] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:58:18.044347] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-01 16:58:26.418086] USER :
+Hello. I had to program the Java.
+
+
+[2025-01-01 16:58:33.662965] AGENT:
+ Hi there! It sounds like you're working on a programming project in Java. How are you feeling about it? Do you find it exciting, challenging, or somewhere in between?
+
+
+[2025-01-01 16:58:50.582607] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+

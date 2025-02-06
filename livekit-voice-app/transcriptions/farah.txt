@@ -1,0 +1,112 @@
+[2025-01-18 12:48:09.535272] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-18 12:48:19.074224] USER :
+Uh, I'm sorry.
+
+
+[2025-01-18 12:48:26.456597] AGENT:
+ It's okay. There's no need to apologize. I'm here to listen and support you with whatever is on your mind. How can I help today?
+
+
+[2025-01-18 12:48:33.234201] USER :
+I'm so angry today.
+
+
+[2025-01-18 12:48:41.102518] AGENT:
+ I can see you're really angry right now, and that's okay. It's important to express those feelings. Would you like to talk about what might have triggered this anger?
+
+
+[2025-01-18 12:48:52.846178] USER :
+No. I'm feeling sad today now.
+
+
+[2025-01-18 12:48:59.778409] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you feel sad?
+
+
+[2025-01-18 12:52:03.384302] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-18 12:52:25.526158] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-18 12:52:33.040808] AGENT:
+ I'm sorry to hear that you're feeling sad today. It's okay to feel this way, and I'm here for you. Would you like to talk about what's making you sad?
+
+
+[2025-01-18 12:52:49.345739] AGENT:
+ Is everything okay, you are so quite! I'm here to listen and provide whatever support you might need
+
+
+[2025-01-18 12:53:49.946682] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-18 12:54:05.531504] AGENT:
+ It's completely okay if you need a moment to gather your thoughts. I'm here for you whenever you're ready to talk.
+
+
+[2025-01-18 12:54:12.737164] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-18 12:54:21.890341] AGENT:
+ I'm really sorry to hear that you're feeling this way. It's perfectly okay to feel sad sometimes. Would you like to share what's been on your mind? I'm here to listen.
+
+
+[2025-01-18 12:54:38.660599] AGENT:
+ Take your time. I'm here whenever you're ready to share or talk about what's been making you feel sad.
+
+
+[2025-01-18 12:54:53.609826] AGENT:
+ There's no rush—let me know when you feel ready to talk. I'm here to support you.
+
+
+[2025-01-18 12:55:01.186819] USER :
+No. No. No. I'm I'm saying I'm feeling Sad today.
+
+
+[2025-01-18 12:55:08.603168] AGENT:
+ I understand. It's okay to feel sad. I'm here for you during this difficult time—let's talk about what's making you feel this way. How can I support you right now?
+
+
+[2025-01-18 12:55:59.836917] AGENT:
+ Hi, I'm Daniel. I'm your emotional health counseling assistant. What's on your mind today?
+
+
+[2025-01-18 12:56:01.936813] USER :
+K.
+
+
+[2025-01-18 12:56:10.916338] USER :
+Uh, I'm feeling sad today.
+
+
+[2025-01-18 12:56:17.763948] AGENT:
+ I'm sorry to hear that you're feeling sad. It's okay to feel this way, and I'm here for you. Would you like to talk about what's been making you feel sad?
+
+
+[2025-01-18 12:56:31.374409] USER :
+Uh, I'm feeling now angry. See that your
+
+
+[2025-01-18 12:56:38.760812] AGENT:
+ I can see that you're really angry right now. It's okay to express that feeling. Would you like to talk about what triggered this anger? I'm here to listen.
+
+
+[2025-01-18 12:56:50.006839] USER :
+Uh, I'm filling now this point
+
+
+[2025-01-18 12:57:07.744146] USER :
+I'm feeling again sad.
+
+
+[2025-01-18 12:57:13.644375] AGENT:
+ I'm sorry to hear that sadness has returned. I'm here with you. Would you like to share what’s been bringing you down? We can talk it through together.
+
+
