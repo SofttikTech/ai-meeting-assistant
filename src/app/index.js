@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Switch, Route, useLocation } from "react-route
 import Talk from './Talk/index';
 import Home from './Home/index';
 import SplashScreen from './SplashScreen/index';
-import ContactDetail from './ContactDetail/index';
+import AddUser from './AddUser/index';
 import CallingAnimation from './Talk/callingAnimation';
 
 import '../static/css/style.css';
@@ -90,7 +90,7 @@ const RoutesWithLoader = () => {
       <Route exact path="/" component={Home} />
       <Route exact path="/Home" component={Home} />
       <Route exact path="/Talk" component={Talk} />
-      <Route exact path="/ContactDetail" component={ContactDetail} />
+      <Route exact path="/AddUser" component={AddUser} />
     </Switch>
   );
 };
