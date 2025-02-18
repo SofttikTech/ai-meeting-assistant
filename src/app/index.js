@@ -5,7 +5,7 @@ import React, { useEffect, Suspense, useState, createContext } from 'react';
 import { BrowserRouter as Router, Switch, Route, useLocation } from "react-router-dom";
 
 import Talk from './Talk/index';
-import Home from './Home/index';
+import Login from './Login/index';
 import SplashScreen from './SplashScreen/index';
 import AddUser from './AddUser/index';
 import CallingAnimation from './Talk/callingAnimation';
@@ -78,17 +78,17 @@ const RoutesWithLoader = () => {
   }, [location.pathname]);
 
   // Render specific loaders based on route
-  if (isLoading) {
-    if (location.pathname === "/Talk") {
-      return <CallingAnimation />;
-    }
-    return <SplashScreen />;
-  }
+  // if (isLoading) {
+  //   if (location.pathname === "/Talk") {
+  //     return <CallingAnimation />;
+  //   }
+  //   return <SplashScreen />;
+  // }
 
   return (
     <Switch>
-      <Route exact path="/" component={Home} />
-      <Route exact path="/Home" component={Home} />
+      <Route exact path="/" component={Login} />
+      <Route exact path="/Login" component={Login} />
       <Route exact path="/Talk" component={Talk} />
       <Route exact path="/AddUser" component={AddUser} />
     </Switch>
