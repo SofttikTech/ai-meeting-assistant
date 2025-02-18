@@ -137,7 +137,7 @@ from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
 import openai
-from conversation_analyzer import analyze_conversation, update_conversation_history
+from conversation_analyzer import analyze_conversation
 
 load_dotenv()
 
@@ -157,6 +157,18 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+MAX_HISTORY = 100
+conversation_history = []
+
+def update_conversation_history(new_transcript):
+    """Update conversation history and ensure it doesn't exceed the max limit."""
+    global conversation_history
+    conversation_history.append(new_transcript)
+
+    if len(conversation_history) > MAX_HISTORY:
+        conversation_history.pop(0)
+
 
 @app.route('/')
 def home():
@@ -209,7 +221,7 @@ def transcribe():
             logging.info(f"Transcript received: {transcript[:50]}...")
             
             update_conversation_history(transcript)
-            ai_response = analyze_conversation(transcript)
+            ai_response = analyze_conversation(transcript,conversation_history)
 
             if ai_response:
                 logging.info(f"AI Response: {ai_response[:50]}...")
@@ -225,6 +237,17 @@ def transcribe():
         logging.error(f"Transcription error: {str(error)}")
         return jsonify({"error": "Processing failed"}), 500
 
+@app.route('/generate_summary', methods=['GET'])
+def generate_summary():
+
+    if not conversation_history:
+        return jsonify({"error": "conversation_history is required"}), 400
+
+    summary = generate_post_meeting_summary(conversation_history)
+
+    return jsonify({"summary": summary})
+
+
 @socketio.on('connect')
 def handle_connect():
     logging.info("Client connected via WebSocket")
@@ -235,5 +258,5 @@ def handle_disconnect():
     logging.info("Client disconnected")
 
 if __name__ == "__main__":
-    logging.info("Starting unified server on port 5001")
+    logging.info("Starting server on port 5001")
     socketio.run(app, host="0.0.0.0", port=5001, debug=False)
