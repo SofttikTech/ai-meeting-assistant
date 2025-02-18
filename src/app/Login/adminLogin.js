@@ -87,10 +87,10 @@ const Login = ({ isVisible, setIsVisible }) => {
                 <FormControl>
                   <RadioGroup
                     aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue="sales_rep"
+                    defaultValue="advisor"
                     name="radio-buttons-group"
                   >
-                    <FormControlLabel value="sales_rep" control={<Radio checked={role === 'sales_rep'} onChange={(e) => setRole(e.target.value)} />} label="Sales Rep" />
+                    <FormControlLabel value="advisor" control={<Radio checked={role === 'advisor'} onChange={(e) => setRole(e.target.value)} />} label="Advisor" />
                     <FormControlLabel value="manager" control={<Radio />} label="Manager" checked={role === 'manager'} onChange={(e) => setRole(e.target.value)} />
                   </RadioGroup>
                 </FormControl>
