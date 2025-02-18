@@ -1,0 +1,186 @@
+
+.btn-style-new,
+.active-btn {
+  position: relative;
+  margin-bottom: 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: #fff;
+  border: 1px solid #AE60FB;
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  padding: 12px 20px;
+  background: #AE60FB;
+  border-radius: 6px;
+  transition: 0.5s;
+  font-family: "Poppins", serif;
+}
+
+.btn-style-new:hover,
+.active-btn {
+  background: none;
+  color: #AE60FB;
+}
+
+.btn-style-new .icon {
+  margin-right: 7px;
+  position: relative;
+  top: -1px;
+}
+
+
+
+.btn-style-border,
+.pause-btn {
+  position: relative;
+  margin-bottom: 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: #AE60FB;
+  border: 1px solid #AE60FB;
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  padding: 12px 20px;
+  background: transparent;
+  border-radius: 6px;
+  transition: 0.5s;
+  font-family: "Poppins", serif;
+}
+
+.btn-style-border:hover,
+.pause-btn:hover {
+  background: #AE60FB;
+  color: #fff;
+}
+
+.btn-style-border .icon {
+  margin-right: 7px;
+  position: relative;
+  top: -1px;
+}
+
+
+.login-page {
+  position: relative;
+  margin: 70px;
+}
+
+.login-page .login-inner {
+  position: relative;
+  background-color: #fff;
+  padding: 50px;
+  border-radius: 48px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.login-page .login-inner .left-area-form {
+  width: calc(60% - 15px);
+}
+.login-page .login-inner .right-img-area {
+  width: calc(40% - 15px);
+}
+
+.login-page .login-inner .left-area-form .form-inner {
+  position: relative;
+}
+
+.login-page .login-inner .left-area-form .form-inner .top-title-area {
+  margin-bottom: 250px;
+  position: relative;
+}
+
+.login-page .login-inner .left-area-form .form-inner .top-title-area h2 {
+  color: #242424;
+  font-size: 52px;
+  font-weight: 600;
+}
+
+.login-page .login-inner .left-area-form .form-inner .top-title-area h2 .icon {
+  margin-left: 25px;
+}
+
+.login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
+  color: #FFC966;
+  font-size: 39px;
+  margin-top: 13px;
+}
+
+.login-page .login-inner .left-area-form .form-inner .bottom-area {
+  position: relative;
+  width: 70%;
+}
+
+.login-page .login-inner .left-area-form .form-inner .bottom-area button {
+  display: block;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.login-page .login-inner .right-img-area .img-box {
+  position: relative;
+  text-align: right;
+}
+
+.login-page .login-inner .right-img-area .img-box img {
+  width: 73%;
+}
+
+
+.login-page .login-inner.login-form .left-area-form .form-inner .top-title-area {
+  margin-bottom: 50px;
+}
+
+.login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form {
+  position: relative;
+  display: block;
+  margin-bottom: 26px;
+}
+
+.login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label {
+  display: block;
+  color: #505050;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form input {
+  border: 1px solid #f2f2f2;
+  border-radius: 7px;
+  padding: 8px 15px;
+  width: 100%;
+  color: #505050;
+}
+
+.login-page .login-inner .back-btn {
+  position: absolute;
+  top: -12px;
+  left: -16px;
+  background-color: #fff;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #00000020;
+  transition: all 0.3s ease-in-out;
+}
+
+.login-page .login-inner .back-btn svg {
+  position: relative;
+  top: -2px;
+  left: -1px;
+}
+
+.login-page .login-inner .back-btn:hover {
+  zoom: 1.1;
+}
+
+.MuiRadio-root.Mui-checked {
+  color: #AE60FB;
+}
+
+.login-page .login-inner.login-form .left-area-form {
+  height: 73vh;
+  overflow-y: auto;
+}
