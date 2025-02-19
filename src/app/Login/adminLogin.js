@@ -39,7 +39,7 @@ const Login = ({ isVisible, setIsVisible }) => {
 
         setMessage('Login successful. Redirecting...');
         setTimeout(() => {
-          history.push('/Talk');
+          history.push('/ListMeetings');
         }, 1000);
       } else {
         setError(data.error || 'Login failed');

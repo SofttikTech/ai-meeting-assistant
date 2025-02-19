@@ -4,11 +4,8 @@ import { Error, CheckCircle } from '@material-ui/icons';
 import React, { useEffect, Suspense, useState, createContext } from 'react';
 import { BrowserRouter as Router, Switch, Route, useLocation } from "react-router-dom";
 
-import Talk from './Talk/index';
 import Login from './Login/index';
 import ListMeetings from './ListMeetings/index';
-import SplashScreen from './SplashScreen/index';
-import CallingAnimation from './Talk/callingAnimation';
 
 import '../static/css/style.css';
 import 'jquery/dist/jquery.min.js';
@@ -54,7 +51,7 @@ const App = () => {
 
   return (
     <div>
-      <Suspense fallback={<SplashScreen />}>
+      <Suspense>
         <ToastContainer closeOnClick position="bottom-left" />
         <DataContext.Provider value={{ agent, setAgent }}>
           <Router>
@@ -89,7 +86,6 @@ const RoutesWithLoader = () => {
     <Switch>
       <Route exact path="/" component={Login} />
       <Route exact path="/Login" component={Login} />
-      <Route exact path="/Talk" component={Talk} />
       <Route exact path="/list-meetings" component={ListMeetings} />
     </Switch>
   );
