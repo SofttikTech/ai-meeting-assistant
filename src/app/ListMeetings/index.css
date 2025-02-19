@@ -255,9 +255,6 @@
   position: relative;
 }
 
-.list-page .list-page-inner .top-back-area {
-}
-
 .list-page .list-page-inner .top-back-area .back-btn-area {
   display: flex;
   align-items: center;
@@ -266,7 +263,7 @@
 
 .information-sec {
   position: relative;
-  padding: 50px 0;
+  padding: 50px 0 0;
 }
 
 .information-sec .information-box {
@@ -314,4 +311,103 @@
 
 .information-sec .information-box .froup-form input {
   width: 80%;
+}
+
+.information-sec .information-box.family-box {
+  min-height: 362px;
+}
+
+
+.information-sec .information-box.family-box {
+  min-height: 362px;
+}
+
+.information-sec .information-box .qustions-box {
+  position: relative;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.information-sec .information-box .qustions-box span {
+  display: block;
+  width: 35px;
+  height: 35px;
+  background-color: #C9D4F3;
+  text-align: center;
+  line-height: 35px;
+  border-radius: 6px;
+  margin-right: 24px;
+  position: relative;
+  top: -7px;
+}
+
+.information-sec .information-box .qustions-box p {
+  width: 100%;
+  border: 1px solid #f2f2f2;
+  border-radius: 6px;
+  padding: 7px 15px;
+}
+
+.information-sec .information-box .summery-box {
+  position: relative;
+  margin-top: 26px;
+  border: 1px solid #f2f2f2;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.information-sec .information-box .summery-box p {
+  margin-bottom: 0;
+  color: #505050;
+}
+
+.information-sec .information-box .summery-box {
+  position: relative;
+  margin-top: 26px;
+  border: 1px solid #f2f2f2;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.information-sec .information-box .summery-box p {
+  margin-bottom: 0;
+  color: #505050;
+}
+
+.information-sec .voice-area {
+  position: relative;
+  text-align: center;
+  padding: 50px 0;
+}
+
+.information-sec .voice-area h1 {
+  font-size: 60px;
+  font-weight: 700;
+  color: #1E3A8A;
+  margin-bottom: 13px;
+}
+
+.information-sec .voice-area p {
+  font-size: 20px;
+  margin-bottom: 28px;
+}
+
+.information-sec .voice-area .speek-btn {
+  background-color: transparent;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  filter: drop-shadow(0px 0px 60px #577ADB);
+}
+
+.information-sec .voice-area .speek-btn:hover {
+  filter: drop-shadow(0px 0px 10px #577ADB);
+}
+
+.information-sec .information-box .summery-box p .icon {
+  margin-right: 15px;
+}
+
+.information-sec .information-box.response-box .summery-box {
+  min-height: 159px;
 }
