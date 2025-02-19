@@ -7,7 +7,7 @@ import MeetingAssistant from './meetingAssistant'
 import "react-table-6/react-table.css";
 import './index.css';
 
-const MeetingsDetail = ({ isVisibleMeetingDetail, setIsVisibleMeetingDetail }) => {
+const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious }) => {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -57,7 +57,7 @@ const MeetingsDetail = ({ isVisibleMeetingDetail, setIsVisibleMeetingDetail }) =
               <div className='row'>
                 <div className='col-12'>
                   <div className='back-btn-area'>
-                    <button className='btn-style-new' onClick={() => setIsVisibleMeetingDetail(false)}>
+                    <button className='btn-style-new' onClick={() => setIsVisibleMeetingDetailPrevious(false)}>
                       <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7.57895 7.5V12.5L0 6.25L7.57895 0V5H13.8947C16.5748 5 19.1451 6.05357 21.0402 7.92893C22.9353 9.8043 24 12.3478 24 15C24 17.6522 22.9353 20.1957 21.0402 22.0711C19.1451 23.9464 16.5748 25 13.8947 25H2.52632V22.5H13.8947C15.9048 22.5 17.8325 21.7098 19.2539 20.3033C20.6752 18.8968 21.4737 16.9891 21.4737 15C21.4737 13.0109 20.6752 11.1032 19.2539 9.6967C17.8325 8.29018 15.9048 7.5 13.8947 7.5H7.57895Z" fill="currentColor" />
                       </svg>
@@ -310,14 +310,14 @@ const MeetingsDetail = ({ isVisibleMeetingDetail, setIsVisibleMeetingDetail }) =
                     </div>
                   </div>
 
-                  {/* <div className='information-box'>
-                    <h3>Summery</h3>
+                  <div className='information-box'>
+                    <h3>Summery & Recommendation</h3>
                     <div className='summery-box'>
                       <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                     </div>
                   </div>
 
-                  <div className='information-box'>
+                  {/* <div className='information-box'>
                     <h3>Recommendation</h3>
                     <div className='summery-box'>
                       <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>

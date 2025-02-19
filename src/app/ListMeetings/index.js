@@ -6,6 +6,7 @@ import "react-table-6/react-table.css";
 import './index.css';
 
 import MeetingDetail from './meetingDetail';
+import MeetingDetailPrevious from './meetingDetailPrevious';
 
 function ListMeetings() {
   const history = useHistory();
@@ -15,6 +16,7 @@ function ListMeetings() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
+  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +48,7 @@ function ListMeetings() {
   };
 
 
-  const dataAgents = [{
+  const dataUpcomingMeetings = [{
     name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetail(true)}>James William</button>,
     city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetail(true)}>New York </button>,
     phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetail(true)}>+1 234-567-89</button>,
@@ -192,7 +194,184 @@ function ListMeetings() {
     campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetail(true)}>Long-Term Care Planning</button>,
   },];
 
-  const columnsAgents = [{
+  const columnsUpcomingMeetings = [{
+    id: 'name',
+    Header: 'Name',
+    accessor: 'name'
+  },
+  {
+    id: 'city',
+    Header: 'City',
+    accessor: 'city'
+
+  },
+  {
+    id: 'phone',
+    Header: 'Phone',
+    accessor: 'phone'
+
+  },
+  {
+    id: 'email',
+    Header: 'Email',
+    accessor: 'email'
+
+  },
+  {
+    id: 'campaign',
+    Header: 'Campaign',
+    accessor: 'campaign'
+
+  },];
+
+
+  const dataPreviousMeetings = [{
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  }, {
+    name: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>James William</button>,
+    city: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>New York </button>,
+    phone: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>+1 234-567-89</button>,
+    email: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>jameswilliam0@gmail.com</button>,
+    campaign: <button className='btn-details-agent' onClick={() => setIsVisibleMeetingDetailPrevious(true)}>Long-Term Care Planning</button>,
+  },];
+
+  const columnsPreviousMeetings = [{
     id: 'name',
     Header: 'Name',
     accessor: 'name'
@@ -224,9 +403,13 @@ function ListMeetings() {
 
   return (
     <div className='list-page'>
-      {isVisibleMeetingDetail
-        ? <MeetingDetail isVisibleMeetingDetail={isVisibleMeetingDetail} setIsVisibleMeetingDetail={setIsVisibleMeetingDetail} />
-        : <div className='list-page-inner'>
+
+      {isVisibleMeetingDetail ? (
+        <MeetingDetail isVisibleMeetingDetail={isVisibleMeetingDetail} setIsVisibleMeetingDetail={setIsVisibleMeetingDetail} />
+      ) : isVisibleMeetingDetailPrevious ? (
+        <MeetingDetailPrevious isVisibleMeetingDetailPrevious={isVisibleMeetingDetailPrevious} setIsVisibleMeetingDetailPrevious={setIsVisibleMeetingDetailPrevious} />
+      ) : (
+        <div className='list-page-inner'>
             <div className='top-nav-area'>
             <div className='auto-container'>
               <div className='row'>
@@ -270,10 +453,10 @@ function ListMeetings() {
                           width='100'
                           className='table responsive meetings-table'
                           minRows={6}
-                          columns={columnsAgents}
+                          columns={columnsUpcomingMeetings}
                           filterable={false}
                           showPagination={false}
-                          data={dataAgents}
+                          data={dataUpcomingMeetings}
                         // defaultFilterMethod={filterCaseInsensitive}
                         // resolveData={allCampaign => allCampaign.map(row => row)}
                         />
@@ -297,10 +480,10 @@ function ListMeetings() {
                           width='100'
                           className='table responsive meetings-table'
                           minRows={6}
-                          columns={columnsAgents}
+                          columns={columnsPreviousMeetings}
                           filterable={false}
                           showPagination={false}
-                          data={dataAgents}
+                          data={dataPreviousMeetings}
                         // defaultFilterMethod={filterCaseInsensitive}
                         // resolveData={allCampaign => allCampaign.map(row => row)}
                         />
@@ -312,8 +495,7 @@ function ListMeetings() {
             </div>
           </div>
         </div>
-      }
-
+      )}
     </div>
   );
 }
