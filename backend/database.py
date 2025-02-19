@@ -410,8 +410,35 @@ def get_clients_for_logged_in_advisor():
             return jsonify({"error": "Advisor not logged in"}), 403
 
         cursor = mysql.connection.cursor()
-        query = "SELECT * FROM clientRequests WHERE advisor = %s"
-        cursor.execute(query, (name,))
+        query = "SELECT * FROM clientRequests WHERE advisor = %s AND status = %s"
+        cursor.execute(query, (name,"scheduled"))
+        data = cursor.fetchall()
+
+        # Get column names from cursor description
+        columns = [desc[0] for desc in cursor.description]
+        clients = [dict(zip(columns, row)) for row in data]
+
+        cursor.close()
+
+        if clients:
+            return jsonify(clients), 200
+        else:
+            return jsonify({"message": f"No clients found for advisor '{name}'"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/advisor/clientsPrevious', methods=['GET'])
+def get_clients_previous():
+    global name
+    try:
+        if not name:
+            return jsonify({"error": "Advisor not logged in"}), 403
+
+        cursor = mysql.connection.cursor()
+        query = "SELECT * FROM clientRequests WHERE advisor = %s AND status = %s"
+        cursor.execute(query, (name,"completed"))
         data = cursor.fetchall()
 
         # Get column names from cursor description
