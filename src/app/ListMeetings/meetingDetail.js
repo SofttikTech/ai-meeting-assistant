@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router-dom';
@@ -11,16 +12,40 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
   const history = useHistory();
   const [isVisibleAssistant, setIsVisibleAssistant] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState({});
+  const [summary, setSummary] = useState("");
 
-  // Retrieve the selected meeting from localStorage when component mounts.
+
   useEffect(() => {
     const storedMeeting = localStorage.getItem("selectedMeeting");
     if (storedMeeting) {
-      setSelectedMeeting(JSON.parse(storedMeeting));
+      const meeting = JSON.parse(storedMeeting);
+      setSelectedMeeting(meeting);
+      fetch(`http://localhost:5000/preMeetingQuestions/${meeting.id}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { 
+              throw new Error(err.error || "Failed to fetch pre meeting questions"); 
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          // If your API returns an object with a "questions" key, use that; otherwise, adjust as needed.
+          if (data.questions) {
+            setSummary(data.questions);
+          } else {
+            setSummary(data);
+            console.log(summary)
+          }
+        })
+        .catch(err => console.error("Error fetching pre meeting questions:", err));
     }
   }, []);
 
-  // (Optional) If you want to clear the selectedMeeting from localStorage on unmount:
   useEffect(() => {
     return () => {
       localStorage.removeItem("selectedMeeting");
@@ -213,8 +238,24 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
                       </div>
                     </div>
                   </div>
-                  {/* Static Sections */}
                   <div className='col-12'>
+                    <div className='information-box'>
+                      <h3>Pre meeting questions</h3>
+                      {summary ? (
+                        summary.map((question, index) => (
+                          <div className='qustions-box' key={index}>
+                            <span>{index + 1}</span>
+                            <p>{question}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No pre meeting questions available.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Static Sections */}
+                  {/* <div className='col-12'>
                     <div className='information-box'>
                       <h3>Pre meeting questions</h3>
                       <div className='qustions-box'>
@@ -233,28 +274,20 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
                         <span>4</span>
                         <p>Are you interested in Medicare Advantage or Supplement plans?</p>
                       </div>
-                    </div>
-                    <div className='information-box'>
+                    </div> */}
+                    {/* <div className='information-box'>
                       <h3>Summery</h3>
                       <div className='summery-box'>
                         <p>Lorem Ipsum is simply dummy text...</p>
                       </div>
                     </div>
-                  </div>
-
-                  {/* <div className='information-box'>
-                    <h3>Summery</h3>
-                    <div className='summery-box'>
-                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                    </div>
-                  </div>
-
-                  <div className='information-box'>
-                    <h3>Recommendation</h3>
-                    <div className='summery-box'>
-                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                    </div>
-                  </div> */}
+                    <div className='information-box'>
+                      <h3>Recommendation</h3>
+                      <div className='summery-box'>
+                        <p>Lorem Ipsum is simply dummy text...</p>
+                      </div>
+                    </div> */}
+                  {/* </div> */}
                 </div>
               </div>
             </div>

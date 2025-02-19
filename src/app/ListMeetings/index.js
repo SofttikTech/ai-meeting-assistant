@@ -8,10 +8,12 @@ import './index.css';
 import MeetingDetail from './meetingDetail';
 import MeetingDetailPrevious from './meetingDetailPrevious';
 
+
 function ListMeetings() {
   const [error, setError] = useState('');
   const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
-  // States to hold upcoming (scheduled) and previous (completed) clients data
+
+  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
   const [upcomingClients, setUpcomingClients] = useState([]);
   const [previousClients, setPreviousClients] = useState([]);
 
@@ -19,7 +21,7 @@ function ListMeetings() {
   useEffect(() => {
     fetch('http://localhost:5000/advisor/clients', {
       method: 'GET',
-      credentials: 'include', // include cookies for session
+      credentials: 'include', 
       headers: { 'Content-Type': 'application/json' }
     })
       .then(response => {
@@ -38,7 +40,7 @@ function ListMeetings() {
   useEffect(() => {
     fetch('http://localhost:5000/advisor/clientsPrevious', {
       method: 'GET',
-      credentials: 'include', // include cookies for session
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     })
       .then(response => {
@@ -105,17 +107,22 @@ function ListMeetings() {
     },
   ];
 
-  // Handle row click: store the selected record in localStorage and show the detail view.
   const handleRowClick = (rowData) => {
     localStorage.setItem("selectedMeeting", JSON.stringify(rowData));
     setIsVisibleMeetingDetail(true);
   };
 
+  const handleRowClick2 = (rowData) => {
+    localStorage.setItem("selectedMeeting", JSON.stringify(rowData));
+    setIsVisibleMeetingDetailPrevious(true);
+  };
+
   return (
     <div className='list-page'>
-      {isVisibleMeetingDetail ? (
-        // Render the MeetingDetail page and pass a method to go back if needed
-        <MeetingsDetail setIsVisibleMeetingDetail={setIsVisibleMeetingDetail} />
+     {isVisibleMeetingDetail ? (
+        <MeetingDetail isVisibleMeetingDetail={isVisibleMeetingDetail} setIsVisibleMeetingDetail={setIsVisibleMeetingDetail} />
+      ) : isVisibleMeetingDetailPrevious ? (
+        <MeetingDetailPrevious isVisibleMeetingDetailPrevious={isVisibleMeetingDetailPrevious} setIsVisibleMeetingDetailPrevious={setIsVisibleMeetingDetailPrevious} />
       ) : (
         <div className='list-page-inner'>
           <div className='top-nav-area'>
@@ -162,7 +169,7 @@ function ListMeetings() {
                           width='100'
                           className='table responsive meetings-table'
                           minRows={6}
-                          columns={columnsUpcomingMeetings}
+                          columns={columnsAgents}
                           filterable={false}
                           showPagination={false}
                           data={upcomingClients}
@@ -195,14 +202,14 @@ function ListMeetings() {
                           width='100'
                           className='table responsive meetings-table'
                           minRows={6}
-                          columns={columnsPreviousMeetings}
+                          columns={columnsAgents}
                           filterable={false}
                           showPagination={false}
                           data={previousClients}
                           getTrProps={(state, rowInfo) => {
                             return rowInfo
                               ? {
-                                  onClick: () => handleRowClick(rowInfo.original),
+                                  onClick: () => handleRowClick2(rowInfo.original),
                                   style: { cursor: 'pointer' }
                                 }
                               : {};
