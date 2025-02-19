@@ -298,11 +298,13 @@
   width: 80%;
 }
 
-.information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root::before, .information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root::after {
+.information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root::before,
+.information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root::after {
   display: none;
 }
 
-.information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root input, .information-sec .information-box .froup-form input {
+.information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root input,
+.information-sec .information-box .froup-form input {
   padding: 8px 15px;
   border: 1px solid #f2f2f2;
   border-radius: 6px;
@@ -410,4 +412,157 @@
 
 .information-sec .information-box.response-box .summery-box {
   min-height: 159px;
+}
+
+@media (max-width: 1690px) {
+  .information-sec {
+    position: relative;
+    padding: 40px 0 0;
+  }
+
+  .information-sec .voice-area {
+    padding: 40px 0;
+  }
+}
+
+@media (max-width: 1610px) {
+  .information-sec .voice-area {
+    padding: 0px 0 40px;
+  }
+
+  .information-sec .voice-area .speek-btn img {
+    width: 67%;
+  }
+
+  .information-sec .voice-area h1 {
+    font-size: 50px;
+  }
+
+  .information-sec .voice-area p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1450px) {
+  .list-page .banner-area .banner-inner .banner-content h2 {
+    font-size: 32px;
+  }
+
+  .list-page .banner-area .banner-inner .banner-content {
+    height: 241px;
+  }
+
+  .information-sec .information-box .froup-form label {
+    margin-bottom: 0;
+    margin-right: 15px;
+    width: 40%;
+  }
+}
+
+@media (max-width: 1410px) {
+  .list-page {
+    padding: 20px 0;
+  }
+
+  .list-page .banner-area {
+    margin: 20px 0;
+  }
+
+  .list-page .banner-area .banner-inner .banner-content {
+    height: 204px;
+  }
+
+  .list-page .banner-area .banner-inner .banner-content h2 {
+    font-size: 28px;
+  }
+
+  .upcoming-meetings .upcoming-inner .upcoming-content h3,
+  .information-sec .information-box h3 {
+    font-size: 18px;
+  }
+
+  .upcoming-meetings .upcoming-inner .upcoming-content .table .meetings-table .rt-table .rt-thead .rt-tr .rt-th,
+  .upcoming-meetings .upcoming-inner .upcoming-content .table .meetings-table .rt-table .rt-tbody .rt-tr-group .rt-tr .rt-td .btn-details-agent,
+  .information-sec .information-box .froup-form label,
+  .information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root input,
+  .information-sec .information-box .froup-form input,
+  .information-sec .information-box .qustions-box p {
+    font-size: 14px;
+  }
+
+  .upcoming-meetings .upcoming-inner {
+    padding: 25px;
+  }
+
+  .list-page .list-page-inner .top-back-area .back-btn-area .btn-style-new {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+
+  .list-page .list-page-inner .top-back-area .back-btn-area .btn-style-new svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .information-sec {
+    padding: 25px 0 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .list-page .banner-area .banner-inner .banner-content {
+    height: 204px;
+    padding: 25px;
+  }
+
+  .list-page .banner-area .banner-inner .banner-content h2 {
+    font-size: 22px;
+  }
+  .information-sec .voice-area h1 {
+    font-size: 36px;
+}
+}
+
+
+@media (max-width: 600px) {
+  .list-page .banner-area .banner-inner .banner-content {
+    height: 150px;
+    padding: 25px;
+  }
+
+  .information-sec .voice-area p{
+    font-size: 14px;
+  }
+
+  .list-page .banner-area .banner-inner .banner-content h2 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .upcoming-meetings .upcoming-inner .upcoming-content h3,
+  .information-sec .information-box h3 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .list-page .banner-area .banner-inner .banner-content {
+    height: 120px;
+    padding: 20px;
+  }
+
+  .list-page .banner-area .banner-inner .banner-content h2 {
+    font-size: 16px;
+  }
+
+  .upcoming-meetings .upcoming-inner .upcoming-content .table .meetings-table .rt-table .rt-thead .rt-tr .rt-th,
+  .upcoming-meetings .upcoming-inner .upcoming-content .table .meetings-table .rt-table .rt-tbody .rt-tr-group .rt-tr .rt-td .btn-details-agent,
+  .information-sec .information-box .froup-form label,
+  .information-sec .information-box .froup-form .MuiFormControl-root .MuiInputBase-root input,
+  .information-sec .information-box .froup-form input,
+  .information-sec .information-box .qustions-box p {
+    font-size: 12px;
+  }
 }
