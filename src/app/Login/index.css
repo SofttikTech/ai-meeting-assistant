@@ -227,9 +227,132 @@
 }
 
 
-.MuiFormControlLabel-root .MuiButtonBase-root{
+.MuiFormControlLabel-root .MuiButtonBase-root {
   color: #1E3A8A80;
 }
-.MuiFormControlLabel-root .Mui-checked{
+
+.MuiFormControlLabel-root .Mui-checked {
   color: #1E3A8A !important;
+}
+
+
+@media (max-width: 1610px) {
+  .login-page {
+    position: relative;
+    margin: 50px 70px;
+  }
+}
+
+@media (max-width: 1410px) {
+  .login-page .login-inner {
+    padding: 30px 50px;
+    gap: 20px;
+  }
+
+  .login-page {
+    position: relative;
+    margin: 30px 70px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area {
+    margin-bottom: 229px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h2 {
+    font-size: 45px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
+    font-size: 30px;
+  }
+
+  .login-page .login-inner.login-form .left-area-form .form-inner .top-title-area h2 {
+    font-size: 25px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .bottom-area button,
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label,
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form input,
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label .MuiTypography-root {
+    font-size: 14px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .bottom-area h4.group-title {
+    font-size: 15px;
+  }
+}
+
+
+@media (max-width: 1199px) {
+  .login-page .login-inner .right-img-area .img-box img {
+    width: 100%;
+  }
+}
+
+@media (max-width: 991px) {
+  .login-page .login-inner .right-img-area .img-box img {
+    width: 100%;
+  }
+
+  .login-page .login-inner .left-area-form,
+  .login-page .login-inner .right-img-area,
+  .login-page .login-inner .left-area-form .form-inner .bottom-area {
+    width: 100%;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area {
+    margin-bottom: 20px;
+  }
+  .login-page .login-inner.login-form .left-area-form.add-user-form{
+    height: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-page {
+    position: relative;
+    margin: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h2 {
+    font-size: 38px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
+    font-size: 26px;
+  }
+
+  .login-page .login-inner {
+    padding: 30px;
+    gap: 30px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h2 .icon img {
+    width: 30px;
+  }
+
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form .MuiFormControl-root .MuiFormGroup-root {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h2 {
+    font-size: 30px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
+    font-size: 20px;
+  }
+  .login-page .login-inner.login-form .left-area-form .form-inner .top-title-area h2{
+    font-size: 20px;
+  }
+  .login-page .login-inner .left-area-form .form-inner .bottom-area button, .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label, .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form input, .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label .MuiTypography-root{
+    font-size: 12px;
+  }
+  .login-page .login-inner .left-area-form .form-inner .bottom-area h4.group-title{
+    font-size: 14px;
+  }
 }
