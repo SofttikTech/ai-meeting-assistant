@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 /* -- set app title --*/
-const AppTitle = 'Frontend Emotional-Health-Counselling-App NFT';
+const AppTitle = 'Frontend AI-Meeting-Assistant-App NFT';
 
 /* -- set app mode -- */
 // const AppMode = [''];

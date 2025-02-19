@@ -9,7 +9,7 @@ import '../../static/css/animate.css';
 
 const tracks = [
     {
-        url: "https://assets-emotional-health-counselling.s3.ap-southeast-1.amazonaws.com/rotery_ring.mp3",
+        url: "https://assets-ai-meeting-assistant.s3.ap-southeast-1.amazonaws.com/rotery_ring.mp3",
         title: "rignging",
         tags: ["rignging"],
     }

@@ -8,7 +8,7 @@ class Footer extends Component {
     render() {
         return (
             <div>
-                <div className="emotional-health-counselling-footer" >
+                <div className="ai-meeting-assistant-footer" >
                     <div class="container ">
                         <div className="row footer-media-1 footer-media-2">
                             <div className="col-lg-5 col-md-12 col-12 footer-div ">

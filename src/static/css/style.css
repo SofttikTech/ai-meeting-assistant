@@ -13,10 +13,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size:16px;
-  color: #fff;
+  color: #000;
 	line-height: 30px;
 	font-weight:400;
-	background:#01af8d;
+	background:#e2e8f9;
 	-webkit-font-smoothing: antialiased;
 	-moz-font-smoothing: antialiased;
 }
@@ -81,7 +81,7 @@ img{
   color: #fff;
 }
   
-.emotional-health-counselling-page {
+.ai-meeting-assistant-page {
   background-color: #01af8d;
 }
 /* width */
@@ -96,7 +96,7 @@ img{
   
   /* Handle */
   ::-webkit-scrollbar-thumb {
-	background: #f5f5f5;
+	background: #ccc;
   }
   
   /* Handle on hover */

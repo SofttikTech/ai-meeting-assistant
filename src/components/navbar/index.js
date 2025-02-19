@@ -6,7 +6,7 @@ import './index.css';
 const Navbar = () => {
 
     return (
-        <div className="emotional-health-counselling-nav">
+        <div className="ai-meeting-assistant-nav">
             <nav className='navbar navbar-expand-lg sidenav' id="sidenav-1" data-mdb-hidden="false">
                 <div className='container-fluid'>
                     <div className="inner-container">

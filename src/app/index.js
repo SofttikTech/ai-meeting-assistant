@@ -6,8 +6,8 @@ import { BrowserRouter as Router, Switch, Route, useLocation } from "react-route
 
 import Talk from './Talk/index';
 import Login from './Login/index';
+import ListMeetings from './ListMeetings/index';
 import SplashScreen from './SplashScreen/index';
-import AddUser from './AddUser/index';
 import CallingAnimation from './Talk/callingAnimation';
 
 import '../static/css/style.css';
@@ -90,7 +90,7 @@ const RoutesWithLoader = () => {
       <Route exact path="/" component={Login} />
       <Route exact path="/Login" component={Login} />
       <Route exact path="/Talk" component={Talk} />
-      <Route exact path="/AddUser" component={AddUser} />
+      <Route exact path="/list-meetings" component={ListMeetings} />
     </Switch>
   );
 };
