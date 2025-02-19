@@ -1,4 +1,3 @@
-# llm_utils.py
 import openai
 import os
 import logging
@@ -70,7 +69,6 @@ def generate_pre_meeting_questions(first_name, last_name, campaigns):
         if q and not q.isdigit():  # Remove empty lines and stray numbers
             cleaned_questions.append(q)
 
-    # Format output as a readable string
     formatted_text = "\n".join(cleaned_questions)
 
     print(formatted_text)

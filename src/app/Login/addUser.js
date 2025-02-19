@@ -44,11 +44,9 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
   const [advisorName, setAdvisorName] = useState('');
   const [advisors, setAdvisors] = useState([]);
 
-  // Feedback messages
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Fetch advisors from the /getAdvisors endpoint when component mounts
   useEffect(() => {
     fetch('http://localhost:5000/getAdvisors')
       .then((response) => response.json())

@@ -4,7 +4,7 @@ import os
 from flask_cors import CORS
 import openai
 from server.llm import generate_pre_meeting_questions
-
+from flask_session import Session
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -20,6 +20,10 @@ app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
 
 mysql = MySQL(app)
+
+campaign_values = []
+userID = 0
+name = ""
 
 @app.route('/test-db', methods=['GET'])
 def test_db():
@@ -76,6 +80,7 @@ def getAdvisors():
 
 @app.route('/admin/login', methods=['POST'])
 def user_login():
+    global name, userID
     try:
         data = request.json
         if not data or 'username' not in data or 'password' not in data:
@@ -84,6 +89,8 @@ def user_login():
         username = data['username']
         password = data['password']
 
+        name = username
+        
         cursor = mysql.connection.cursor()
         query = "SELECT id, role, email FROM User WHERE username = %s AND password = %s"
         cursor.execute(query, (username, password))
@@ -97,6 +104,7 @@ def user_login():
                 return jsonify({"error": "User is not authorized"}), 403
             # Store user details in session if needed
             session['user_id'] = user_id
+            userID = user_id
             session['role'] = role
             return jsonify({
                 "message": "Login successful",
@@ -248,76 +256,74 @@ def add_meeting():
         meeting_id = cursor.lastrowid
         cursor.close()
         
-        # Store the current meeting ID in session for later updates
         session['current_meeting_id'] = meeting_id
 
         return jsonify({"message": "Meeting added successfully", "meeting_id": meeting_id}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/meetings/update', methods=['PUT'])
-def update_meeting():
-    try:
-        # Ensure the admin is logged in
-        admin_id = session.get('admin_id')
-        if not admin_id:
-            return jsonify({"error": "Admin not logged in"}), 403
+# @app.route('/meetings/update', methods=['PUT'])
+# def update_meeting():
+#     try:
+#         # Ensure the admin is logged in
+#         admin_id = session.get('admin_id')
+#         if not admin_id:
+#             return jsonify({"error": "Admin not logged in"}), 403
 
-        # Retrieve the current meeting ID from the session
-        meeting_id = session.get('current_meeting_id')
-        if not meeting_id:
-            return jsonify({"error": "No meeting in session to update"}), 400
+#         # Retrieve the current meeting ID from the session
+#         meeting_id = session.get('current_meeting_id')
+#         if not meeting_id:
+#             return jsonify({"error": "No meeting in session to update"}), 400
 
-        data = request.json
-        update_fields = []
-        params = []
+#         data = request.json
+#         update_fields = []
+#         params = []
 
-        # Automatically update the meeting with the admin's ID
-        update_fields.append("admin_id = %s")
-        params.append(admin_id)
+#         # Automatically update the meeting with the admin's ID
+#         update_fields.append("admin_id = %s")
+#         params.append(admin_id)
         
-        # Optionally update transcript, ai_response, summary, or status.
-        if 'transcript' in data:
-            update_fields.append("transcript = %s")
-            params.append(data['transcript'])
-        if 'ai_response' in data:
-            update_fields.append("ai_response = %s")
-            params.append(data['ai_response'])
-        if 'summary' in data:
-            update_fields.append("summary = %s")
-            params.append(data['summary'])
-        if 'status' in data:
-            status = data['status']
-            if status not in ['pending', 'completed']:
-                return jsonify({"error": "Invalid status. Must be 'pending' or 'completed'."}), 400
-            update_fields.append("status = %s")
-            params.append(status)
+#         # Optionally update transcript, ai_response, summary, or status.
+#         if 'transcript' in data:
+#             update_fields.append("transcript = %s")
+#             params.append(data['transcript'])
+#         if 'ai_response' in data:
+#             update_fields.append("ai_response = %s")
+#             params.append(data['ai_response'])
+#         if 'summary' in data:
+#             update_fields.append("summary = %s")
+#             params.append(data['summary'])
+#         if 'status' in data:
+#             status = data['status']
+#             if status not in ['pending', 'completed']:
+#                 return jsonify({"error": "Invalid status. Must be 'pending' or 'completed'."}), 400
+#             update_fields.append("status = %s")
+#             params.append(status)
 
-        if not update_fields:
-            return jsonify({"error": "No fields provided to update"}), 400
+#         if not update_fields:
+#             return jsonify({"error": "No fields provided to update"}), 400
 
-        params.append(meeting_id)
-        query = "UPDATE Meetings SET " + ", ".join(update_fields) + " WHERE meeting_id = %s"
+#         params.append(meeting_id)
+#         query = "UPDATE Meetings SET " + ", ".join(update_fields) + " WHERE meeting_id = %s"
 
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, tuple(params))
-        mysql.connection.commit()
-        affected = cursor.rowcount
-        cursor.close()
+#         cursor = mysql.connection.cursor()
+#         cursor.execute(query, tuple(params))
+#         mysql.connection.commit()
+#         affected = cursor.rowcount
+#         cursor.close()
 
-        if affected == 0:
-            return jsonify({"error": "Meeting not found or no change made"}), 404
+#         if affected == 0:
+#             return jsonify({"error": "Meeting not found or no change made"}), 404
 
-        return jsonify({"message": "Meeting updated successfully"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#         return jsonify({"message": "Meeting updated successfully"}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 
 @app.route('/preMeetingQuestions/<int:user_id>', methods=['GET'])
 def preMeetingQuestions(user_id):
     try:
         cursor = mysql.connection.cursor()
-        # Adjust column/table names to match your actual schema
         query = """
             SELECT clientFirstName, clientLastName,
                    medicare, lifeInsurance, wealthPlanning, LTC_Planning
@@ -344,7 +350,6 @@ def preMeetingQuestions(user_id):
         if ltc == 1:
             campaigns.append("Long-Term Care Planning")
 
-        # Call the LLM utility function
         questions = generate_pre_meeting_questions(first_name, last_name, campaigns)
 
         # return jsonify({"questions": questions}), 200
@@ -352,6 +357,104 @@ def preMeetingQuestions(user_id):
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# using to get campaign of active user (whose conversation going to start)
+@app.route('/campaign/<int:user_id>', methods=['GET'])
+def get_campaign_by_user(user_id):
+    global campaign_values
+    campaign_values.clear()
+
+    try:
+        cursor = mysql.connection.cursor()
+        query = """
+            SELECT medicare, lifeInsurance, wealthPlanning, LTC_Planning
+            FROM clientRequests
+            WHERE id = %s
+        """
+        cursor.execute(query, (user_id,))
+        row = cursor.fetchone()
+        cursor.close()
+
+        if row is None:
+            return jsonify({"error": f"No campaign data found for user id {user_id}"}), 404
+
+        medicare, life_insurance, wealth_planning, ltc_planning = row
+
+        if medicare == 1:
+            campaign_values.append("Medicare")
+        if life_insurance == 1:
+            campaign_values.append("Life Insurance")
+        if wealth_planning == 1:
+            campaign_values.append("Wealth Planning")
+        if ltc_planning == 1:
+            campaign_values.append("Long Term Care Planning")
+
+        return jsonify({"campaigns": campaign_values}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# get campaign for prompt
+@app.route('/get_campaign', methods=['GET'])
+def get_campaign():
+
+    return jsonify({"campaign": campaign_values})
+
+
+@app.route('/advisor/clients', methods=['GET'])
+def get_clients_for_logged_in_advisor():
+    global name
+    try:
+        if not name:
+            return jsonify({"error": "Advisor not logged in"}), 403
+
+        cursor = mysql.connection.cursor()
+        query = "SELECT * FROM clientRequests WHERE advisor = %s AND status = %s"
+        cursor.execute(query, (name,"scheduled"))
+        data = cursor.fetchall()
+
+        # Get column names from cursor description
+        columns = [desc[0] for desc in cursor.description]
+        clients = [dict(zip(columns, row)) for row in data]
+
+        cursor.close()
+
+        if clients:
+            return jsonify(clients), 200
+        else:
+            return jsonify({"message": f"No clients found for advisor '{name}'"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/advisor/clientsPrevious', methods=['GET'])
+def get_clients_previous():
+    global name
+    try:
+        if not name:
+            return jsonify({"error": "Advisor not logged in"}), 403
+
+        cursor = mysql.connection.cursor()
+        query = "SELECT * FROM clientRequests WHERE advisor = %s AND status = %s"
+        cursor.execute(query, (name,"completed"))
+        data = cursor.fetchall()
+
+        # Get column names from cursor description
+        columns = [desc[0] for desc in cursor.description]
+        clients = [dict(zip(columns, row)) for row in data]
+
+        cursor.close()
+
+        if clients:
+            return jsonify(clients), 200
+        else:
+            return jsonify({"message": f"No clients found for advisor '{name}'"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(port=5000)
