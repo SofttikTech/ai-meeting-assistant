@@ -5,6 +5,7 @@ import React, { useEffect, Suspense, useState, createContext } from 'react';
 import { BrowserRouter as Router, Switch, Route, useLocation } from "react-router-dom";
 
 import Login from './Login/index';
+import Manager from './Manager/index';
 import ListMeetings from './ListMeetings/index';
 
 import '../static/css/style.css';
@@ -87,6 +88,7 @@ const RoutesWithLoader = () => {
       <Route exact path="/" component={Login} />
       <Route exact path="/Login" component={Login} />
       <Route exact path="/list-meetings" component={ListMeetings} />
+      <Route exact path="/manager" component={Manager} />
     </Switch>
   );
 };
