@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 import "react-table-6/react-table.css";
 import './index.css';
 
-import MeetingsDetail from './meetingDetail';
+import MeetingDetail from './meetingDetail';
+import MeetingDetailPrevious from './meetingDetailPrevious';
 
 function ListMeetings() {
   const [error, setError] = useState('');
@@ -161,7 +162,7 @@ function ListMeetings() {
                           width='100'
                           className='table responsive meetings-table'
                           minRows={6}
-                          columns={columnsAgents}
+                          columns={columnsUpcomingMeetings}
                           filterable={false}
                           showPagination={false}
                           data={upcomingClients}
@@ -194,7 +195,7 @@ function ListMeetings() {
                           width='100'
                           className='table responsive meetings-table'
                           minRows={6}
-                          columns={columnsAgents}
+                          columns={columnsPreviousMeetings}
                           filterable={false}
                           showPagination={false}
                           data={previousClients}
