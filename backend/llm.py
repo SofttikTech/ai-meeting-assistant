@@ -7,7 +7,8 @@ from flask import jsonify
 
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-client = openai.OpenAI(api_key="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")
+client = openai.OpenAI(api_key="")
+# client = openai.OpenAI(api_key="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")
 
 def generate_pre_meeting_questions(first_name, last_name, campaigns):
     user_info = f"Client Name: {first_name}."

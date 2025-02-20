@@ -28,8 +28,8 @@ def build_vectorstore(documents):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     docs = text_splitter.split_documents(documents)
     
-    embeddings = OpenAIEmbeddings(openai_api_key="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")
-    
+    # embeddings = OpenAIEmbeddings(openai_api_key="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")
+    embeddings = OpenAIEmbeddings(openai_api_key="")
     vectorstore = FAISS.from_documents(docs, embeddings)
     return vectorstore
 
