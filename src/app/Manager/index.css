@@ -1,0 +1,534 @@
+.upcoming-meetings .upcoming-inner .upcoming-content .advisor-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.upcoming-meetings .upcoming-inner .upcoming-content .advisor-title h3 {
+  margin-bottom: 0;
+}
+
+.upcoming-meetings .upcoming-inner .upcoming-content .advisor-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.upcoming-meetings .upcoming-inner .upcoming-content .advisor-title h3 {
+  margin-bottom: 0;
+}
+
+.dropdown button.btn.btn-secondary {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.dropdown .dropdown-menu {
+  margin: 0;
+  padding: 0 8px;
+  border: 1px solid #f2f2f2;
+  background-color: #fff !important;
+}
+
+.dropdown .dropdown-menu .dropdown-item {
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.dropdown .dropdown-menu .dropdown-item.active,
+.dropdown .dropdown-menu .dropdown-item:active {
+  background-color: #f2f2f2;
+}
+
+.dropdown .dropdown-menu .dropdown-item .dropdwon-detail {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown .dropdown-menu .dropdown-item .dropdwon-detail p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.dropdown .dropdown-menu .dropdown-item .dropdwon-detail .icon {
+  margin-right: 8px;
+}
+
+.new-advisor-modal {
+  max-width: 750px !important;
+}
+
+
+.upcoming-meetings .upcoming-inner .upcoming-content .advisor-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.upcoming-meetings .upcoming-inner .upcoming-content .advisor-title h3 {
+  margin-bottom: 0;
+}
+
+button.btn.btn-secondary {}
+
+.dropdown {}
+
+.dropdown button.btn.btn-secondary {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.dropdown .dropdown-menu {
+  margin: 0;
+  padding: 0;
+  border: 1px solid #f2f2f2;
+  background-color: #fff !important;
+}
+
+.dropdown .dropdown-menu .dropdown-item {
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.dropdown .dropdown-menu .dropdown-item .dropdwon-detail {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown .dropdown-menu .dropdown-item .dropdwon-detail p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.dropdown .dropdown-menu .dropdown-item .dropdwon-detail .icon {
+  margin-right: 8px;
+}
+
+.new-advisor-modal {
+  max-width: 750px !important;
+}
+
+.new-advisor-modal .modal-content {
+  position: relative;
+  border-radius: 23px;
+  height: auto;
+}
+
+.new-advisor-modal .modal-content .modal-header {
+  border-bottom: none;
+  position: absolute;
+  right: 9px;
+  top: 4px;
+  font-size: 20px;
+  z-index: 3;
+}
+
+.new-advisor-modal .modal-content .modal-header .close {
+  background-color: transparent;
+  border: none;
+  z-index: 99;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content {
+  padding: 17px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content h2 {
+  font-size: 24px;
+  color: #1C1E26;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area {
+  position: relative;
+  margin-top: 25px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form label {
+  display: block;
+  font-size: 16px;
+  color: #505050;
+  margin-bottom: 11px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form .MuiFormControl-root {
+  width: 100%;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root {}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root::before,
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root::after {
+  display: none;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root input {
+  width: 100%;
+  border: 1px solid #f2f2f2;
+  font-size: 16px;
+  color: #505050;
+  padding: 11px 15px;
+  border-radius: 7px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form.btn-groups,
+.new-advisor-modal .modal-content .add-content .delete-modal .btns-box {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+  margin-top: 31px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form.btn-groups button,
+.new-advisor-modal .modal-content .add-content .delete-modal .btns-box button {
+  font-size: 14px;
+  padding: 7px 21px;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form.btn-groups button.btn-style-border,
+.new-advisor-modal .modal-content .add-content .delete-modal .btns-box button.btn-style-border {
+  border: 1px solid #1E3A8A30;
+}
+
+.new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form.btn-groups button.btn-style-border:hover,
+.new-advisor-modal .modal-content .add-content .delete-modal .btns-box button.btn-style-border:hover {
+  background-color: #1E3A8A30;
+  color: #1E3A8A;
+}
+
+.new-advisor-modal .modal-content .add-content .delete-modal {
+  padding: 25px 50px;
+}
+
+.new-advisor-modal .modal-content .add-content .delete-modal h4 {
+  font-size: 21px;
+  display: flex;
+  align-items: center;
+}
+
+.new-advisor-modal .modal-content .add-content .delete-modal h4 .icon {
+  margin-right: 15px;
+}
+
+
+
+.right-side-modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 70%;
+  /* Set the width of the modal */
+  margin: 0;
+  /* Start off-screen to the right */
+  transition: transform 0.3s ease-out;
+  /* Smooth slide-in transition */
+}
+
+.right-side-modal.show {
+  transform: translateX(0) !important;
+  /* Slide in to the visible area */
+}
+
+.right-side-modal .modal-content {
+  height: 100vh;
+  /* Make the modal full height */
+  border-radius: 0;
+  /* Remove border radius for a clean edge */
+}
+
+.right-side-modal.modal-dialog {
+  max-width: 22% !important;
+  margin: 0 !important;
+  right: -78.1%;
+}
+
+.right-side-modal.modal-dialog .modal-content {
+  border-radius: 14px 0 0 14px !important;
+  box-shadow: -15px -15px 30px #f2f2f2 inset;
+  position: relative;
+}
+
+.modal.right.fade.show {
+  transform: translateX(0) !important;
+}
+
+.modal.right.fade {
+  transform: translateX(100%) !important;
+  top: 0;
+  bottom: auto;
+  left: auto;
+  right: 0;
+}
+
+
+.email-campigon-modal {
+  -webkit-transform: translate3d(0%, 0, 0);
+  -ms-transform: translate3d(0%, 0, 0);
+  -o-transform: translate3d(0%, 0, 0);
+  transform: translate3d(0%, 0, 0);
+  margin: auto;
+}
+
+
+
+.modal.right.fade .modal-dialog {
+  -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+  transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.right-side-modal .modal-header {
+  display: none;
+}
+
+
+.right-side-modal .modal-header {
+  display: none;
+}
+
+.right-side-modal .profile-content {
+  position: relative;
+}
+
+.right-side-modal .profile-content .banner-area {
+  position: relative;
+}
+
+.right-side-modal .profile-content .banner-area img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.right-side-modal .profile-content .profile-img-area {
+  position: relative;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-top: -35px;
+  padding: 0 15px;
+}
+
+.right-side-modal .profile-content .profile-img-area img {
+  width: 100px;
+  height: 100px;
+  background-color: #1e3a8a;
+  border-radius: 50%;
+  border: 4px solid #fff;
+}
+
+.right-side-modal .profile-content .profile-img-area .active-btn {
+  border-color: #34C75930;
+  color: #34C759;
+  padding: 5px 15px !important;
+  font-size: 14px;
+}
+
+
+.right-side-modal .profile-content .pending-mettings-area {
+  position: relative;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-side-modal .profile-content .name-area {
+  position: relative;
+  padding: 20px 15px;
+}
+
+.right-side-modal .profile-content .name-area h4 {
+  font-size: 20px;
+  color: #242424;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.right-side-modal .profile-content .name-area p {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box {
+  position: relative;
+  border-right: 1px solid #f2f2f2;
+  padding-right: 15px;
+  margin-right: 15px;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box:last-child {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box p {
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #7C7C7C;
+  font-weight: 500;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box h4 {
+  font-size: 14px;
+  color: #242424;
+  font-weight: 500;
+}
+
+
+.right-side-modal .profile-content .pending-mettings-area {
+  position: relative;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-side-modal .profile-content .name-area {
+  position: relative;
+  padding: 20px 15px;
+}
+
+.right-side-modal .profile-content .name-area h4 {
+  font-size: 20px;
+  color: #242424;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.right-side-modal .profile-content .name-area p {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box {
+  position: relative;
+  border-right: 1px solid #f2f2f2;
+  padding-right: 15px;
+  margin-right: 15px;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box:last-child {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box p {
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #7C7C7C;
+  font-weight: 500;
+}
+
+.right-side-modal .profile-content .pending-mettings-area .pending-mettings-box h4 {
+  font-size: 14px;
+  color: #242424;
+  font-weight: 500;
+}
+
+.right-side-modal .profile-content .form-area {
+  position: relative;
+}
+
+.right-side-modal .profile-content .form-area .froup-form {
+  position: relative;
+  width: 100%;
+  margin-bottom: 22px;
+}
+
+.right-side-modal .profile-content .form-area .froup-form label {
+  display: block;
+  color: #505050;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 11px;
+}
+
+.right-side-modal .profile-content .form-area .froup-form .MuiFormControl-root {
+  width: 100%;
+}
+
+.right-side-modal .profile-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root.MuiInput-root::before,
+.right-side-modal .profile-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root.MuiInput-root::after {
+  display: none;
+}
+
+.right-side-modal .profile-content .form-area .froup-form .MuiFormControl-root .MuiInputBase-root input {
+  border: 1px solid #f2f2f2;
+  width: 100%;
+  padding: 11px 15px;
+  color: #505050;
+  font-weight: 500;
+  border-radius: 7px;
+}
+
+.right-side-modal .profile-content .btn-style-border {
+  width: 100%;
+  margin-top: 150px;
+}
+
+
+@media (max-width: 1610px) {
+  .right-side-modal.modal-dialog {
+    max-width: 25% !important;
+    margin: 0 !important;
+    right: -75.1%;
+  }
+}
+
+
+@media (max-width: 1410px) {
+  .right-side-modal.modal-dialog {
+    max-width: 35% !important;
+    margin: 0 !important;
+    right: -65.1%;
+  }
+}
+
+@media (max-width: 991px) {
+  .right-side-modal.modal-dialog {
+    max-width: 45% !important;
+    margin: 0 !important;
+    right: -55.1%;
+  }
+}
+
+
+@media (max-width: 791px) {
+  .right-side-modal.modal-dialog {
+    max-width: 55% !important;
+    margin: 0 !important;
+    right: -45.1%;
+  }
+}
+
+@media (max-width: 481px) {
+  .right-side-modal.modal-dialog {
+    max-width: 74% !important;
+    margin: 0 !important;
+    right: -26.1%;
+  }
+}
+
+
+@media (max-width: 381px) {
+  .right-side-modal.modal-dialog {
+    max-width: 84% !important;
+    margin: 0 !important;
+    right: -16.1%;
+  }
+}

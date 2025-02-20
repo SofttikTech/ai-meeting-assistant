@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import ReactTable from 'react-table-6';
 import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
+import { Modal, ModalBody, ModalHeader, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 import "react-table-6/react-table.css";
 import './index.css';
@@ -11,23 +13,23 @@ import MeetingDetailPrevious from './meetingDetailPrevious';
 
 function ListMeetings() {
   const [error, setError] = useState('');
-  const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
-
-  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
   const [upcomingClients, setUpcomingClients] = useState([]);
   const [previousClients, setPreviousClients] = useState([]);
+  const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
+  const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
+  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
 
   // Fetch upcoming clients (scheduled meetings)
   useEffect(() => {
     fetch('http://localhost:5000/advisor/clients', {
       method: 'GET',
-      credentials: 'include', 
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     })
       .then(response => {
         if (!response.ok) {
-          return response.json().then(err => { 
-            throw new Error(err.error || "Failed to fetch upcoming clients"); 
+          return response.json().then(err => {
+            throw new Error(err.error || "Failed to fetch upcoming clients");
           });
         }
         return response.json();
@@ -45,8 +47,8 @@ function ListMeetings() {
     })
       .then(response => {
         if (!response.ok) {
-          return response.json().then(err => { 
-            throw new Error(err.error || "Failed to fetch previous clients"); 
+          return response.json().then(err => {
+            throw new Error(err.error || "Failed to fetch previous clients");
           });
         }
         return response.json();
@@ -117,9 +119,11 @@ function ListMeetings() {
     setIsVisibleMeetingDetailPrevious(true);
   };
 
+  const toggleProfileAdvisor = () => setModalProfileAdvisor(!modalProfileAdvisor);
+
   return (
     <div className='list-page'>
-     {isVisibleMeetingDetail ? (
+      {isVisibleMeetingDetail ? (
         <MeetingDetail isVisibleMeetingDetail={isVisibleMeetingDetail} setIsVisibleMeetingDetail={setIsVisibleMeetingDetail} />
       ) : isVisibleMeetingDetailPrevious ? (
         <MeetingDetailPrevious isVisibleMeetingDetailPrevious={isVisibleMeetingDetailPrevious} setIsVisibleMeetingDetailPrevious={setIsVisibleMeetingDetailPrevious} />
@@ -134,7 +138,7 @@ function ListMeetings() {
                       <Link className='logo-area' to="/"><img src={require("../../static/images/logo.png")} alt="Logo" /></Link>
                     </div>
                     <div className='right-icon-area'>
-                      <button className='btn-profile-img'><img src={require("../../static/images/avatar-face.png")} alt="Profile" /></button>
+                      <button className='btn-profile-img' onClick={toggleProfileAdvisor}><img src={require("../../static/images/avatar-face.png")} alt="Profile" /></button>
                     </div>
                   </div>
                 </div>
@@ -155,7 +159,7 @@ function ListMeetings() {
               </div>
             </div>
           </div>
-          {error && <div className="error">{error}</div>}
+
           {/* Upcoming Meetings Table */}
           <div className='upcoming-meetings'>
             <div className='auto-container'>
@@ -164,6 +168,7 @@ function ListMeetings() {
                   <div className='upcoming-inner'>
                     <div className='upcoming-content'>
                       <h3>Upcoming Meetings</h3>
+                      {error && <div className="error">{error}</div>}
                       <div className='table'>
                         <ReactTable
                           width='100'
@@ -176,9 +181,9 @@ function ListMeetings() {
                           getTrProps={(state, rowInfo) => {
                             return rowInfo
                               ? {
-                                  onClick: () => handleRowClick(rowInfo.original),
-                                  style: { cursor: 'pointer' }
-                                }
+                                onClick: () => handleRowClick(rowInfo.original),
+                                style: { cursor: 'pointer' }
+                              }
                               : {};
                           }}
                         />
@@ -209,9 +214,9 @@ function ListMeetings() {
                           getTrProps={(state, rowInfo) => {
                             return rowInfo
                               ? {
-                                  onClick: () => handleRowClick2(rowInfo.original),
-                                  style: { cursor: 'pointer' }
-                                }
+                                onClick: () => handleRowClick2(rowInfo.original),
+                                style: { cursor: 'pointer' }
+                              }
                               : {};
                           }}
                         />
@@ -224,6 +229,74 @@ function ListMeetings() {
           </div>
         </div>
       )}
+
+      <Modal isOpen={modalProfileAdvisor} toggle={toggleProfileAdvisor} modalClassName="right" className={`main-modal right right-side-modal`}>
+        <ModalHeader toggle={toggleProfileAdvisor}></ModalHeader>
+        <ModalBody>
+          <div className='profile-content'>
+            <div className='banner-area'>
+              <img src={require("../../static/images/banner-profile-img.png")} alt="" />
+            </div>
+            <div className='profile-img-area'>
+              <img src={require("../../static/images/profile-img.png")} alt="" />
+              <button className='active-btn'>Active</button>
+            </div>
+            <div className='name-area'>
+              <h4> Henry king</h4>
+              <p> henryking23@gmail.com</p>
+            </div>
+            <div className='pending-mettings-area'>
+              <div className='pending-mettings-box'>
+                <p>Pending meetings</p>
+                <h4>10</h4>
+              </div>
+              <div className='pending-mettings-box'>
+                <p>Completed</p>
+                <h4>25</h4>
+              </div>
+            </div>
+
+            <div className='form-area'>
+              <div className='froup-form'>
+                <label>Username</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='Add username'
+                  size="small"
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  // value={editState?.type || agentData?.type || ''}
+                  // onChange={handleEditChange}
+                  name='type'
+                  style={{
+                    backgroundColor: 'white'
+                  }}
+                />
+              </div>
+
+              <div className='froup-form'>
+                <label>Email address  </label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='Add email'
+                  size="small"
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  // value={editState?.type || agentData?.type || ''}
+                  // onChange={handleEditChange}
+                  name='type'
+                  style={{
+                    backgroundColor: 'white'
+                  }}
+                />
+              </div>
+
+
+            </div>
+            <button className='btn-style-border'>Logout</button>
+          </div>
+        </ModalBody>
+      </Modal>
     </div>
   );
 }

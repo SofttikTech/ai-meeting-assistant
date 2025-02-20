@@ -232,6 +232,7 @@
 
 .upcoming-meetings .upcoming-inner .upcoming-content .table .meetings-table .rt-table .rt-tbody .rt-tr-group .rt-tr .rt-td {
   border-right: none;
+  overflow: visible;
 }
 
 .upcoming-meetings .upcoming-inner .upcoming-content .table .meetings-table .rt-table .rt-tbody .rt-tr-group .rt-tr .rt-td .btn-details-agent {
