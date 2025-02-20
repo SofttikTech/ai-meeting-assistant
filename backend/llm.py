@@ -2,9 +2,12 @@ import openai
 import os
 import logging
 import requests
+from flask import jsonify
+
+
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-client = openai.OpenAI(api_key="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")
+client = openai.OpenAI(api_key="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")
 
 def generate_pre_meeting_questions(first_name, last_name, campaigns):
     user_info = f"Client Name: {first_name}."
@@ -72,4 +75,5 @@ def generate_pre_meeting_questions(first_name, last_name, campaigns):
     formatted_text = "\n".join(cleaned_questions)
 
     print(formatted_text)
-    return formatted_text
+    # return formatted_text
+    return jsonify({"questions": formatted_text}), 200

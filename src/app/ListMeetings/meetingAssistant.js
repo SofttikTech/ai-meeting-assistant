@@ -1,99 +1,234 @@
-import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { saveAs } from "file-saver";
+import io from "socket.io-client";
+import { Link, useHistory } from "react-router-dom";
 
 import "react-table-6/react-table.css";
-import './index.css';
+import "./index.css";
 
-const MeetingAssistant = ({ isVisibleAssistant, setIsVisibleAssistant }) => {
+const SERVER_URL = "http://localhost:5001";
+
+const Talk = () => {
   const history = useHistory();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('sales_rep'); // default selection
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [transcript, setTranscript] = useState("Waiting for transcription...");
+  const [ai_response, setAIResponse] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const intervalIdRef = useRef(null);
+  const socketRef = useRef(null);
+  const lastMessageRef = useRef("");
+  const lastTranscriptRef = useRef("");
 
-    try {
-      const response = await fetch('http://localhost:5000/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('admin_id', data.admin_id);
-        localStorage.setItem('role', data.role);
-
-        setMessage('Login successful. Redirecting...');
-        setTimeout(() => {
-          history.push('/Talk');
-        }, 1000);
-      } else {
-        setError(data.error || 'Login failed');
+  useEffect(() => {
+    const socket = io(SERVER_URL);
+    socket.on("connect", () => {
+      console.log("Connected to server");
+    });
+    socket.on("update", (data) => {
+      console.log("Update received:", data);
+      // Update AI response only if it's new
+      if (data.ai_response) {
+        const newAIMessage = data.ai_response.trim();
+        if (lastMessageRef.current !== newAIMessage) {
+          lastMessageRef.current = newAIMessage;
+          setAIResponse((prev) =>
+            prev ? prev + "\n" + data.ai_response : data.ai_response
+          );
+        }
       }
-    } catch (err) {
-      setError('An error occurred: ' + err.message);
+      // Update transcript only if it's new
+      if (data.transcript) {
+        const newTranscript = data.transcript.trim();
+        if (lastTranscriptRef.current !== newTranscript) {
+          lastTranscriptRef.current = newTranscript;
+          setTranscript((prev) =>
+            prev === "Waiting for transcription..."
+              ? data.transcript
+              : prev + "\n" + data.transcript
+          );
+        }
+      }
+    });
+    socket.on("status", (data) => {
+      console.log("Server status:", data.message);
+    });
+    socketRef.current = socket;
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+  
+
+  useEffect(() => {
+    return () => {
+      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === "recording"
+      ) {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
+
+  // Start recording and processing.
+  const startRecording = async () => {
+    try {
+      setIsProcessing(true);
+      setIsRecording(true);
+      setAIResponse("");
+      setTranscript("");
+      audioChunksRef.current = [];
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: "audio/webm",
+      });
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          console.log(`Received chunk: ${event.data.size} bytes`);
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      mediaRecorderRef.current.start(1000);
+      console.log("Recording started");
+      setIsProcessing(false);
+
+      // Send audio every 20 seconds.
+      intervalIdRef.current = setInterval(() => {
+        if (audioChunksRef.current.length > 0) {
+          console.log(
+            `Sending ${audioChunksRef.current.length} audio chunks to backend`
+          );
+          sendAudioToBackend();
+        }
+      }, 20000);
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      setIsRecording(false);
+      setIsProcessing(false);
     }
   };
 
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+      console.log("Recording stopped");
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+        intervalIdRef.current = null;
+      }
+      if (audioChunksRef.current.length > 0) {
+        console.log(`Sending final ${audioChunksRef.current.length} chunks`);
+        sendAudioToBackend();
+      }
+      setIsRecording(false);
+      console.log(ai_response)
+      console.log("WAIT")
+      console.log(transcript)
+    }
+  };
+
+  const sendAudioToBackend = async () => {
+    if (audioChunksRef.current.length === 0) {
+      console.log("No audio chunks to send");
+      return;
+    }
+    try {
+      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+      console.log(`Created blob of size: ${audioBlob.size} bytes`);
+      // Save locally for debugging.
+      saveAs(audioBlob, `conversation-${Date.now()}.webm`);
+
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "conversation.webm");
+
+      const response = await axios.post(`${SERVER_URL}/transcribe`, formData);
+      setTranscript(response.data.transcript);
+      console.log("Transcription received:", response.data.transcript);
+      audioChunksRef.current = [];
+    } catch (error) {
+      console.error("Error sending audio:", error);
+    }
+  };
+
+  const responseStyle = {
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-word",
+    overflowX: "hidden",
+    padding: "10px",
+  };
 
   return (
-    <>
-      <div className='list-page-inner'>
-
-        <div className='top-back-area'>
-          <div className='auto-container'>
-            <div className='row'>
-              <div className='col-12'>
-                <div className='back-btn-area' onClick={() => setIsVisibleAssistant(false)}>
-                  <button className='btn-style-new'>
-                    <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M7.57895 7.5V12.5L0 6.25L7.57895 0V5H13.8947C16.5748 5 19.1451 6.05357 21.0402 7.92893C22.9353 9.8043 24 12.3478 24 15C24 17.6522 22.9353 20.1957 21.0402 22.0711C19.1451 23.9464 16.5748 25 13.8947 25H2.52632V22.5H13.8947C15.9048 22.5 17.8325 21.7098 19.2539 20.3033C20.6752 18.8968 21.4737 16.9891 21.4737 15C21.4737 13.0109 20.6752 11.1032 19.2539 9.6967C17.8325 8.29018 15.9048 7.5 13.8947 7.5H7.57895Z" fill="currentColor" />
-                    </svg>
-                  </button>
-                </div>
+    <div className="list-page-inner">
+      <div className="top-back-area">
+        <div className="auto-container">
+          <div className="row">
+            <div className="col-12">
+              <div className="back-btn-area" onClick={() => history.goBack()}>
+                <button className="btn-style-new">
+                  <svg
+                    width="24"
+                    height="25"
+                    viewBox="0 0 24 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M7.57895 7.5V12.5L0 6.25L7.57895 0V5H13.8947C16.5748 5 19.1451 6.05357 21.0402 7.92893C22.9353 9.8043 24 12.3478 24 15C24 17.6522 22.9353 20.1957 21.0402 22.0711C19.1451 23.9464 16.5748 25 13.8947 25H2.52632V22.5H13.8947C15.9048 22.5 17.8325 21.7098 19.2539 20.3033C20.6752 18.8968 21.4737 16.9891 21.4737 15C21.4737 13.0109 20.6752 11.1032 19.2539 9.6967C17.8325 8.29018 15.9048 7.5 13.8947 7.5H7.57895Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <div className='information-sec'>
-          <div className='auto-container'>
-            <div className='row'>
-              <div className='col-12'>
-                <div className='voice-area'>
-                  <h1>AI Meeting Assistant</h1>
-                  <p>Speak naturally and get real-time AI meeting responses</p>
-                  <button className='speek-btn'>
-                    <img src={require("../../static/images/speek-btn.png")} alt="" />
-                  </button>
-                </div>
+      </div>
 
-                <div className='information-box response-box'>
-                  <h3>AI Response</h3>
-                  <div className='summery-box'>
-                    <p>
-                      <i className='icon'>
-                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M18.3125 4.07812H11.6094V0.625C11.6094 0.463384 11.5452 0.308387 11.4309 0.194107C11.3166 0.0798268 11.1616 0.015625 11 0.015625C10.8384 0.015625 10.6834 0.0798268 10.5691 0.194107C10.4548 0.308387 10.3906 0.463384 10.3906 0.625V4.07812H3.6875C2.87942 4.07812 2.10443 4.39913 1.53303 4.97053C0.961634 5.54193 0.640625 6.31692 0.640625 7.125V18.5C0.640625 19.3081 0.961634 20.0831 1.53303 20.6545C2.10443 21.2259 2.87942 21.5469 3.6875 21.5469H18.3125C19.1206 21.5469 19.8956 21.2259 20.467 20.6545C21.0384 20.0831 21.3594 19.3081 21.3594 18.5V7.125C21.3594 6.31692 21.0384 5.54193 20.467 4.97053C19.8956 4.39913 19.1206 4.07812 18.3125 4.07812ZM20.1406 18.5C20.1406 18.9848 19.948 19.4498 19.6052 19.7927C19.2623 20.1355 18.7973 20.3281 18.3125 20.3281H3.6875C3.20265 20.3281 2.73766 20.1355 2.39482 19.7927C2.05198 19.4498 1.85938 18.9848 1.85938 18.5V7.125C1.85938 6.64015 2.05198 6.17516 2.39482 5.83232C2.73766 5.48948 3.20265 5.29688 3.6875 5.29688H18.3125C18.7973 5.29688 19.2623 5.48948 19.6052 5.83232C19.948 6.17516 20.1406 6.64015 20.1406 7.125V18.5ZM5.51562 9.96875C5.51562 9.76788 5.57519 9.57152 5.68679 9.4045C5.79839 9.23748 5.95701 9.10731 6.14259 9.03044C6.32817 8.95356 6.53238 8.93345 6.72939 8.97264C6.9264 9.01183 7.10737 9.10856 7.24941 9.2506C7.39144 9.39263 7.48817 9.5736 7.52736 9.77061C7.56655 9.96762 7.54643 10.1718 7.46956 10.3574C7.39269 10.543 7.26252 10.7016 7.0955 10.8132C6.92848 10.9248 6.73212 10.9844 6.53125 10.9844C6.26189 10.9844 6.00356 10.8774 5.81309 10.6869C5.62263 10.4964 5.51562 10.2381 5.51562 9.96875ZM14.4531 9.96875C14.4531 9.76788 14.5127 9.57152 14.6243 9.4045C14.7359 9.23748 14.8945 9.10731 15.0801 9.03044C15.2657 8.95356 15.4699 8.93345 15.6669 8.97264C15.8639 9.01183 16.0449 9.10856 16.1869 9.2506C16.3289 9.39263 16.4257 9.5736 16.4649 9.77061C16.504 9.96762 16.4839 10.1718 16.4071 10.3574C16.3302 10.543 16.2 10.7016 16.033 10.8132C15.866 10.9248 15.6696 10.9844 15.4688 10.9844C15.1994 10.9844 14.9411 10.8774 14.7506 10.6869C14.5601 10.4964 14.4531 10.2381 14.4531 9.96875ZM14.6562 13.0156H7.34375C6.64341 13.0156 5.97176 13.2938 5.47655 13.789C4.98133 14.2843 4.70312 14.9559 4.70312 15.6562C4.70312 16.3566 4.98133 17.0282 5.47655 17.5235C5.97176 18.0187 6.64341 18.2969 7.34375 18.2969H14.6562C15.3566 18.2969 16.0282 18.0187 16.5235 17.5235C17.0187 17.0282 17.2969 16.3566 17.2969 15.6562C17.2969 14.9559 17.0187 14.2843 16.5235 13.789C16.0282 13.2938 15.3566 13.0156 14.6562 13.0156ZM12.4219 14.2344V17.0781H9.57812V14.2344H12.4219ZM5.92188 15.6562C5.92188 15.2791 6.07168 14.9175 6.33833 14.6508C6.60499 14.3842 6.96665 14.2344 7.34375 14.2344H8.35938V17.0781H7.34375C6.96665 17.0781 6.60499 16.9283 6.33833 16.6617C6.07168 16.395 5.92188 16.0334 5.92188 15.6562ZM14.6562 17.0781H13.6406V14.2344H14.6562C15.0334 14.2344 15.395 14.3842 15.6617 14.6508C15.9283 14.9175 16.0781 15.2791 16.0781 15.6562C16.0781 16.0334 15.9283 16.395 15.6617 16.6617C15.395 16.9283 15.0334 17.0781 14.6562 17.0781Z" fill="#505050" />
-                        </svg>
-                      </i>
-                      AI Start.......
-                      </p>
+      {/* Main Information Section */}
+      <div className="information-sec">
+        <div className="auto-container">
+          <div className="row">
+            <div className="col-12">
+              <div className="voice-area">
+                <h1>AI Meeting Assistant</h1>
+                <p>Speak naturally and get real-time AI meeting responses</p>
+                <button className="speek-btn" onClick={isRecording ? stopRecording : startRecording}>
+                  <img
+                    src={require("../../static/images/speek-btn.png")}
+                    alt="Speak Button"
+                  />
+                </button>
+                {isProcessing && (
+                  <div className="processing-indicator">
+                    <p>Processing...</p>
                   </div>
+                )}
+              </div>
+
+              <div className="information-box response-box">
+                <h3>AI Response</h3>
+                <div className="summery-box">
+                  <pre style={responseStyle}>
+                    {ai_response || "Waiting for AI Response...."}
+                  </pre>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+};
 
-export default MeetingAssistant;
+export default Talk;

@@ -28,7 +28,7 @@ def build_vectorstore(documents):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     docs = text_splitter.split_documents(documents)
     
-    embeddings = OpenAIEmbeddings(openai_api_key="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")
+    embeddings = OpenAIEmbeddings(openai_api_key="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")
     
     vectorstore = FAISS.from_documents(docs, embeddings)
     return vectorstore
@@ -45,9 +45,6 @@ vectorstore = build_vectorstore(docs)
 retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
 print("Retriever is ready.")
 
-# ---------------------------
-# 5. API Endpoint for Retrieval
-# ---------------------------
 @app.post("/query/")
 async def query_api(payload: dict):
     query_text = payload.get("query")

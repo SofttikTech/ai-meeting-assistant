@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 import os
 from flask_cors import CORS
 import openai
-from server.llm import generate_pre_meeting_questions
+from llm import generate_pre_meeting_questions
 from flask_session import Session
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -454,6 +454,30 @@ def get_clients_previous():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/clientRequests/<int:user_id>/preMeetingQuestions', methods=['POST'])
+def store_pre_meeting_questions(user_id):
+    try:
+        data = request.json
+        if not data or 'preMeetingQuestions' not in data:
+            return jsonify({"error": "Missing preMeetingQuestions in request data"}), 400
+
+        pre_meeting_questions = data['preMeetingQuestions']
+        if isinstance(pre_meeting_questions, list):
+            pre_meeting_questions = "\n".join(pre_meeting_questions)
+
+        cursor = mysql.connection.cursor()
+        query = "UPDATE clientRequests SET preMeetingQ = %s WHERE id = %s"
+        cursor.execute(query, (pre_meeting_questions, user_id))
+        mysql.connection.commit()
+        cursor.close()
+
+        return jsonify({"message": "Pre meeting questions stored successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == "__main__":

@@ -34,9 +34,9 @@ const Login = ({ isVisible, setIsVisible }) => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('admin_id', data.admin_id);
+        localStorage.setItem('admin_id', data.user_id);
         localStorage.setItem('role', data.role);
-
+        console.log(localStorage.getItem("admin_id"));
         setMessage('Login successful. Redirecting...');
         setTimeout(() => {
           history.push('/list-meetings');
