@@ -19,7 +19,7 @@ function ListMeetings() {
   const [previousClients, setPreviousClients] = useState([]);
   const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
   const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
-  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
+  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(true);
   const [profileData, setProfileData] = useState("");
 
   const handleLogout = () => {

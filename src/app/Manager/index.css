@@ -198,13 +198,13 @@ button.btn.btn-secondary {}
 
 .new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form.btn-groups button.btn-style-border,
 .new-advisor-modal .modal-content .add-content .delete-modal .btns-box button.btn-style-border {
-  border: 1px solid #1E3A8A30;
+  border: 1px solid #9565E730;
 }
 
 .new-advisor-modal .modal-content .modal-body .add-content .form-area .froup-form.btn-groups button.btn-style-border:hover,
 .new-advisor-modal .modal-content .add-content .delete-modal .btns-box button.btn-style-border:hover {
-  background-color: #1E3A8A30;
-  color: #1E3A8A;
+  background-color: #9565E730;
+  color: #9565E7;
 }
 
 .new-advisor-modal .modal-content .add-content .delete-modal {
@@ -324,7 +324,7 @@ button.btn.btn-secondary {}
 .right-side-modal .profile-content .profile-img-area img {
   width: 100px;
   height: 100px;
-  background-color: #1e3a8a;
+  background-color: #9565E7;
   border-radius: 50%;
   border: 4px solid #fff;
 }

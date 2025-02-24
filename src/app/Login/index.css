@@ -5,11 +5,11 @@
   font-size: 16px;
   font-weight: 400;
   color: #fff;
-  border: 1px solid #1E3A8A;
+  border: 1px solid #9565E7;
   transition: all 0.3s ease-in-out;
   display: inline-block;
   padding: 12px 20px;
-  background: #1E3A8A;
+  background: #9565E7;
   border-radius: 6px;
   transition: 0.5s;
   font-family: "Poppins", serif;
@@ -18,7 +18,7 @@
 .btn-style-new:hover,
 .active-btn {
   background: none;
-  color: #1E3A8A;
+  color: #9565E7;
 }
 
 .btn-style-new .icon {
@@ -35,8 +35,8 @@
   margin-bottom: 0;
   font-size: 16px;
   font-weight: 400;
-  color: #1E3A8A;
-  border: 1px solid #1E3A8A;
+  color: #9565E7;
+  border: 1px solid #9565E7;
   transition: all 0.3s ease-in-out;
   display: inline-block;
   padding: 12px 20px;
@@ -48,7 +48,7 @@
 
 .btn-style-border:hover,
 .pause-btn:hover {
-  background: #1E3A8A;
+  background: #9565E7;
   color: #fff;
 }
 
@@ -73,6 +73,32 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 30px;
+  background-position: top center;
+  background-size: 100% 100%;
+  background-image: url('../../static/images/login-bg.png');
+}
+
+.login-page .login-inner.cilent-form {
+  background-image: url('../../static/images/client-form-bg.png');
+}
+
+.login-page .login-inner.login-main-page {
+  overflow: hidden;
+}
+
+.login-page .login-inner.login-main-page .right-img-area {
+  position: relative;
+}
+
+.login-page .login-inner.login-main-page .right-img-area .img-box {
+  position: relative;
+  margin-left: -87px;
+  margin-right: -50px;
+  margin-bottom: -50px;
+}
+
+.login-page .login-inner.login-main-page .right-img-area .img-box img {
+  width: 100%;
 }
 
 .login-page .login-inner .left-area-form {
@@ -88,7 +114,7 @@
 }
 
 .login-page .login-inner .left-area-form .form-inner .top-title-area {
-  margin-bottom: 250px;
+  margin-bottom: 100px;
   position: relative;
 }
 
@@ -103,9 +129,19 @@
 }
 
 .login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
-  color: #1E3A8A;
-  font-size: 39px;
+  color: #754189;
+  font-size: 62px;
   margin-top: 13px;
+}
+
+.login-page .login-inner .left-area-form .form-inner .top-title-area .logo-area {
+  margin-bottom: 45px;
+}
+
+.login-page .login-inner .left-area-form .form-inner .top-title-area p {
+  margin-bottom: 0;
+  font-size: 29px;
+  color: #242424;
 }
 
 .login-page .login-inner .left-area-form .form-inner .bottom-area {
@@ -177,7 +213,7 @@
 }
 
 .MuiRadio-root.Mui-checked {
-  color: #1E3A8A;
+  color: #9565E7;
 }
 
 .login-page .login-inner.login-form .left-area-form.add-user-form {
@@ -228,11 +264,11 @@
 
 
 .MuiFormControlLabel-root .MuiButtonBase-root {
-  color: #1E3A8A80;
+  color: #9565E780;
 }
 
 .MuiFormControlLabel-root .Mui-checked {
-  color: #1E3A8A !important;
+  color: #9565E7 !important;
 }
 
 
@@ -255,7 +291,7 @@
   }
 
   .login-page .login-inner .left-area-form .form-inner .top-title-area {
-    margin-bottom: 229px;
+    margin-bottom: 70px;
   }
 
   .login-page .login-inner .left-area-form .form-inner .top-title-area h2 {
@@ -263,7 +299,13 @@
   }
 
   .login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
-    font-size: 30px;
+    font-size: 49px;
+  }
+
+  .login-page .login-inner .left-area-form .form-inner .top-title-area p {
+    margin-bottom: 0;
+    font-size: 23px;
+    color: #242424;
   }
 
   .login-page .login-inner.login-form .left-area-form .form-inner .top-title-area h2 {
@@ -303,7 +345,8 @@
   .login-page .login-inner .left-area-form .form-inner .top-title-area {
     margin-bottom: 20px;
   }
-  .login-page .login-inner.login-form .left-area-form.add-user-form{
+
+  .login-page .login-inner.login-form .left-area-form.add-user-form {
     height: 100%;
   }
 }
@@ -346,13 +389,19 @@
   .login-page .login-inner .left-area-form .form-inner .top-title-area h4 {
     font-size: 20px;
   }
-  .login-page .login-inner.login-form .left-area-form .form-inner .top-title-area h2{
+
+  .login-page .login-inner.login-form .left-area-form .form-inner .top-title-area h2 {
     font-size: 20px;
   }
-  .login-page .login-inner .left-area-form .form-inner .bottom-area button, .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label, .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form input, .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label .MuiTypography-root{
+
+  .login-page .login-inner .left-area-form .form-inner .bottom-area button,
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label,
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form input,
+  .login-page .login-inner.login-form .left-area-form .form-inner .bottom-area .group-form label .MuiTypography-root {
     font-size: 12px;
   }
-  .login-page .login-inner .left-area-form .form-inner .bottom-area h4.group-title{
+
+  .login-page .login-inner .left-area-form .form-inner .bottom-area h4.group-title {
     font-size: 14px;
   }
 }
