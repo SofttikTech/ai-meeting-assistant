@@ -145,7 +145,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
   };
 
   return (
-    <div className='login-inner login-form'>
+    <div className='login-inner login-form cilent-form'>
       <button className='back-btn' onClick={() => setIsVisibleAddUser(false)}>
         <svg width="14" height="22" viewBox="0 0 14 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12.6489 2.93463C13.244 2.33954 13.244 1.37472 12.6489 0.779634C12.0538 0.184549 11.089 0.184549 10.4939 0.779634L1.35105 9.92249C0.755968 10.5176 0.755968 11.4824 1.35105 12.0775L10.4939 21.2203C11.089 21.8154 12.0538 21.8154 12.6489 21.2203C13.244 20.6253 13.244 19.6604 12.6489 19.0653L4.58354 11L12.6489 2.93463Z" fill="#A7A7A7" />

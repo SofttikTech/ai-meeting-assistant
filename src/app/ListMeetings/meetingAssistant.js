@@ -62,7 +62,7 @@ const Talk = () => {
       socket.disconnect();
     };
   }, []);
-  
+
 
   useEffect(() => {
     return () => {
@@ -136,25 +136,25 @@ const Talk = () => {
       console.log("WAIT")
       console.log(transcript)
 
-      axios.get(`${SERVER_URL}/generate_summary`,{
-        params:{
+      axios.get(`${SERVER_URL}/generate_summary`, {
+        params: {
           ai_response: ai_response,
           transcript: transcript,
           user_id: localStorage.getItem("user_id"),
           admin_id: localStorage.getItem("admin_id")
         }
       })
-      .then((response) => {
-        if (response.data.summary) {
-          console.log("Summary:", response.data.summary);
-          setSummary(response.data.summary);
-        } else {
-          console.error("Error generating summary:", response.data.error);
-        }
-      })
-      .catch((error) => {
-        console.error("Error calling summary endpoint:", error);
-      });
+        .then((response) => {
+          if (response.data.summary) {
+            console.log("Summary:", response.data.summary);
+            setSummary(response.data.summary);
+          } else {
+            console.error("Error generating summary:", response.data.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error calling summary endpoint:", error);
+        });
 
       // axios.post(`${SERVER_URL}/generate_summary`, {
       //   ai_response: ai_response,       
@@ -171,7 +171,7 @@ const Talk = () => {
       // .catch((error) => {
       //   console.error("Error calling summary endpoint:", error);
       // });
-      
+
     }
   };
 
@@ -211,7 +211,7 @@ const Talk = () => {
         <div className="auto-container">
           <div className="row">
             <div className="col-12">
-              <div className="back-btn-area" onClick={() => history.goBack()}>
+              <div className="back-btn-area style-two" onClick={() => history.goBack()}>
                 <button className="btn-style-new">
                   <svg
                     width="24"
@@ -240,17 +240,25 @@ const Talk = () => {
               <div className="voice-area">
                 <h1>AI Meeting Assistant</h1>
                 <p>Speak naturally and get real-time AI meeting responses</p>
-                <button className="speek-btn" onClick={isRecording ? stopRecording : startRecording}>
-                  <img
-                    src={require("../../static/images/speek-btn.png")}
-                    alt="Speak Button"
-                  />
-                </button>
-                {isProcessing && (
-                  <div className="processing-indicator">
-                    <p>Processing...</p>
-                  </div>
-                )}
+                {isProcessing
+                  ? <>
+                    <button className="speek-btn style-animation" onClick={isRecording ? stopRecording : startRecording}>
+                      <img
+                        src={require("../../static/images/speek-btn.png")}
+                        alt="Speak Button"
+                      />
+                    </button>
+                    <div className="processing-indicator">
+                      <p>Processing...</p>
+                    </div>
+                  </>
+                  : <button className="speek-btn" onClick={isRecording ? stopRecording : startRecording}>
+                    <img
+                      src={require("../../static/images/speek-btn.png")}
+                      alt="Speak Button"
+                    />
+                  </button>
+                }
               </div>
 
               <div className="information-box response-box">

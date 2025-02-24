@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import AddUser from './addUser';
 import AdminLogin from './adminLogin';
@@ -57,12 +57,14 @@ function Login() {
       ) : isVisibleAddUser ? (
         <AddUser isVisibleAddUser={isVisibleAddUser} setIsVisibleAddUser={setIsVisibleAddUser} />
       ) : (
-        <div className='login-inner'>
+        <div className='login-inner login-main-page'>
           <div className='left-area-form'>
             <div className='form-inner'>
               <div className='top-title-area'>
+                <div className='logo-area'><img src={require("../../static/images/logo.png")} alt="" /></div>
                 <h2>Welcome <i className='icon'><img src={require("../../static/images/welcome-icon.png")} alt="" /></i></h2>
-                <h4 className='ponnala-regular'>AI Meeting Assistant</h4>
+                <h4 className='ponnala-regular'>EPIPHANY</h4>
+                <p>Financial Group, LLC </p>
               </div>
               <div className='bottom-area'>
                 <button type="submit" className='btn-style-new' onClick={() => setIsVisibleAddUser(true)}>
@@ -76,7 +78,7 @@ function Login() {
           </div>
           <div className='right-img-area'>
             <div className='img-box'>
-              <img src={require("../../static/images/right-buttn-img.png")} alt="" />
+              <img src={require("../../static/images/login-right-img-main.png")} alt="" />
             </div>
           </div>
         </div>
