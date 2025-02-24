@@ -7,7 +7,7 @@ from flask import jsonify
 
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-client = openai.OpenAI(api_key="")
+client = openai.OpenAI(api_key="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")
 
 def generate_pre_meeting_questions(first_name, last_name, campaigns):
     user_info = f"Client Name: {first_name}."
@@ -69,11 +69,10 @@ def generate_pre_meeting_questions(first_name, last_name, campaigns):
     cleaned_questions = []
     for q in questions:
         q = q.strip("- ").strip()
-        if q and not q.isdigit():  # Remove empty lines and stray numbers
+        if q and not q.isdigit():
             cleaned_questions.append(q)
 
     formatted_text = "\n".join(cleaned_questions)
 
     print(formatted_text)
-    # return formatted_text
     return jsonify({"questions": formatted_text}), 200

@@ -35,7 +35,8 @@ const Login = ({ isVisible, setIsVisible }) => {
 
       if (response.ok) {
         localStorage.setItem('admin_id', data.user_id);
-        localStorage.setItem('role', data.role);
+        localStorage.setItem('email', data.email);
+        localStorage.setItem('name', data.name);
         console.log(localStorage.getItem("admin_id"));
         setMessage('Login successful. Redirecting...');
         setTimeout(() => {

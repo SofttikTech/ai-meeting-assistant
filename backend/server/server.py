@@ -8,7 +8,7 @@ from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
 import openai
-from conversation_analyzer import analyze_conversation
+from conversation_analyzer import analyze_conversation, generate_post_meeting_summary
 
 load_dotenv()
 
@@ -112,12 +112,40 @@ def transcribe():
 @app.route('/generate_summary', methods=['GET'])
 def generate_summary():
 
+    ai_response = request.args.get('ai_response')
+    transcript = request.args.get('transcript')
+    user_id = request.args.get('user_id')
+    admin_id = request.args.get('admin_id')
     if not conversation_history:
         return jsonify({"error": "conversation_history is required"}), 400
 
     summary = generate_post_meeting_summary(conversation_history)
+    print("Summary", summary)
+    print("AI response",ai_response)
+    print("transcript",transcript)
 
-    return jsonify({"summary": summary})
+    db_payload = {
+        "user_id": user_id,
+        "admin_id": admin_id,
+        "ai_response": ai_response,
+        "transcript": transcript,
+        "summary": summary
+    }
+
+    try:
+        db_response = requests.post("http://localhost:5000/addMeetings", json=db_payload)
+        if db_response.status_code != 200:
+            return jsonify({
+                "error": "Failed to store meeting data in database",
+                "details": db_response.text
+            }), 500
+    except Exception as e:
+        return jsonify({
+            "error": "Error calling database endpoint",
+            "details": str(e)
+        }), 500
+
+    return jsonify({"summary": summary}), 200
 
 
 @socketio.on('connect')

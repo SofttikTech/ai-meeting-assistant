@@ -108,6 +108,7 @@ def user_login():
             session['role'] = role
             return jsonify({
                 "message": "Login successful",
+                "name":username,
                 "user_id": user_id,
                 "role": role,
                 "email": email
@@ -226,39 +227,30 @@ def add_user():
 
 
 
-@app.route('/meetings', methods=['POST'])
+@app.route('/addMeetings', methods=['POST'])
 def add_meeting():
     try:
         data = request.json
         if not data or 'user_id' not in data:
             return jsonify({"error": "Missing user_id in request data"}), 400
 
-        user_id = data['user_id']
+        user_id = data.get('user_id')
+        admin_id = data.get('admin_id')
         transcript = data.get('transcript')
         ai_response = data.get('ai_response')
         summary = data.get('summary')
         
         cursor = mysql.connection.cursor()
-        # Verify that the user exists
-        cursor.execute("SELECT id FROM Users WHERE id = %s", (user_id,))
-        user = cursor.fetchone()
-        if not user:
-            cursor.close()
-            return jsonify({"error": "User not found"}), 404
-        
-        # Insert a new meeting with status 'pending' by default
         query = """
-            INSERT INTO Meetings (user_id, transcript, ai_response, summary, status)
-            VALUES (%s, %s, %s, %s, 'pending')
+            INSERT INTO Meetings (user_id, admin_id, transcript, ai_response, summary, meeting_status)
+            VALUES (%s, %s, %s, %s, %s, 'completed')
         """
-        cursor.execute(query, (user_id, transcript, ai_response, summary))
+        cursor.execute(query, (user_id, admin_id, transcript, ai_response, summary))
         mysql.connection.commit()
         meeting_id = cursor.lastrowid
         cursor.close()
         
-        session['current_meeting_id'] = meeting_id
-
-        return jsonify({"message": "Meeting added successfully", "meeting_id": meeting_id}), 201
+        return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -478,6 +470,35 @@ def store_pre_meeting_questions(user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/advisor/meetings/count/<string:advisor_name>', methods=['GET'])
+def get_meeting_counts(advisor_name):
+    try:
+        cursor = mysql.connection.cursor()
+        
+        query_scheduled = """
+            SELECT COUNT(*) FROM clientRequests 
+            WHERE advisor = %s AND status = 'scheduled'
+        """
+        cursor.execute(query_scheduled, (advisor_name,))
+        scheduled_count = cursor.fetchone()[0]
+        
+        query_completed = """
+            SELECT COUNT(*) FROM clientRequests 
+            WHERE advisor = %s AND status = 'completed'
+        """
+        cursor.execute(query_completed, (advisor_name,))
+        completed_count = cursor.fetchone()[0]
+        
+        cursor.close()
+        
+        return jsonify({
+            "advisor": advisor_name,
+            "scheduled_meetings": scheduled_count,
+            "completed_meetings": completed_count
+        }), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

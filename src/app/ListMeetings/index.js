@@ -2,6 +2,7 @@ import ReactTable from 'react-table-6';
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
+import { useHistory } from 'react-router-dom';
 import { Modal, ModalBody, ModalHeader, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
 import "react-table-6/react-table.css";
@@ -12,12 +13,23 @@ import MeetingDetailPrevious from './meetingDetailPrevious';
 
 
 function ListMeetings() {
+  const history = useHistory();
   const [error, setError] = useState('');
   const [upcomingClients, setUpcomingClients] = useState([]);
   const [previousClients, setPreviousClients] = useState([]);
   const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
   const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
   const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
+  const [profileData, setProfileData] = useState("");
+
+  const handleLogout = () => {
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    localStorage.removeItem('admin_id');
+
+    history.push('/login');
+
+  };
 
   // Fetch upcoming clients (scheduled meetings)
   useEffect(() => {
@@ -54,6 +66,24 @@ function ListMeetings() {
         return response.json();
       })
       .then(data => setPreviousClients(data))
+      .catch(err => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/advisor/meetings/count/${localStorage.getItem("name")}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => {
+            throw new Error(err.error || "Failed to fetch previous clients");
+          });
+        }
+        return response.json();
+      })
+      .then(data => setProfileData(data))
       .catch(err => setError(err.message));
   }, []);
 
@@ -242,21 +272,21 @@ function ListMeetings() {
               <button className='active-btn'>Active</button>
             </div>
             <div className='name-area'>
-              <h4> Henry king</h4>
-              <p> henryking23@gmail.com</p>
+              <h4>{localStorage.getItem("name")}</h4>
+              <p>{localStorage.getItem("email")}</p>
             </div>
             <div className='pending-mettings-area'>
               <div className='pending-mettings-box'>
                 <p>Pending meetings</p>
-                <h4>10</h4>
+                <h4>{profileData.scheduled_meetings}</h4>
               </div>
               <div className='pending-mettings-box'>
                 <p>Completed</p>
-                <h4>25</h4>
+                <h4>{profileData.completed_meetings}</h4>
               </div>
             </div>
-
             <div className='form-area'>
+{/* 
               <div className='froup-form'>
                 <label>Username</label>
                 <TextField
@@ -289,11 +319,13 @@ function ListMeetings() {
                     backgroundColor: 'white'
                   }}
                 />
-              </div>
+              </div> */}
 
 
             </div>
-            <button className='btn-style-border'>Logout</button>
+            <button className='btn-style-border' onClick={handleLogout}>
+              Logout
+            </button>
           </div>
         </ModalBody>
       </Modal>

@@ -15,6 +15,7 @@ const Talk = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcript, setTranscript] = useState("Waiting for transcription...");
   const [ai_response, setAIResponse] = useState("");
+  const [summary, setSummary] = useState('');
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -106,7 +107,7 @@ const Talk = () => {
           );
           sendAudioToBackend();
         }
-      }, 20000);
+      }, 10000);
     } catch (error) {
       console.error("Error starting recording:", error);
       setIsRecording(false);
@@ -134,6 +135,43 @@ const Talk = () => {
       console.log(ai_response)
       console.log("WAIT")
       console.log(transcript)
+
+      axios.get(`${SERVER_URL}/generate_summary`,{
+        params:{
+          ai_response: ai_response,
+          transcript: transcript,
+          user_id: localStorage.getItem("user_id"),
+          admin_id: localStorage.getItem("admin_id")
+        }
+      })
+      .then((response) => {
+        if (response.data.summary) {
+          console.log("Summary:", response.data.summary);
+          setSummary(response.data.summary);
+        } else {
+          console.error("Error generating summary:", response.data.error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error calling summary endpoint:", error);
+      });
+
+      // axios.post(`${SERVER_URL}/generate_summary`, {
+      //   ai_response: ai_response,       
+      //   transcript: transcript,         
+      // })
+      // .then((response) => {
+      //   if (response.data.summary) {
+      //     console.log("Summary:", response.data.summary);
+      //     setSummary(response.data.summary);
+      //   } else {
+      //     console.error("Error generating summary:", response.data.error);
+      //   }
+      // })
+      // .catch((error) => {
+      //   console.error("Error calling summary endpoint:", error);
+      // });
+      
     }
   };
 
@@ -220,6 +258,15 @@ const Talk = () => {
                 <div className="summery-box">
                   <pre style={responseStyle}>
                     {ai_response || "Waiting for AI Response...."}
+                  </pre>
+                </div>
+              </div>
+              {/* sample summary */}
+              <div className="information-box response-box">
+                <h3>Summary</h3>
+                <div className="summery-box">
+                  <pre style={responseStyle}>
+                    {summary}
                   </pre>
                 </div>
               </div>
