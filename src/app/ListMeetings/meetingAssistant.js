@@ -261,15 +261,6 @@ const Talk = () => {
                   </pre>
                 </div>
               </div>
-              {/* sample summary */}
-              <div className="information-box response-box">
-                <h3>Summary</h3>
-                <div className="summery-box">
-                  <pre style={responseStyle}>
-                    {summary}
-                  </pre>
-                </div>
-              </div>
             </div>
           </div>
         </div>

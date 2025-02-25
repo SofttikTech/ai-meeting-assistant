@@ -500,6 +500,30 @@ def get_meeting_counts(advisor_name):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/getPreQ/<int:user_id>',methods=['GET'])
+def getPerQ(user_id):
+    try:
+        if not user_id:
+            return jsonify({"error": "Advisor not logged in"}), 403
+
+        cursor = mysql.connection.cursor()
+        query = "SELECT preMeetingQ FROM clientRequests WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+
+        cursor.close()
+        if result and result[0]:
+            pre_meeting_questions = result[0]
+            return jsonify({"preMeetingQ": pre_meeting_questions}), 200
+        else:
+            return jsonify({"message": "No pre-meeting questions found"}), 404
+
+
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 if __name__ == "__main__":
     app.run(port=5000)
