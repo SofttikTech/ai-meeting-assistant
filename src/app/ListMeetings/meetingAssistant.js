@@ -184,7 +184,7 @@ const Talk = () => {
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       console.log(`Created blob of size: ${audioBlob.size} bytes`);
       // Save locally for debugging.
-      saveAs(audioBlob, `conversation-${Date.now()}.webm`);
+      // saveAs(audioBlob, `conversation-${Date.now()}.webm`);
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "conversation.webm");

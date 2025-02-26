@@ -11,19 +11,23 @@ const Login = ({ isVisible, setIsVisible }) => {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('sales_rep'); // default selection
+  const [role, setRole] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleClick = () => {
-    // Redirect to the "/add-user" page
-    history.push('/AddUser');
-  };
+  // const handleClick = () => {
+  //   history.push('/AddUser');
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
+
+    if (!role) {
+      setError('Please select a role.');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:5000/admin/login', {
@@ -34,13 +38,23 @@ const Login = ({ isVisible, setIsVisible }) => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('admin_id', data.user_id);
-        localStorage.setItem('email', data.email);
-        localStorage.setItem('name', data.name);
-        console.log(localStorage.getItem("admin_id"));
+        if(role == "advisor"){
+          localStorage.setItem('admin_id', data.user_id);
+          localStorage.setItem('email', data.email);
+          localStorage.setItem('name', data.name);
+        }
+        else{
+          localStorage.setItem('manager_id', data.user_id);
+          localStorage.setItem('manager_email', data.email);
+          localStorage.setItem('manager_name', data.name);
+        }
         setMessage('Login successful. Redirecting...');
         setTimeout(() => {
-          history.push('/list-meetings');
+          if (role === 'advisor') {
+            history.push('/list-meetings');
+          } else if (role === 'manager') {
+            history.push('/manager');
+          }
         }, 1000);
       } else {
         setError(data.error || 'Login failed');
@@ -85,14 +99,16 @@ const Login = ({ isVisible, setIsVisible }) => {
               </div>
 
               <div className='group-form'>
-                <FormControl>
+                <FormControl component="fieldset" required>
+                  <FormLabel component="legend">Select Role</FormLabel>
                   <RadioGroup
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    defaultValue="advisor"
-                    name="radio-buttons-group"
+                    aria-labelledby="role-radio-group-label"
+                    name="role-radio-group"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
                   >
-                    <FormControlLabel value="advisor" control={<Radio checked={role === 'advisor'} onChange={(e) => setRole(e.target.value)} />} label="Advisor" />
-                    <FormControlLabel value="manager" control={<Radio />} label="Manager" checked={role === 'manager'} onChange={(e) => setRole(e.target.value)} />
+                    <FormControlLabel value="advisor" control={<Radio />} label="Advisor" />
+                    <FormControlLabel value="manager" control={<Radio />} label="Manager" />
                   </RadioGroup>
                 </FormControl>
               </div>
@@ -116,6 +132,6 @@ const Login = ({ isVisible, setIsVisible }) => {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

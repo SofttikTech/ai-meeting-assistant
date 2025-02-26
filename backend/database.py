@@ -36,32 +36,6 @@ def test_db():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# @app.route('/admin/login', methods=['POST'])
-# def admin_login():
-#     try:
-#         data = request.json
-#         if not data or 'username' not in data or 'password' not in data:
-#             return jsonify({"error": "Missing username or password"}), 400
-
-#         username = data['username']
-#         password = data['password']
-#         role = data['role']
-#         print(role)
-#         cursor = mysql.connection.cursor()
-#         query = "SELECT id,password FROM Admin WHERE username = %s AND role = %s"
-#         cursor.execute(query, (username, role))
-#         admin = cursor.fetchone()
-#         cursor.close()
-        
-#         if admin[1] == password:
-#             admin_id = admin[0]
-#             session['admin_id'] = admin_id
-#             return jsonify({"message": "Login successful", "admin_id": admin_id, "role": role}), 200
-#         else:
-#             return jsonify({"error": "Invalid credentials"}), 401
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
 @app.route('/getAdvisors', methods=['GET'])
 def getAdvisors():
     try:
@@ -88,24 +62,23 @@ def user_login():
 
         username = data['username']
         password = data['password']
+        role = data['role']
 
         name = username
         
         cursor = mysql.connection.cursor()
-        query = "SELECT id, role, email FROM User WHERE username = %s AND password = %s"
-        cursor.execute(query, (username, password))
+        query = "SELECT id, email FROM User WHERE username = %s AND password = %s AND role = %s" 
+        cursor.execute(query, (username, password, role))
         user_record = cursor.fetchone()
         cursor.close()
 
         if user_record:
-            user_id, role, email = user_record[0], user_record[1], user_record[2]
-            # Check that role is either advisor or manager
-            if role not in ['advisor', 'manager']:
-                return jsonify({"error": "User is not authorized"}), 403
-            # Store user details in session if needed
-            session['user_id'] = user_id
+            user_id, email = user_record[0], user_record[1]
+            # # Check that role is either advisor or manager
+            # if getRole == role:
+            #     return jsonify({"error": "User is not authorized"}), 403
+            # # Store user details in session if needed
             userID = user_id
-            session['role'] = role
             return jsonify({
                 "message": "Login successful",
                 "name":username,
@@ -248,69 +221,16 @@ def add_meeting():
         cursor.execute(query, (user_id, admin_id, transcript, ai_response, summary))
         mysql.connection.commit()
         meeting_id = cursor.lastrowid
+
+        update_query = "UPDATE clientRequests SET status = 'completed' WHERE id = %s"
+        cursor.execute(update_query, (user_id,))
+        mysql.connection.commit()
+        
         cursor.close()
         
         return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-# @app.route('/meetings/update', methods=['PUT'])
-# def update_meeting():
-#     try:
-#         # Ensure the admin is logged in
-#         admin_id = session.get('admin_id')
-#         if not admin_id:
-#             return jsonify({"error": "Admin not logged in"}), 403
-
-#         # Retrieve the current meeting ID from the session
-#         meeting_id = session.get('current_meeting_id')
-#         if not meeting_id:
-#             return jsonify({"error": "No meeting in session to update"}), 400
-
-#         data = request.json
-#         update_fields = []
-#         params = []
-
-#         # Automatically update the meeting with the admin's ID
-#         update_fields.append("admin_id = %s")
-#         params.append(admin_id)
-        
-#         # Optionally update transcript, ai_response, summary, or status.
-#         if 'transcript' in data:
-#             update_fields.append("transcript = %s")
-#             params.append(data['transcript'])
-#         if 'ai_response' in data:
-#             update_fields.append("ai_response = %s")
-#             params.append(data['ai_response'])
-#         if 'summary' in data:
-#             update_fields.append("summary = %s")
-#             params.append(data['summary'])
-#         if 'status' in data:
-#             status = data['status']
-#             if status not in ['pending', 'completed']:
-#                 return jsonify({"error": "Invalid status. Must be 'pending' or 'completed'."}), 400
-#             update_fields.append("status = %s")
-#             params.append(status)
-
-#         if not update_fields:
-#             return jsonify({"error": "No fields provided to update"}), 400
-
-#         params.append(meeting_id)
-#         query = "UPDATE Meetings SET " + ", ".join(update_fields) + " WHERE meeting_id = %s"
-
-#         cursor = mysql.connection.cursor()
-#         cursor.execute(query, tuple(params))
-#         mysql.connection.commit()
-#         affected = cursor.rowcount
-#         cursor.close()
-
-#         if affected == 0:
-#             return jsonify({"error": "Meeting not found or no change made"}), 404
-
-#         return jsonify({"message": "Meeting updated successfully"}), 200
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
 
 @app.route('/preMeetingQuestions/<int:user_id>', methods=['GET'])
 def preMeetingQuestions(user_id):
@@ -517,12 +437,124 @@ def getPerQ(user_id):
             return jsonify({"preMeetingQ": pre_meeting_questions}), 200
         else:
             return jsonify({"message": "No pre-meeting questions found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
+@app.route('/getSummary/<int:user_id>',methods=['GET'])
+def getSummary(user_id):
+    try:
+        if not user_id:
+            return jsonify({"error": "Advisor not logged in"}), 403
+
+        cursor = mysql.connection.cursor()
+        query = "SELECT summary FROM Meetings WHERE user_id = %s"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+
+        cursor.close()
+        if result and result[0]:
+            summary = result[0]
+            return jsonify({"summary": summary}), 200
+        else:
+            return jsonify({"message": "No summary found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ==========For manager Role 
+
+@app.route('/getAllAdvisors', methods=['GET'])
+def get_AllAdvisors():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM User WHERE role = 'advisor'")
+    data = cur.fetchall()
+    cur.close()
+    return jsonify(data)
+
+@app.route('/addAdvisor', methods=['POST'])
+def add_Advisors():
+    data = request.json
+    name = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+    
+    if not name or not password or not email:
+        return jsonify({"error": "Missing username, password, or email"}), 400
+
+    try:
+        cursor = mysql.connection.cursor()
+        query = "INSERT INTO User (username, password, email, role) VALUES (%s, %s, %s, 'advisor')"
+        cursor.execute(query, (name, password, email))
+        mysql.connection.commit()
+        advisor_id = cursor.lastrowid
+        cursor.close()
+        
+        return jsonify({"message": "Advisor added successfully", "advisor_id": advisor_id}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/editAdvisorByID/<int:user_id>', methods=['POST'])
+def edit_advisor_by_id(user_id):
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+
+    if (username is None or username.strip() == "") and \
+       (password is None or password.strip() == "") and \
+       (email is None or email.strip() == ""):
+        return jsonify({"error": "No fields provided to update"}), 400
+
+    try:
+        cursor = mysql.connection.cursor()
+        update_fields = []
+        params = []
+
+        if username is not None and username.strip() != "":
+            update_fields.append("username = %s")
+            params.append(username)
+        if password is not None and password.strip() != "":
+            update_fields.append("password = %s")
+            params.append(password)
+        if email is not None and email.strip() != "":
+            update_fields.append("email = %s")
+            params.append(email)
+
+        params.append(user_id)
+        
+        query = "UPDATE User SET " + ", ".join(update_fields) + " WHERE id = %s AND role = 'advisor'"
+        cursor.execute(query, tuple(params))
+        mysql.connection.commit()
+        affected = cursor.rowcount
+        cursor.close()
+
+        if affected == 0:
+            return jsonify({"error": "Advisor not found or no changes made"}), 404
+
+        return jsonify({"message": "Advisor updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/deleteAdvisor', methods=['POST'])
+def delete_advisor():
+    try:
+        data = request.json
+        id = data.get("id")
+        cursor = mysql.connection.cursor()
+        query = "DELETE FROM User WHERE id = %s AND role = 'advisor'"
+        cursor.execute(query, (id,))
+        mysql.connection.commit()
+        affected = cursor.rowcount
+        cursor.close()
+
+        if affected == 0:
+            return jsonify({"error": "Advisor not found"}), 404
+
+        return jsonify({"message": "Advisor deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

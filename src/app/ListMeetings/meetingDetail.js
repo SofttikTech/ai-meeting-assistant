@@ -65,6 +65,18 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
       } else {
         console.error("Error storing pre meeting questions:", data.error);
       }
+
+      const campaignResponse = await fetch(`http://localhost:5000/campaign/${userId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const campaignData = await campaignResponse.json();
+      if (!campaignResponse.ok) {
+        console.error("Error retrieving campaign:", campaignData.error);
+      } else {
+        console.log("Campaign data:", campaignData);
+        // Optionally, you can process campaignData further here.
+      }
     } catch (error) {
       console.error("Error:", error);
     }

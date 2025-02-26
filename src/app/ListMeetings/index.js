@@ -19,7 +19,7 @@ function ListMeetings() {
   const [previousClients, setPreviousClients] = useState([]);
   const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
   const [isVisibleMeetingDetail, setIsVisibleMeetingDetail] = useState(false);
-  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(true);
+  const [isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious] = useState(false);
   const [profileData, setProfileData] = useState("");
 
   const handleLogout = () => {
@@ -41,7 +41,7 @@ function ListMeetings() {
       .then(response => {
         if (!response.ok) {
           return response.json().then(err => {
-            throw new Error(err.error || "Failed to fetch upcoming clients");
+            throw new Error(err.error || "");
           });
         }
         return response.json();
@@ -60,7 +60,7 @@ function ListMeetings() {
       .then(response => {
         if (!response.ok) {
           return response.json().then(err => {
-            throw new Error(err.error || "Failed to fetch previous clients");
+            throw new Error(err.error || "");
           });
         }
         return response.json();
