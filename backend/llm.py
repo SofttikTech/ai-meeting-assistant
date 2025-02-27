@@ -3,11 +3,13 @@ import os
 import logging
 import requests
 from flask import jsonify
+from dotenv import load_dotenv
 
 
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
 
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-client = openai.OpenAI(api_key="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")
+client = openai.OpenAI(api_key=api_key)
 
 def generate_pre_meeting_questions(first_name, last_name, campaigns):
     user_info = f"Client Name: {first_name}."

@@ -184,7 +184,7 @@ const Talk = () => {
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       console.log(`Created blob of size: ${audioBlob.size} bytes`);
       // Save locally for debugging.
-      saveAs(audioBlob, `conversation-${Date.now()}.webm`);
+      // saveAs(audioBlob, `conversation-${Date.now()}.webm`);
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "conversation.webm");
@@ -266,15 +266,6 @@ const Talk = () => {
                 <div className="summery-box">
                   <pre style={responseStyle}>
                     {ai_response || "Waiting for AI Response...."}
-                  </pre>
-                </div>
-              </div>
-              {/* sample summary */}
-              <div className="information-box response-box">
-                <h3>Summary</h3>
-                <div className="summery-box">
-                  <pre style={responseStyle}>
-                    {summary}
                   </pre>
                 </div>
               </div>

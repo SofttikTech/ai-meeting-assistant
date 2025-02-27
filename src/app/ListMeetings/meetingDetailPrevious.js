@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { useHistory } from 'react-router-dom';
-
+import axios from 'axios';
 import MeetingAssistant from './meetingAssistant';
-
+import ReactMarkdown from 'react-markdown';
 import "react-table-6/react-table.css";
 import './index.css';
 
@@ -11,13 +11,69 @@ const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDet
   const history = useHistory();
   const [isVisibleAssistant, setIsVisibleAssistant] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState({});
+  const [questions, setQuestions] = useState('');
+  const [error, setError] = useState(null);
+  const [loadingQ, setLoadingQ] = useState(true);
+  const [loadingSummary, setLoadingSummary] = useState(true);
+  const [summary, setSummary] = useState("");
 
-  // Retrieve the selected meeting from localStorage when component mounts.
+  const getCampaign = async (id) => {
+    try {
+      const campaignResponse = await fetch(`http://localhost:5000/campaign/${id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const campaignData = await campaignResponse.json();
+      if (!campaignResponse.ok) {
+        console.error("Error retrieving campaign:", campaignData.error);
+      } else {
+        console.log("Campaign data:", campaignData);
+        // Optionally, you can process campaignData further here.
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
     const storedMeeting = localStorage.getItem("selectedMeeting");
     if (storedMeeting) {
-      setSelectedMeeting(JSON.parse(storedMeeting));
+      const meeting = JSON.parse(storedMeeting);
+      getCampaign(meeting.id);
+      setSelectedMeeting(meeting);
+      axios.get(`http://localhost:5000/getPreQ/${meeting.id}`)
+        .then((response) => {
+          if (response.data.preMeetingQ) {
+            setQuestions(response.data.preMeetingQ);
+            setLoadingQ(false);
+          } else {
+            setError('No pre-meeting questions found.');
+            setLoadingQ(false);
+          }
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+
+        axios.get(`http://localhost:5000/getSummary/${meeting.id}`)
+        .then((response) => {
+          if (response.data.summary) {
+            setSummary(response.data.summary);
+            setLoadingSummary(false);
+          } else {
+            setError('No Summary found.');
+            setLoadingSummary(false);
+          }
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+
     }
+
+    console.log(summary)
+    console.log(summary)
+    
   }, []);
 
   // (Optional) If you want to clear the selectedMeeting from localStorage on unmount:
@@ -216,29 +272,35 @@ const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDet
                   {/* Static Sections */}
                   <div className='col-12'>
                     <div className='information-box'>
-                      <h3>Pre meeting questions</h3>
-                      <div className='qustions-box'>
-                        <span>1</span>
-                        <p>What is your current Medicare coverage status?</p>
-                      </div>
-                      <div className='qustions-box'>
-                        <span>2</span>
-                        <p>Are you currently experiencing any health issues?</p>
-                      </div>
-                      <div className='qustions-box'>
-                        <span>3</span>
-                        <p>Have you reviewed your Medicare options for this year?</p>
-                      </div>
-                      <div className='qustions-box'>
-                        <span>4</span>
-                        <p>Are you interested in Medicare Advantage or Supplement plans?</p>
-                      </div>
+                    <h3>Pre meeting questions</h3>
+                    {loadingQ ? (
+                      <p>Processing...</p>
+                    ) : (
+                      questions ? (
+                        questions
+                          .split(/\d+\.\s/)
+                          .filter(q => q.trim() !== "")
+                          .map((question, index) => (
+                            <div className='qustions-box' key={index}>
+                              <span>{index + 1}</span>
+                              <p>{question}</p>
+                            </div>
+                          ))
+                      ) : (
+                        <p>No pre meeting questions available.</p>
+                      )
+                    )}
                     </div>
                     <div className='information-box'>
                     <h3>Summery & Recommendation</h3>
-                    <div className='summery-box'>
-                      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                    </div>
+                    <ReactMarkdown>{summary}</ReactMarkdown>
+
+                    {/* <pre className="summary-box" style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                      {summary}
+                    </pre> */}
+                    {/* <div className='summery-box'>
+                      <p>{summary}</p>
+                    </div> */}
                   </div>
                   </div>
                 </div>

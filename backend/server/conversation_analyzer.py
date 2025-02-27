@@ -43,7 +43,18 @@ def analyze_conversation(query, conversation_history):
 
     context = "\n".join(conversation_history)
 
-    campaign = "medicare"
+    campaign = ""
+    try:
+        res = requests.get("http://127.0.0.1:5000/get_campaign")
+        if res.status_code == 200:
+            data = res.json()
+            campaign = data.get("campaign")
+            print(campaign)
+        else:
+            campaign = "medicare"
+    except Exception as e:
+        logging.error(f"Error calling campaign endpoint: {e}")
+        campaign = "medicare"
 
     # Respond only if a relevant topic is mentioned. Otherwise, return "NO_ACTION".
     prompt = f"""
