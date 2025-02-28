@@ -9,7 +9,8 @@ import "./index.css";
 
 const SERVER_URL = "http://localhost:5001";
 
-const Talk = () => {
+
+const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -211,6 +212,7 @@ const Talk = () => {
     overflowX: "hidden",
     padding: "10px",
   };
+  
 
   return (
     <div className="list-page-inner">
@@ -218,7 +220,7 @@ const Talk = () => {
         <div className="auto-container">
           <div className="row">
             <div className="col-12">
-              <div className="back-btn-area style-two" onClick={() => history.goBack()}>
+              <div className="back-btn-area style-two" onClick={() => setIsVisibleAssistant(false)}>
                 <button className="btn-style-new">
                   <svg
                     width="24"
@@ -249,7 +251,7 @@ const Talk = () => {
                 <p>Speak naturally and get real-time AI meeting responses</p>
                 {isProcessing
                   ? <>
-                    <button className="speek-btn style-animation" onClick={isRecording ? stopRecording : startRecording}>
+                    <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={isRecording ? stopRecording : startRecording}>
                       <img
                         src={require("../../static/images/speek-btn.png")}
                         alt="Speak Button"
@@ -259,7 +261,7 @@ const Talk = () => {
                       <p>Processing...</p>
                     </div>
                   </>
-                  : <button className="speek-btn" onClick={isRecording ? stopRecording : startRecording}>
+                  : <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={isRecording ? stopRecording : startRecording}>
                     <img
                       src={require("../../static/images/speek-btn.png")}
                       alt="Speak Button"
