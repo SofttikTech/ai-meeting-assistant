@@ -221,14 +221,16 @@ def add_meeting():
         cursor.execute(query, (user_id, admin_id, transcript, ai_response, summary))
         mysql.connection.commit()
         meeting_id = cursor.lastrowid
+        cursor.close()
 
+        second = mysql.connection.cursor()
         update_query = "UPDATE clientRequests SET status = 'completed' WHERE id = %s"
-        cursor.execute(update_query, (user_id,))
+        second.execute(update_query, (user_id,))
         mysql.connection.commit()
         
-        cursor.close()
+        second.close()
         
-        return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 201
+        return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

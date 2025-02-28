@@ -9,6 +9,8 @@ from io import BytesIO
 from dotenv import load_dotenv
 import openai
 from conversation_analyzer import analyze_conversation, generate_post_meeting_summary
+from ghl_integration import send_data_to_n8n_and_log
+
 
 load_dotenv()
 
@@ -111,19 +113,40 @@ def transcribe():
 
 @app.route('/generate_summary', methods=['GET'])
 def generate_summary():
-
+    # Retrieve parameters from the URL query string.
     ai_response = request.args.get('ai_response')
     transcript = request.args.get('transcript')
     user_id = request.args.get('user_id')
     admin_id = request.args.get('admin_id')
-    if not conversation_history:
+    firstName = request.args.get('FirstName')
+    lastName = request.args.get('LastName')
+    email = request.args.get('Email')
+    phoneNumber = request.args.get('phoneNumber')
+
+    # Check for the required transcript (conversation history).
+    if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400
 
-    summary = generate_post_meeting_summary(conversation_history)
-    print("Summary", summary)
-    print("AI response",ai_response)
-    print("transcript",transcript)
+    summary = generate_post_meeting_summary(transcript)
+    print("Summary:", summary)
+    print("AI response:", ai_response)
+    print("Transcript:", transcript)
 
+    # Prepare data to send to n8n.
+    data_to_send = {
+        "FirstName": firstName,
+        "LastName": lastName,
+        "phoneNumber": phoneNumber,
+        "email": email,
+        "ai_response": ai_response,
+        "transcript": transcript,
+        "summary": summary
+    }
+    
+    message = send_data_to_n8n_and_log(data_to_send)
+    print(message)
+
+    # Prepare payload for storing meeting data in your database.
     db_payload = {
         "user_id": user_id,
         "admin_id": admin_id,
@@ -131,6 +154,7 @@ def generate_summary():
         "transcript": transcript,
         "summary": summary
     }
+
 
     try:
         db_response = requests.post("http://localhost:5000/addMeetings", json=db_payload)
@@ -144,6 +168,7 @@ def generate_summary():
             "error": "Error calling database endpoint",
             "details": str(e)
         }), 500
+
 
     return jsonify({"summary": summary}), 200
 

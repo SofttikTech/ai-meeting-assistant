@@ -1,1 +1,0 @@
-uwsgi --http-socket 0.0.0.0:4000 --plugin python3 --module server:server --daemonize ./app.logs

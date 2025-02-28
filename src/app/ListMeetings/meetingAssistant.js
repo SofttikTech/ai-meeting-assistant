@@ -136,14 +136,19 @@ const Talk = () => {
       console.log("WAIT")
       console.log(transcript)
 
-      axios.get(`${SERVER_URL}/generate_summary`, {
-        params: {
-          ai_response: ai_response,
-          transcript: transcript,
-          user_id: localStorage.getItem("user_id"),
-          admin_id: localStorage.getItem("admin_id")
-        }
-      })
+      setTimeout(() => {
+        axios.get(`${SERVER_URL}/generate_summary`, {
+          params: {
+            ai_response: ai_response,
+            transcript: transcript,
+            user_id: localStorage.getItem("user_id"),
+            admin_id: localStorage.getItem("admin_id"),
+            FirstName: localStorage.getItem("FirstName"),
+            LastName: localStorage.getItem("LastName"),
+            Email: localStorage.getItem("email"),
+            phoneNumber: localStorage.getItem("phoneNumber")
+          }
+        })
         .then((response) => {
           if (response.data.summary) {
             console.log("Summary:", response.data.summary);
@@ -155,6 +160,8 @@ const Talk = () => {
         .catch((error) => {
           console.error("Error calling summary endpoint:", error);
         });
+      }, 50000);
+      
 
       // axios.post(`${SERVER_URL}/generate_summary`, {
       //   ai_response: ai_response,       

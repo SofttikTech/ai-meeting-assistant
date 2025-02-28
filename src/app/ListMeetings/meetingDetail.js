@@ -20,6 +20,10 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
       const meeting = JSON.parse(storedMeeting);
       setSelectedMeeting(meeting);
       localStorage.setItem("user_id",meeting.id)
+      localStorage.setItem("FirstName",meeting.clientFirstName)
+      localStorage.setItem("LastName",meeting.clientLastName)
+      localStorage.setItem("email",meeting.clientEmail)
+      localStorage.setItem("phoneNumber",meeting.clientPhone)
       fetch(`http://localhost:5000/preMeetingQuestions/${meeting.id}`, {
         method: 'GET',
         credentials: 'include',
