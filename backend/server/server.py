@@ -183,5 +183,5 @@ def handle_disconnect():
     logging.info("Client disconnected")
 
 if __name__ == "__main__":
-    logging.info("Starting server on port 5001")
-    socketio.run(app, host="0.0.0.0", port=5001, debug=False)
+    logging.info("Starting server on port 5000")
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)
