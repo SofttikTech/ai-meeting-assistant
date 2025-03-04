@@ -6,6 +6,7 @@ import FormLabel from '@mui/material/FormLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { adminLogin } from '../../store/config';
 
 const Login = ({ isVisible, setIsVisible }) => {
   const history = useHistory();
@@ -30,23 +31,18 @@ const Login = ({ isVisible, setIsVisible }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
-      });
-      const data = await response.json();
+      const data = await adminLogin({ username, password, role })
 
-      if (response.ok) {
+      if (data) {
         if(role == "advisor"){
           localStorage.setItem('admin_id', data.user_id);
           localStorage.setItem('email', data.email);
-          localStorage.setItem('name', data.name);
+          localStorage.setItem('name', username);
         }
         else{
           localStorage.setItem('manager_id', data.user_id);
           localStorage.setItem('manager_email', data.email);
-          localStorage.setItem('manager_name', data.name);
+          localStorage.setItem('manager_name', username);
         }
         setMessage('Login successful. Redirecting...');
         setTimeout(() => {

@@ -6,8 +6,9 @@ import { Link, useHistory } from "react-router-dom";
 
 import "react-table-6/react-table.css";
 import "./index.css";
+import { URL } from "../../store/config";
 
-const SERVER_URL = "http://localhost:5001";
+const SERVER_URL = URL;
 
 
 const Talk = ({ setIsVisibleAssistant }) => {
@@ -162,23 +163,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
           console.error("Error calling summary endpoint:", error);
         });
       }, 50000);
-      
-
-      // axios.post(`${SERVER_URL}/generate_summary`, {
-      //   ai_response: ai_response,       
-      //   transcript: transcript,         
-      // })
-      // .then((response) => {
-      //   if (response.data.summary) {
-      //     console.log("Summary:", response.data.summary);
-      //     setSummary(response.data.summary);
-      //   } else {
-      //     console.error("Error generating summary:", response.data.error);
-      //   }
-      // })
-      // .catch((error) => {
-      //   console.error("Error calling summary endpoint:", error);
-      // });
 
     }
   };

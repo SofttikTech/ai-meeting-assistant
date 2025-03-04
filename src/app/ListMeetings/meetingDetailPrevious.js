@@ -6,6 +6,7 @@ import MeetingAssistant from './meetingAssistant';
 import ReactMarkdown from 'react-markdown';
 import "react-table-6/react-table.css";
 import './index.css';
+import {getCampaignD, getPreQ, getSummary} from '../../store/config'
 
 const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDetailPrevious }) => {
   const history = useHistory();
@@ -18,20 +19,32 @@ const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDet
   const [summary, setSummary] = useState("");
 
   const getCampaign = async (id) => {
-    try {
-      const campaignResponse = await fetch(`http://localhost:5000/campaign/${id}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const campaignData = await campaignResponse.json();
-      if (!campaignResponse.ok) {
-        console.error("Error retrieving campaign:", campaignData.error);
-      } else {
-        console.log("Campaign data:", campaignData);
-        // Optionally, you can process campaignData further here.
-      }
-    } catch (error) {
-      console.error("Error:", error);
+    const data  = await getCampaignD(id);
+    console.log("Campaign data:", data);
+  };
+
+  const getQ = async (id) => {
+    const data  = await getPreQ(id);
+    console.log("data:", data);
+    if (data.preMeetingQ) {
+      setQuestions(data.preMeetingQ);
+      setLoadingQ(false);
+    } else {
+      setError('No pre-meeting questions found.');
+      setLoadingQ(false);
+    }
+    return data;
+  };
+  
+  const getSummry = async (id) => {
+    const data  = await getSummary(id);
+    console.log("data summary:", data);
+    if (data.summary) {
+      setSummary(data.summary);
+      setLoadingSummary(false);
+    } else {
+        setError('No Summary found.');
+        setLoadingSummary(false);
     }
   };
 
@@ -41,34 +54,20 @@ const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDet
       const meeting = JSON.parse(storedMeeting);
       getCampaign(meeting.id);
       setSelectedMeeting(meeting);
-      axios.get(`http://localhost:5000/getPreQ/${meeting.id}`)
-        .then((response) => {
-          if (response.data.preMeetingQ) {
-            setQuestions(response.data.preMeetingQ);
-            setLoadingQ(false);
-          } else {
-            setError('No pre-meeting questions found.');
-            setLoadingQ(false);
-          }
-        })
-        .catch((err) => {
-          setError(err.message);
-        });
+      
+      try {
+        getQ(meeting.id);
+      } catch (error) {
+        setError(error.message);
+        setLoadingQ(false);
+      }
 
-        axios.get(`http://localhost:5000/getSummary/${meeting.id}`)
-        .then((response) => {
-          if (response.data.summary) {
-            setSummary(response.data.summary);
-            setLoadingSummary(false);
-          } else {
-            setError('No Summary found.');
-            setLoadingSummary(false);
-          }
-        })
-        .catch((err) => {
-          setError(err.message);
-        });
-
+      try {
+        getSummry(meeting.id);
+      } catch (error) {
+        setError(error.message);
+        setLoadingQ(false);
+      }
     }
 
     console.log(summary)

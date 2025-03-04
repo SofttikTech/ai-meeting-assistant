@@ -13,35 +13,7 @@ const MeetingAssistant = ({ isVisibleAssistant, setIsVisibleAssistant }) => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
-
-    try {
-      const response = await fetch('http://localhost:5000/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('admin_id', data.admin_id);
-        localStorage.setItem('role', data.role);
-
-        setMessage('Login successful. Redirecting...');
-        setTimeout(() => {
-          history.push('/Talk');
-        }, 1000);
-      } else {
-        setError(data.error || 'Login failed');
-      }
-    } catch (err) {
-      setError('An error occurred: ' + err.message);
-    }
-  };
-
+ 
 
   return (
     <>

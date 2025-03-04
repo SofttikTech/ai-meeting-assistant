@@ -157,7 +157,7 @@ def generate_summary():
 
 
     try:
-        db_response = requests.post("http://localhost:5000/addMeetings", json=db_payload)
+        db_response = requests.post("http://3.146.37.52:4000/addMeetings", json=db_payload)
         if db_response.status_code != 200:
             return jsonify({
                 "error": "Failed to store meeting data in database",
