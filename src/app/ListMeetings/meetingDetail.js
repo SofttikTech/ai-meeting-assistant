@@ -21,11 +21,21 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
     if (storedMeeting) {
       const meeting = JSON.parse(storedMeeting);
       setSelectedMeeting(meeting);
+      console.log(meeting)
+      let value = "";
+
+      if (meeting.medicare === 1) value = "medicare";
+      if (meeting.wealthPlanning === 1) value = "wealthPlanning";
+      if (meeting.lifeInsurance === 1) value = "lifeInsurance";
+      if (meeting.LTC_Planning === 1) value = "LTC_Planning";
+
+      
       localStorage.setItem("user_id",meeting.id)
       localStorage.setItem("FirstName",meeting.clientFirstName)
       localStorage.setItem("LastName",meeting.clientLastName)
       localStorage.setItem("email",meeting.clientEmail)
       localStorage.setItem("phoneNumber",meeting.clientPhone)
+      localStorage.setItem("campaign",value)
       fetchPreMeetingQuestions(meeting.id)
       .then((data) => {
         if (data.questions) {

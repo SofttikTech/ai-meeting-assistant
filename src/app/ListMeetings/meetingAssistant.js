@@ -148,7 +148,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
             FirstName: localStorage.getItem("FirstName"),
             LastName: localStorage.getItem("LastName"),
             Email: localStorage.getItem("email"),
-            phoneNumber: localStorage.getItem("phoneNumber")
+            phoneNumber: localStorage.getItem("phoneNumber"),
+            campaign: localStorage.getItem("campaign")
           }
         })
         .then((response) => {
