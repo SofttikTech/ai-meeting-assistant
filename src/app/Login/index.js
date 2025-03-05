@@ -8,13 +8,13 @@ import './index.css';
 
 function Login() {
   const history = useHistory();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('sales_rep'); // default selection
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleAddUser, setIsVisibleAddUser] = useState(false);
+  const [role, setRole] = useState('sales_rep'); // default selection
 
   const handleClick = () => {
     // Redirect to the "/add-user" page

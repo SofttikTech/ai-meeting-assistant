@@ -1,3 +1,4 @@
+import Radio from '@mui/material/Radio';
 import Checkbox from '@mui/material/Checkbox';
 import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
@@ -395,29 +396,20 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
               <div className='row'>
                 <div className='col-12'>
                   <h4 className='group-title'>Select Advisor</h4>
-                  <div className='group-form'>
-                    {advisors.length > 0 ? (
-                      advisors.map((advisor) => (
-                        <label
-                          key={advisor}
-                          style={{ display: 'flex', alignItems: 'center' }}
-                        >
-                          <input
-                            type="radio"
-                            name="advisor"
-                            value={advisor}
-                            checked={advisorName === advisor}
-                            onChange={(e) => setAdvisorName(e.target.value)}
-                            style={{ marginRight: '8px' }}
-                          />
-                          {advisor}
-                        </label>
-                      ))
-                    ) : (
-                      <p>Loading advisors...</p>
-                    )}
-                  </div>
                 </div>
+                {advisors.length > 0 ? (
+                  advisors.map((advisor) => (
+                    <div className='col-lg-6 col-md-12'>
+                      <div className='group-form radio-group'>
+                        <FormControlLabel key={advisor} value={advisor} control={<Radio value={advisor} checked={advisorName === advisor} onChange={(e) => setAdvisorName(e.target.value)}/>} label={advisor} />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className='col-12'>
+                    <p>Loading advisors...</p>
+                  </div>
+                )}
               </div>
               <button type="submit" className='btn-style-new'>
                 Add User

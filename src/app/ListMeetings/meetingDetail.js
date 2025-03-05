@@ -1,20 +1,20 @@
+import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
-import { useHistory } from 'react-router-dom';
 
 import MeetingAssistant from './meetingAssistant';
+import {StorePreMeetingQuestions} from '../../store/config';
 import { fetchPreMeetingQuestions } from '../../store/config';
 
 import "react-table-6/react-table.css";
 import './index.css';
-import {StorePreMeetingQuestions} from '../../store/config';
 
 const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
   const history = useHistory();
-  const [isVisibleAssistant, setIsVisibleAssistant] = useState(false);
-  const [selectedMeeting, setSelectedMeeting] = useState({});
   const [summary, setSummary] = useState("");
+  const [selectedMeeting, setSelectedMeeting] = useState({});
   const [loadingSummary, setLoadingSummary] = useState(true);
+  const [isVisibleAssistant, setIsVisibleAssistant] = useState(false);
 
   useEffect(() => {
     const storedMeeting = localStorage.getItem("selectedMeeting");
@@ -79,7 +79,7 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
     //   console.error("Error:", error);
     // }
   };
-  
+
 
   useEffect(() => {
     return () => {
@@ -90,9 +90,9 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
   return (
     <>
       {isVisibleAssistant ? (
-        <MeetingAssistant 
-          isVisibleAssistant={isVisibleAssistant} 
-          setIsVisibleAssistant={setIsVisibleAssistant} 
+        <MeetingAssistant
+          isVisibleAssistant={isVisibleAssistant}
+          setIsVisibleAssistant={setIsVisibleAssistant}
         />
       ) : (
         <div className='list-page-inner'>
@@ -101,16 +101,16 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
               <div className='row'>
                 <div className='col-12'>
                   <div className='back-btn-area'>
-                    <button 
-                      className='btn-style-new' 
+                    <button
+                      className='btn-style-new'
                       onClick={() => setIsVisibleMeetingDetail(false)}
                     >
                       <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7.57895 7.5V12.5L0 6.25L7.57895 0V5H13.8947C16.5748 5 19.1451 6.05357 21.0402 7.92893C22.9353 9.8043 24 12.3478 24 15C24 17.6522 22.9353 20.1957 21.0402 22.0711C19.1451 23.9464 16.5748 25 13.8947 25H2.52632V22.5H13.8947C15.9048 22.5 17.8325 21.7098 19.2539 20.3033C20.6752 18.8968 21.4737 16.9891 21.4737 15C21.4737 13.0109 20.6752 11.1032 19.2539 9.6967C17.8325 8.29018 15.9048 7.5 13.8947 7.5H7.57895Z" fill="currentColor" />
                       </svg>
                     </button>
-                    <button 
-                      className='btn-style-new' 
+                    <button
+                      className='btn-style-new'
                       onClick={() => setIsVisibleAssistant(true)}
                     >
                       Start Meeting
