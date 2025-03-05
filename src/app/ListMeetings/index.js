@@ -10,6 +10,8 @@ import './index.css';
 
 import MeetingDetail from './meetingDetail';
 import MeetingDetailPrevious from './meetingDetailPrevious';
+import {getAdvisorClients, getMeetingCount, getPreMeetingQuestions, getPreviousClients} from '../../store/config';
+import { createWatchProgram } from 'typescript';
 
 
 function ListMeetings() {
@@ -33,58 +35,26 @@ function ListMeetings() {
 
   // Fetch upcoming clients (scheduled meetings)
   useEffect(() => {
-    fetch('http://localhost:5000/advisor/clients', {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => {
-            throw new Error(err.error || "");
-          });
-        }
-        return response.json();
-      })
-      .then(data => setUpcomingClients(data))
-      .catch(err => setError(err.message));
+    getAdvisorClients()
+      .then((data) => setUpcomingClients(data))
+      .catch((error) => console.error('Error fetching clients:', error));
+
   }, []);
 
   // Fetch previous clients (completed meetings)
   useEffect(() => {
-    fetch('http://localhost:5000/advisor/clientsPrevious', {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => {
-            throw new Error(err.error || "");
-          });
-        }
-        return response.json();
-      })
-      .then(data => setPreviousClients(data))
-      .catch(err => setError(err.message));
+    getPreviousClients()
+      .then((data) => setPreviousClients(data))
+      .catch((error) => console.error('Error fetching clients:', error));
+
+
   }, []);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/advisor/meetings/count/${localStorage.getItem("name")}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' }
-    })
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => {
-            throw new Error(err.error || "Failed to fetch previous clients");
-          });
-        }
-        return response.json();
-      })
-      .then(data => setProfileData(data))
-      .catch(err => setError(err.message));
+    getMeetingCount(localStorage.getItem("name"))
+      .then((data) => setProfileData(data))
+      .catch((error) => console.error('Error fetching meeting count:', error));
+
   }, []);
 
   // Define columns for the table.

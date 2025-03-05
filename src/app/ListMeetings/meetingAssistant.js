@@ -6,8 +6,9 @@ import { Link, useHistory } from "react-router-dom";
 
 import "react-table-6/react-table.css";
 import "./index.css";
+import { URL } from "../../store/config";
 
-const SERVER_URL = "http://localhost:5001";
+const SERVER_URL = URL;
 
 
 const Talk = ({ setIsVisibleAssistant }) => {
@@ -137,14 +138,19 @@ const Talk = ({ setIsVisibleAssistant }) => {
       console.log("WAIT")
       console.log(transcript)
 
-      axios.get(`${SERVER_URL}/generate_summary`, {
-        params: {
-          ai_response: ai_response,
-          transcript: transcript,
-          user_id: localStorage.getItem("user_id"),
-          admin_id: localStorage.getItem("admin_id")
-        }
-      })
+      setTimeout(() => {
+        axios.get(`${SERVER_URL}/generate_summary`, {
+          params: {
+            ai_response: ai_response,
+            transcript: transcript,
+            user_id: localStorage.getItem("user_id"),
+            admin_id: localStorage.getItem("admin_id"),
+            FirstName: localStorage.getItem("FirstName"),
+            LastName: localStorage.getItem("LastName"),
+            Email: localStorage.getItem("email"),
+            phoneNumber: localStorage.getItem("phoneNumber")
+          }
+        })
         .then((response) => {
           if (response.data.summary) {
             console.log("Summary:", response.data.summary);
@@ -156,22 +162,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
         .catch((error) => {
           console.error("Error calling summary endpoint:", error);
         });
-
-      // axios.post(`${SERVER_URL}/generate_summary`, {
-      //   ai_response: ai_response,       
-      //   transcript: transcript,         
-      // })
-      // .then((response) => {
-      //   if (response.data.summary) {
-      //     console.log("Summary:", response.data.summary);
-      //     setSummary(response.data.summary);
-      //   } else {
-      //     console.error("Error generating summary:", response.data.error);
-      //   }
-      // })
-      // .catch((error) => {
-      //   console.error("Error calling summary endpoint:", error);
-      // });
+      }, 50000);
 
     }
   };

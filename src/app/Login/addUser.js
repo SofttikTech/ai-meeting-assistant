@@ -1,3 +1,4 @@
+import Radio from '@mui/material/Radio';
 import Checkbox from '@mui/material/Checkbox';
 import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
@@ -48,7 +49,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/getAdvisors')
+    fetch('http://3.146.37.52:4000/getAdvisors')
       .then((response) => response.json())
       .then((data) => setAdvisors(data))
       .catch((error) => console.error('Error fetching advisors:', error));
@@ -97,7 +98,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/users', {
+      const response = await fetch('http://3.146.37.52:4000/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -395,29 +396,20 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
               <div className='row'>
                 <div className='col-12'>
                   <h4 className='group-title'>Select Advisor</h4>
-                  <div className='group-form'>
-                    {advisors.length > 0 ? (
-                      advisors.map((advisor) => (
-                        <label
-                          key={advisor}
-                          style={{ display: 'flex', alignItems: 'center' }}
-                        >
-                          <input
-                            type="radio"
-                            name="advisor"
-                            value={advisor}
-                            checked={advisorName === advisor}
-                            onChange={(e) => setAdvisorName(e.target.value)}
-                            style={{ marginRight: '8px' }}
-                          />
-                          {advisor}
-                        </label>
-                      ))
-                    ) : (
-                      <p>Loading advisors...</p>
-                    )}
-                  </div>
                 </div>
+                {advisors.length > 0 ? (
+                  advisors.map((advisor) => (
+                    <div className='col-lg-6 col-md-12'>
+                      <div className='group-form radio-group'>
+                        <FormControlLabel key={advisor} value={advisor} control={<Radio value={advisor} checked={advisorName === advisor} onChange={(e) => setAdvisorName(e.target.value)}/>} label={advisor} />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className='col-12'>
+                    <p>Loading advisors...</p>
+                  </div>
+                )}
               </div>
               <button type="submit" className='btn-style-new'>
                 Add User

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { getAdvisors, createUser } from '../../store/config';
+
 
 const containerStyle = {
   background: 'linear-gradient(135deg, #f6d365, #fda085)',
@@ -108,9 +110,14 @@ function AddUser() {
   const [error, setError] = useState('');
 
   // Fetch advisors from the /getAdvisors endpoint when component mounts
+  // useEffect(() => {
+  //   fetch('http://3.146.37.52:4000/getAdvisors')
+  //     .then((response) => response.json())
+  //     .then((data) => setAdvisors(data))
+  //     .catch((error) => console.error('Error fetching advisors:', error));
+  // }, []);
   useEffect(() => {
-    fetch('http://localhost:5000/getAdvisors')
-      .then((response) => response.json())
+    getAdvisors()
       .then((data) => setAdvisors(data))
       .catch((error) => console.error('Error fetching advisors:', error));
   }, []);
@@ -158,14 +165,20 @@ function AddUser() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
+      // const response = await fetch('http://3.146.37.52:4000/users', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(payload),
+      // });
+      try {
+        const data = await createUser(payload);
+        console.log('User created:', data);
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
+      // const data = await response.json();
 
-      if (response.ok) {
+      if (data) {
         setMessage('User added successfully! User ID: ' + data.user_id);
         // Reset all fields
         setFirstName('');

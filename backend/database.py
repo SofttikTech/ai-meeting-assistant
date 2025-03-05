@@ -14,9 +14,14 @@ CORS(app, supports_credentials=True)
 app.config["SECRET_KEY"] = "abcdef"
 app.config['SESSION_TYPE'] = 'filesystem'
 
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
+# app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
+# app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
+# app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
+# app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
+
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-3-146-37-52.us-east-2.compute.amazonaws.com')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'AMA')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Root1234$')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
 
 mysql = MySQL(app)
@@ -221,14 +226,16 @@ def add_meeting():
         cursor.execute(query, (user_id, admin_id, transcript, ai_response, summary))
         mysql.connection.commit()
         meeting_id = cursor.lastrowid
+        cursor.close()
 
+        second = mysql.connection.cursor()
         update_query = "UPDATE clientRequests SET status = 'completed' WHERE id = %s"
-        cursor.execute(update_query, (user_id,))
+        second.execute(update_query, (user_id,))
         mysql.connection.commit()
         
-        cursor.close()
+        second.close()
         
-        return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 201
+        return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -558,4 +565,4 @@ def delete_advisor():
 
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(host="0.0.0.0",port=4000)

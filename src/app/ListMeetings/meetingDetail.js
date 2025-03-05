@@ -1,8 +1,10 @@
+import { useHistory } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
-import { useHistory } from 'react-router-dom';
 
 import MeetingAssistant from './meetingAssistant';
+import {StorePreMeetingQuestions} from '../../store/config';
+import { fetchPreMeetingQuestions } from '../../store/config';
 
 import "react-table-6/react-table.css";
 import './index.css';
@@ -19,33 +21,25 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
     if (storedMeeting) {
       const meeting = JSON.parse(storedMeeting);
       setSelectedMeeting(meeting);
-      localStorage.setItem("user_id", meeting.id)
-      fetch(`http://localhost:5000/preMeetingQuestions/${meeting.id}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      })
-        .then(response => {
-          if (!response.ok) {
-            return response.json().then(err => {
-              throw new Error(err.error || "Failed to fetch pre meeting questions");
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.questions) {
-            setSummary(data.questions);
-            storePreMeetingQuestions(meeting.id, data.questions)
-          } else {
+      localStorage.setItem("user_id",meeting.id)
+      localStorage.setItem("FirstName",meeting.clientFirstName)
+      localStorage.setItem("LastName",meeting.clientLastName)
+      localStorage.setItem("email",meeting.clientEmail)
+      localStorage.setItem("phoneNumber",meeting.clientPhone)
+      fetchPreMeetingQuestions(meeting.id)
+      .then((data) => {
+        if (data.questions) {
+          setSummary(data.questions);
+          storePreMeetingQuestions(meeting.id, data.questions)
+        } else {
             setSummary(data);
-          }
-          setLoadingSummary(false);
-        })
-        .catch(err => {
-          console.error("Error fetching pre meeting questions:", err);
-          setLoadingSummary(false);
-        });
+        }
+        setLoadingSummary(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching clients:', error)
+        setLoadingSummary(false);
+      });
     } else {
       setLoadingSummary(false);
     }
@@ -54,32 +48,26 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
 
   const storePreMeetingQuestions = async (userId, questions) => {
     try {
-      const response = await fetch(`http://localhost:5000/clientRequests/${userId}/preMeetingQuestions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preMeetingQuestions: questions })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Successfully stored pre meeting questions:", data);
-      } else {
-        console.error("Error storing pre meeting questions:", data.error);
-      }
-
-      const campaignResponse = await fetch(`http://localhost:5000/campaign/${userId}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const campaignData = await campaignResponse.json();
-      if (!campaignResponse.ok) {
-        console.error("Error retrieving campaign:", campaignData.error);
-      } else {
-        console.log("Campaign data:", campaignData);
-        // Optionally, you can process campaignData further here.
-      }
-    } catch (error) {
-      console.error("Error:", error);
+      const response = await StorePreMeetingQuestions(userId, questions);
+      console.log(response)
+    } catch (err) {
+      console.log(err)
     }
+
+    //   const campaignResponse = await fetch(`http://3.146.37.52:4000/campaign/${userId}`, {
+    //     method: 'GET',
+    //     headers: { 'Content-Type': 'application/json' }
+    //   });
+    //   const campaignData = await campaignResponse.json();
+    //   if (!campaignResponse.ok) {
+    //     console.error("Error retrieving campaign:", campaignData.error);
+    //   } else {
+    //     console.log("Campaign data:", campaignData);
+    //     // Optionally, you can process campaignData further here.
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // }
   };
 
 

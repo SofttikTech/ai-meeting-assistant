@@ -1,0 +1,13 @@
+Flask
+Flask-MySQLdb
+Flask-Cors
+Flask-Session
+openai
+requests
+python-dotenv
+langchain
+langchain-community
+langchain-openai
+faiss-cpu
+fastapi
+uvicorn

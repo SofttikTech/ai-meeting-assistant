@@ -8,13 +8,13 @@ import './index.css';
 
 function Login() {
   const history = useHistory();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('sales_rep'); // default selection
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleAddUser, setIsVisibleAddUser] = useState(false);
+  const [role, setRole] = useState('sales_rep'); // default selection
 
   const handleClick = () => {
     // Redirect to the "/add-user" page
@@ -27,7 +27,7 @@ function Login() {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/admin/login', {
+      const response = await fetch('http://3.146.37.52:4000/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, role }),
