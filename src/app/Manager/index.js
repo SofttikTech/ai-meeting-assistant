@@ -470,7 +470,7 @@
 //                 />
 //               </div>
 
-              
+
 //             </div>
 //             <button className='btn-style-border'>Logout</button>
 //           </div>
@@ -504,18 +504,19 @@ function ListMeetings() {
   const [fetchError, setFetchError] = useState('');
 
   // Modal states and selected advisor
+  const [currentID, setCurrentID] = useState(0);
+  const [deleteID, setDeleteID] = useState(0);
+  const [selectedAdvisor, setSelectedAdvisor] = useState(null);
   const [modalEditAdvisor, setModalEditAdvisor] = useState(false);
   const [modalDeleteAdvisor, setModalDeleteAdvisor] = useState(false);
   const [modalAddNewAdvisor, setModalAddNewAdvisor] = useState(false);
   const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
-  const [selectedAdvisor, setSelectedAdvisor] = useState(null);
-  const [currentID, setCurrentID] = useState(0);
-  const [deleteID, setDeleteID] = useState(0);
 
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
   // Dropdown state for action column (one dropdown open at a time)
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropDwon = () => setDropdownOpen(!dropdownOpen);
+  const [openDropdownRow, setOpenDropdownRow] = useState(null);
+
   const [newAdvisorData, setNewAdvisorData] = useState({
     username: "",
     password: "",
@@ -527,7 +528,7 @@ function ListMeetings() {
     password: "",
     email: ""
   });
-  
+
   const handleLogout = () => {
     localStorage.removeItem('manager_name');
     localStorage.removeItem('manager_email');
@@ -652,7 +653,7 @@ function ListMeetings() {
             setOpenDropdownRow(index);
           }
         };
-  
+
         return (
           <div className='content-area'>
             <Dropdown
@@ -669,7 +670,7 @@ function ListMeetings() {
                 </svg>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={() => { toggleEditAdvisor(); setCurrentID(original.id)}}>
+                <DropdownItem onClick={() => { toggleEditAdvisor(); setCurrentID(original.id) }}>
                   <div className='dropdwon-detail'>
                     <i className='icon'>
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -774,79 +775,79 @@ function ListMeetings() {
 
       {/* ------------------ Add New Advisor Modal ------------------ */}
       <Modal isOpen={modalAddNewAdvisor} className={`main-modal new-advisor-modal modal-dialog-centered`}>
-      <ModalHeader toggle={toggleAddNewAdvisor}></ModalHeader>
-      <ModalBody>
-        <div className='add-content'>
-          <h2>Add Advisor</h2>
-          <div className='form-area'>
-            <div className='froup-form'>
-              <label>Username</label>
-              <TextField
-                hiddenLabel
-                variant="standard"
-                placeholder='Add username'
-                size="small"
-                fullWidth
-                name="username"
-                value={newAdvisorData.username}
-                onChange={(e) =>
-                  setNewAdvisorData({
-                    ...newAdvisorData,
-                    username: e.target.value,
-                  })
-                }
-                style={{ backgroundColor: 'white' }}
-              />
-            </div>
+        <ModalHeader toggle={toggleAddNewAdvisor}></ModalHeader>
+        <ModalBody>
+          <div className='add-content'>
+            <h2>Add Advisor</h2>
+            <div className='form-area'>
+              <div className='froup-form'>
+                <label>Username</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='Add username'
+                  size="small"
+                  fullWidth
+                  name="username"
+                  value={newAdvisorData.username}
+                  onChange={(e) =>
+                    setNewAdvisorData({
+                      ...newAdvisorData,
+                      username: e.target.value,
+                    })
+                  }
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
 
-            <div className='froup-form'>
-              <label>Password</label>
-              <TextField
-                hiddenLabel
-                variant="standard"
-                placeholder='Set password'
-                size="small"
-                fullWidth
-                name="password"
-                value={newAdvisorData.password}
-                onChange={(e) =>
-                  setNewAdvisorData({
-                    ...newAdvisorData,
-                    password: e.target.value,
-                  })
-                }
-                style={{ backgroundColor: 'white' }}
-              />
-            </div>
+              <div className='froup-form'>
+                <label>Password</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='Set password'
+                  size="small"
+                  fullWidth
+                  name="password"
+                  value={newAdvisorData.password}
+                  onChange={(e) =>
+                    setNewAdvisorData({
+                      ...newAdvisorData,
+                      password: e.target.value,
+                    })
+                  }
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
 
-            <div className='froup-form'>
-              <label>Email</label>
-              <TextField
-                hiddenLabel
-                variant="standard"
-                placeholder='Add email'
-                size="small"
-                fullWidth
-                name="email"
-                value={newAdvisorData.email}
-                onChange={(e) =>
-                  setNewAdvisorData({
-                    ...newAdvisorData,
-                    email: e.target.value,
-                  })
-                }
-                style={{ backgroundColor: 'white' }}
-              />
-            </div>
+              <div className='froup-form'>
+                <label>Email</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='Add email'
+                  size="small"
+                  fullWidth
+                  name="email"
+                  value={newAdvisorData.email}
+                  onChange={(e) =>
+                    setNewAdvisorData({
+                      ...newAdvisorData,
+                      email: e.target.value,
+                    })
+                  }
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
 
-            <div className='froup-form btn-groups'>
-              <button className='btn-style-border' onClick={toggleAddNewAdvisor}>Cancel</button>
-              <button className='btn-style-new' onClick={handleAddAdvisor}>Add</button>
+              <div className='froup-form btn-groups'>
+                <button className='btn-style-border' onClick={toggleAddNewAdvisor}>Cancel</button>
+                <button className='btn-style-new' onClick={handleAddAdvisor}>Add</button>
+              </div>
             </div>
           </div>
-        </div>
-      </ModalBody>
-    </Modal>
+        </ModalBody>
+      </Modal>
 
 
 
@@ -857,68 +858,68 @@ function ListMeetings() {
           <div className='add-content'>
             <h2>Edit Advisor</h2>
             <div className='form-area'>
-            <div className='froup-form'>
-              <label>Username</label>
-              <TextField
-                hiddenLabel
-                variant="standard"
-                placeholder='update username'
-                size="small"
-                fullWidth
-                name="username"
-                value={editAdvisorData.username}
-                onChange={(e) =>
-                  setEditAdvisorData({
-                    ...editAdvisorData,
-                    username: e.target.value,
-                  })
-                }
-                style={{ backgroundColor: 'white' }}
-              />
-            </div>
+              <div className='froup-form'>
+                <label>Username</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='update username'
+                  size="small"
+                  fullWidth
+                  name="username"
+                  value={editAdvisorData.username}
+                  onChange={(e) =>
+                    setEditAdvisorData({
+                      ...editAdvisorData,
+                      username: e.target.value,
+                    })
+                  }
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
 
-            <div className='froup-form'>
-              <label>Password</label>
-              <TextField
-                hiddenLabel
-                variant="standard"
-                placeholder='update password'
-                size="small"
-                fullWidth
-                name="password"
-                value={editAdvisorData.password}
-                onChange={(e) =>
-                  setEditAdvisorData({
-                    ...editAdvisorData,
-                    password: e.target.value,
-                  })
-                }
-                style={{ backgroundColor: 'white' }}
-              />
-            </div>
+              <div className='froup-form'>
+                <label>Password</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='update password'
+                  size="small"
+                  fullWidth
+                  name="password"
+                  value={editAdvisorData.password}
+                  onChange={(e) =>
+                    setEditAdvisorData({
+                      ...editAdvisorData,
+                      password: e.target.value,
+                    })
+                  }
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
 
-            <div className='froup-form'>
-              <label>Email</label>
-              <TextField
-                hiddenLabel
-                variant="standard"
-                placeholder='update email'
-                size="small"
-                fullWidth
-                name="email"
-                value={editAdvisorData.email}
-                onChange={(e) =>
-                  setEditAdvisorData({
-                    ...editAdvisorData,
-                    email: e.target.value,
-                  })
-                }
-                style={{ backgroundColor: 'white' }}
-              />
-            </div>
+              <div className='froup-form'>
+                <label>Email</label>
+                <TextField
+                  hiddenLabel
+                  variant="standard"
+                  placeholder='update email'
+                  size="small"
+                  fullWidth
+                  name="email"
+                  value={editAdvisorData.email}
+                  onChange={(e) =>
+                    setEditAdvisorData({
+                      ...editAdvisorData,
+                      email: e.target.value,
+                    })
+                  }
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
               <div className='froup-form btn-groups'>
                 <button className='btn-style-border' onClick={toggleEditAdvisor}>Cancel</button>
-                <button className='btn-style-new' 
+                <button className='btn-style-new'
                   onClick={() => {
                     handleEditAdvisor();
                   }}
@@ -928,7 +929,7 @@ function ListMeetings() {
           </div>
         </ModalBody>
       </Modal>
-      
+
 
       {/* ------------------ Delete Advisor Modal ------------------ */}
       <Modal isOpen={modalDeleteAdvisor} className="main-modal new-advisor-modal modal-dialog-centered">
@@ -967,7 +968,7 @@ function ListMeetings() {
               <h4>{localStorage.getItem("manager_name")}</h4>
               <p>{localStorage.getItem("manager_email")}</p>
             </div>
-            
+
             <button className='btn-style-border' onClick={handleLogout}>Logout</button>
           </div>
         </ModalBody>
