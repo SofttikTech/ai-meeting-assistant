@@ -27,7 +27,7 @@ def analyze_conversation(query, conversation_history):
 
     if query:
         # Calling RAG endpoint
-        rag_url = "http://3.146.37.52:8000/query/"
+        rag_url = "http://3.14.253.21:8000/query/"
         rag_payload = {"query": query}
         try:
             rag_response = requests.post(rag_url, json=rag_payload)
@@ -45,7 +45,7 @@ def analyze_conversation(query, conversation_history):
 
     campaign = ""
     try:
-        res = requests.get("http://3.146.37.52:4000/get_campaign")
+        res = requests.get("http://3.14.253.21:4000/get_campaign")
         if res.status_code == 200:
             data = res.json()
             campaign = data.get("campaign")
