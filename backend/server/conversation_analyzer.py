@@ -145,3 +145,42 @@ def generate_post_meeting_summary(conversation_history):
     summary = response["choices"][0]["message"]["content"].strip()
     return summary
 
+def generate_client_meeting_summary(conversation_history):
+    context = "\n".join(conversation_history)
+
+    prompt = f"""
+    Based on the previous discussion, generate a **client-friendly post-meeting summary**.
+    This should be clear, simple, and easy for the client to understand, focusing on their needs and the action steps ahead. The summary should include:
+
+    1. **Meeting Recap:** A brief overview of the main points discussed in the meeting.
+    2. **Actionable Next Steps:** Clear, actionable steps that the client should take.
+    3. **Key Takeaways:** Important notes or reminders for the client to consider.
+
+    **Conversation History:**
+    {context}
+
+    Format the response as:
+    - **Meeting Recap:**
+    - ...  
+    - ...  
+    - **Actionable Next Steps:**
+    1. ...  
+    2. ...  
+    3. ...  
+    - **Key Takeaways:**
+    1. ...  
+    2. ...  
+    3. ...  
+    """
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are an expert in summarizing meetings for clients, with a focus on clear communication and actionable next steps."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7
+    )
+
+    summary = response["choices"][0]["message"]["content"].strip()
+    return summary

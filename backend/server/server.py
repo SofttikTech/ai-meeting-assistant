@@ -122,12 +122,14 @@ def generate_summary():
     lastName = request.args.get('LastName')
     email = request.args.get('Email')
     phoneNumber = request.args.get('phoneNumber')
+    campaign = request.args.get('campaign')
 
     # Check for the required transcript (conversation history).
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400
 
     summary = generate_post_meeting_summary(transcript)
+    client_summary = generate_client_meeting_summary()
     print("Summary:", summary)
     print("AI response:", ai_response)
     print("Transcript:", transcript)
@@ -140,7 +142,9 @@ def generate_summary():
         "email": email,
         "ai_response": ai_response,
         "transcript": transcript,
-        "summary": summary
+        "summary": summary,
+        "campaign": campaign,
+        "clientSummary": client_summary
     }
     
     message = send_data_to_n8n_and_log(data_to_send)
@@ -152,7 +156,8 @@ def generate_summary():
         "admin_id": admin_id,
         "ai_response": ai_response,
         "transcript": transcript,
-        "summary": summary
+        "summary": summary,
+        "clientSummary": client_summary
     }
 
 
