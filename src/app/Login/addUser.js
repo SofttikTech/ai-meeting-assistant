@@ -49,7 +49,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://3.146.37.52:4000/getAdvisors')
+    fetch('http://3.14.253.21:4000/getAdvisors')
       .then((response) => response.json())
       .then((data) => setAdvisors(data))
       .catch((error) => console.error('Error fetching advisors:', error));
@@ -98,7 +98,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
     };
 
     try {
-      const response = await fetch('http://3.146.37.52:4000/users', {
+      const response = await fetch('http://3.14.253.21:4000/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

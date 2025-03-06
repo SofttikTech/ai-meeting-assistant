@@ -1,6 +1,6 @@
-const BASE_URL = 'http://3.146.37.52:4000';
+const BASE_URL = 'http://3.14.253.21:4000';
 
-export const URL = 'http://3.146.37.52:5000';
+export const URL = 'http://3.14.253.21:5000';
 
 // Generic API call helper
 const apiCall = async (url, method = 'GET', data = null, extraOptions = {}) => {
@@ -58,7 +58,7 @@ export const getAdvisorClients = async () => {
 // 4. Get Previous Clients (GET /advisor/clientsPrevious)
 export const getPreviousClients = async () => {
   try{
-    const response = await fetch('http://3.146.37.52:4000/advisor/clientsPrevious', {
+    const response = await fetch('http://3.14.253.21:4000/advisor/clientsPrevious', {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' }

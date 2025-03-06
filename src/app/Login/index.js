@@ -16,40 +16,6 @@ function Login() {
   const [isVisibleAddUser, setIsVisibleAddUser] = useState(false);
   const [role, setRole] = useState('sales_rep'); // default selection
 
-  const handleClick = () => {
-    // Redirect to the "/add-user" page
-    // history.push('/AddUser');
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setMessage('');
-
-    try {
-      const response = await fetch('http://3.146.37.52:4000/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('admin_id', data.admin_id);
-        localStorage.setItem('role', data.role);
-
-        setMessage('Login successful. Redirecting...');
-        setTimeout(() => {
-          history.push('/Talk');
-        }, 1000);
-      } else {
-        setError(data.error || 'Login failed');
-      }
-    } catch (err) {
-      setError('An error occurred: ' + err.message);
-    }
-  };
-
   return (
     <div className='login-page'>
       {isVisible ? (

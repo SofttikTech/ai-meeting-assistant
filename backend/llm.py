@@ -17,7 +17,7 @@ def generate_pre_meeting_questions(first_name, last_name, campaigns):
         user_info += f" Campaign Interests: {', '.join(campaigns)}."
         query = f"Reterive questions about {campaigns[0]}"
 
-        rag_url = "http://3.146.37.52:8000/query/"
+        rag_url = "http://3.14.253.21:8000/query/"
         rag_payload = {"query": query}
         try:
             rag_response = requests.post(rag_url, json=rag_payload)
