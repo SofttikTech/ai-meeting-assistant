@@ -22,7 +22,7 @@ const MeetingsDetail = ({ isVisibleMeetingDetail, setIsVisibleMeetingDetail }) =
     setMessage('');
 
     try {
-      const response = await fetch('http://3.14.253.21:4000/admin/login', {
+      const response = await fetch('http://52.15.132.215:4000/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, role }),

@@ -19,7 +19,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 # app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
 # app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
 
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-3-14-253-21.us-east-2.compute.amazonaws.com')
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-52-15-132-215.us-east-2.compute.amazonaws.com')
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'AMA')
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Root1234$')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
