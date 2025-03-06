@@ -8,7 +8,7 @@ from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
 import openai
-from conversation_analyzer import analyze_conversation, generate_post_meeting_summary
+from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary
 from ghl_integration import send_data_to_n8n_and_log
 
 
@@ -128,8 +128,8 @@ def generate_summary():
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400
 
-    summary = generate_post_meeting_summary(transcript)
-    client_summary = generate_client_meeting_summary()
+    summary = generate_post_meeting_summary(conversation_history)
+    client_summary = generate_client_meeting_summary(conversation_history)
     print("Summary:", summary)
     print("AI response:", ai_response)
     print("Transcript:", transcript)
