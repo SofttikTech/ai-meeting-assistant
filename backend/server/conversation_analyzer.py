@@ -10,6 +10,8 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 logging.basicConfig(level=logging.DEBUG)
 
+campaign = ""
+
 # MAX_HISTORY = 10
 # conversation_history = []
 
@@ -43,7 +45,7 @@ def analyze_conversation(query, conversation_history):
 
     context = "\n".join(conversation_history)
 
-    campaign = ""
+    # campaign = ""
     try:
         res = requests.get("http://52.15.132.215:4000/get_campaign")
         if res.status_code == 200:
@@ -184,3 +186,41 @@ def generate_client_meeting_summary(conversation_history):
 
     summary = response["choices"][0]["message"]["content"].strip()
     return summary
+
+def find_additional_campaign_interests(conversation_history):
+    context = "\n".join(conversation_history)
+    
+    prompt = f"""
+    You are a strategic advisor specialized in financial and healthcare planning. Your task is to analyze a client's conversation and identify any topics discussed that are different from the primary campaign focus which is {campaign}. The primary campaign focus of the meeting is "{campaign}".
+
+    The available campaign topics are:
+    1. Medicare
+    2. Life Insurance
+    3. Wealth Planning
+    4. Long-Term Care Planning
+
+    For each additional topic (i.e., a campaign topic other than "{campaign}") that the client discusses, return:
+    - **Task Name:** The name of the additional topic other than the primary topic fo campaign {campaign}.
+    - **Task Description:** A concise explanation of the discussion or concern related to that topic (additional topic) as derived from the conversation.
+    Only return me this for the aditional topic, don't return me the Task name and description for the topic "{campaign}".
+
+    If no additional topics other than {campaign} topic, return empty response.
+
+    Conversation History:
+    {context}
+    """
+
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a strategic advisor who analyzes client conversations to identify cross-campaign interests."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7
+    )
+    
+    result = response["choices"][0]["message"]["content"].strip()
+    print(result)
+    return result
+

@@ -28,6 +28,12 @@ function ListMeetings() {
     localStorage.removeItem('name');
     localStorage.removeItem('email');
     localStorage.removeItem('admin_id');
+    localStorage.removeItem("user_id")
+    localStorage.removeItem("FirstName")
+    localStorage.removeItem("LastName")
+    localStorage.removeItem("email")
+    localStorage.removeItem("phoneNumber")
+    localStorage.removeItem("campaign")
 
     history.push('/login');
 

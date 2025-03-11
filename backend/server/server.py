@@ -8,7 +8,7 @@ from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
 import openai
-from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary
+from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests
 from ghl_integration import send_data_to_n8n_and_log
 
 
@@ -130,6 +130,7 @@ def generate_summary():
 
     summary = generate_post_meeting_summary(conversation_history)
     client_summary = generate_client_meeting_summary(conversation_history)
+    new_data = find_additional_campaign_interests(conversation_history)
     print("Summary:", summary)
     print("AI response:", ai_response)
     print("Transcript:", transcript)
@@ -144,7 +145,8 @@ def generate_summary():
         "transcript": transcript,
         "summary": summary,
         "campaign": campaign,
-        "clientSummary": client_summary
+        "clientSummary": client_summary,
+        "New Actionable":new_data
     }
     
     message = send_data_to_n8n_and_log(data_to_send)
@@ -176,7 +178,6 @@ def generate_summary():
 
 
     return jsonify({"summary": summary}), 200
-
 
 @socketio.on('connect')
 def handle_connect():
