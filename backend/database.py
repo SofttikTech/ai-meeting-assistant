@@ -6,28 +6,25 @@ import openai
 from llm import generate_pre_meeting_questions
 from flask_session import Session
 
-# openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-app.config["SECRET_KEY"] = "abcdef"
-app.config['SESSION_TYPE'] = 'filesystem'
-
-# app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-# app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
-# app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+# app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-52-15-132-215.us-east-2.compute.amazonaws.com')
+# app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'AMA')
+# app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Root1234$')
 # app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
 
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-52-15-132-215.us-east-2.compute.amazonaws.com')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'AMA')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Root1234$')
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
 
 mysql = MySQL(app)
 
 campaign_values = []
-userID = 0
+userID = 9 #Admin id
 name = ""
 
 @app.route('/test-db', methods=['GET'])
@@ -563,6 +560,151 @@ def delete_advisor():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ===========kapi feature endpoints
+
+@app.route('/meetings/update_details', methods=['POST'])
+def update_meeting_details():
+    global userID
+
+
+    data = request.json
+
+    askedToBuy = data.get("askedToBuy")
+    clientPurchased = data.get("clientPurchased")     
+    productType = data.get("productType")             
+    company = data.get("company")
+    annualPremium = data.get("annualPremium")         
+    receivedReferrals = data.get("receivedReferrals") 
+    presentedSage = data.get("presentedSage")         
+    client_id = data.get("client_id")
+
+    try:
+        cursor = mysql.connection.cursor()
+        query = """
+            UPDATE Meetings 
+            SET 
+              askedToBuy = %s,
+              clientPurchased = %s,
+              productType = %s,
+              company = %s,
+              annualPremium = %s,
+              receivedReferrals = %s,
+              presentedSage = %s
+            WHERE user_id = %s AND admin_id = %s
+        """
+        params = (
+            askedToBuy,
+            clientPurchased,
+            productType,
+            company,
+            annualPremium,
+            receivedReferrals,
+            presentedSage,
+            client_id,
+            userID
+        )
+        cursor.execute(query, tuple(params))
+        mysql.connection.commit()
+        affected = cursor.rowcount
+        cursor.close()
+
+        if affected == 0:
+            return jsonify({"error": "Meeting not found or no changes made"}), 404
+
+        return jsonify({"message": "Meeting details updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+@app.route('/meetings/stats/<int:user_id>', methods=['GET'])
+def meeting_stats(user_id):
+    try:
+        cursor = mysql.connection.cursor()
+        query = """
+            SELECT 
+                COUNT(*) AS total_appointments,
+                SUM(CASE WHEN askedToBuy = 'Yes' THEN 1 ELSE 0 END) AS total_asks,
+                SUM(CASE WHEN clientPurchased = 'Yes' THEN 1 ELSE 0 END) AS total_submissions,
+                SUM(CASE WHEN receivedReferrals = 'Yes' THEN 1 ELSE 0 END) AS total_referrals
+            FROM Meetings
+            WHERE user_id = %s
+        """
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+
+        if result:
+            total_appointments = result[0]
+            total_asks = result[1] if result[1] is not None else 0
+            total_submissions = result[2] if result[2] is not None else 0
+            total_referrals = result[3] if result[3] is not None else 0
+
+            return jsonify({
+                "total_appointments": total_appointments,
+                "total_asks": total_asks,
+                "total_submissions": total_submissions,
+                "total_referrals": total_referrals
+            }), 200
+        else:
+            return jsonify({"error": f"No data found for user id {user_id}"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# apply filter of campaign
+
+@app.route('/meetings/stats_filtered/<int:user_id>', methods=['GET'])
+def meeting_stats_filtered(user_id):
+    campaign_columns = {
+        'medicare': 'clientRequests.medicare = 1',
+        'lifeInsurance': 'clientRequests.lifeInsurance = 1',
+        'wealthPlanning': 'clientRequests.wealthPlanning = 1',
+        'longTermCare': 'clientRequests.LTC_Planning = 1'
+    }
+
+    campaign = request.args.get('campaign')
+    if not campaign:
+        return jsonify({"error": "Missing campaign parameter"}), 400
+
+    filter_condition = campaign_columns.get(campaign)
+    if not filter_condition:
+        return jsonify({"error": f"Invalid campaign: {campaign}"}), 400
+
+    try:
+        cursor = mysql.connection.cursor()
+        query = f"""
+            SELECT 
+                COUNT(*) AS total_appointments,
+                SUM(CASE WHEN Meetings.askedToBuy = 'Yes' THEN 1 ELSE 0 END) AS total_asks,
+                SUM(CASE WHEN Meetings.clientPurchased = 'Yes' THEN 1 ELSE 0 END) AS total_submissions,
+                SUM(CASE WHEN Meetings.receivedReferrals = 'Yes' THEN 1 ELSE 0 END) AS total_referrals
+            FROM Meetings
+            JOIN clientRequests ON Meetings.user_id = clientRequests.id
+            WHERE Meetings.user_id = %s
+              AND {filter_condition}
+        """
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+
+        if not result:
+            return jsonify({"error": f"No data found for user id {user_id}"}), 404
+
+        total_appointments = result[0] if result[0] else 0
+        total_asks = result[1] if result[1] else 0
+        total_submissions = result[2] if result[2] else 0
+        total_referrals = result[3] if result[3] else 0
+
+        return jsonify({
+            "total_appointments": total_appointments,
+            "total_asks": total_asks,
+            "total_submissions": total_submissions,
+            "total_referrals": total_referrals
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=4000)
