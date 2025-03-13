@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { saveAs } from "file-saver";
 import io from "socket.io-client";
+import { saveAs } from "file-saver";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import "react-table-6/react-table.css";
@@ -13,11 +13,12 @@ const SERVER_URL = URL;
 
 const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
+  const [summary, setSummary] = useState('');
+  const [ai_response, setAIResponse] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isVisibleDetailSelect, setIsVisibleDetailSelect] = useState(false);
   const [transcript, setTranscript] = useState("Waiting for transcription...");
-  const [ai_response, setAIResponse] = useState("");
-  const [summary, setSummary] = useState('');
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -197,6 +198,18 @@ const Talk = ({ setIsVisibleAssistant }) => {
     overflowX: "hidden",
     padding: "10px",
   };
+
+  const handleClickRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+    setIsVisibleAssistant(true);
+
+    // Navigate to detailsSelect.js page
+    history.push("/DetailSelect");
+  };
   
 
   return (
@@ -234,16 +247,18 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="voice-area">
                 <h1>AI Meeting Assistant</h1>
                 <p>Speak naturally and get real-time AI meeting responses</p>
-                {isProcessing
+                {isRecording
                   ? <>
-                    <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={isRecording ? stopRecording : startRecording}>
+                    <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={handleClickRecording}>
                       <img
                         src={require("../../static/images/speek-btn.png")}
                         alt="Speak Button"
                       />
                     </button>
                     <div className="processing-indicator">
-                      <p>Processing...</p>
+                      {isProcessing && (
+                        <p>Processing...</p>
+                      )}
                     </div>
                   </>
                   : <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={isRecording ? stopRecording : startRecording}>

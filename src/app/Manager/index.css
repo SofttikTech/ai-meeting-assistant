@@ -482,11 +482,90 @@ button.btn.btn-secondary {}
 }
 
 
+.upcoming-meetings.style-filter {
+  margin-top: 69px;
+}
+
+.upcoming-meetings.style-filter .upcoming-inner .counting-area {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 74px 0 0;
+  gap: 30px;
+}
+
+.upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box {
+  width: calc(50% - 30px);
+  text-align: center;
+  margin-bottom: 108px;
+}
+
+.upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box h3 {
+  color: #474747;
+  font-size: 25px;
+  font-weight: 700;
+  margin-bottom: 17px;
+}
+
+.upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box span {
+  background-color: #dedede;
+  padding: 7px 19px;
+  font-size: 22px;
+  border-radius: 31px;
+  color: #000;
+}
+.list-page .top-nav-area .nav-area-inner .right-icon-area .filter-btn img {
+  width: 44px;
+}
+
+
+.right-side-modal .profile-content .name-area .select-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.right-side-modal .profile-content .name-area .select-box .MuiFormControl-root {
+  width: 100%;
+}
+
+.right-side-modal .profile-content .name-area .select-box .MuiFormControl-root .MuiInputBase-root {
+  border-radius: 7px;
+  color: #000000;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.right-side-modal .profile-content .name-area .select-box .MuiFormControl-root .MuiInputBase-root fieldset {
+  border: 1px solid #ccc;
+}
+
+
+.right-side-modal .profile-content .name-area .select-box .MuiFormControl-root .MuiInputBase-root .MuiSelect-select em {
+  font-style: normal;
+}
+
+@media (max-width: 1690px) {
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box {
+    margin-bottom: 87px;
+  }
+}
+
 @media (max-width: 1610px) {
   .right-side-modal.modal-dialog {
     max-width: 25% !important;
     margin: 0 !important;
     right: -75.1%;
+  }
+
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box {
+    margin-bottom: 33px;
+  }
+
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area {
+    padding: 46px 0 0;
   }
 }
 
@@ -497,6 +576,10 @@ button.btn.btn-secondary {}
     margin: 0 !important;
     right: -65.1%;
   }
+
+  .upcoming-meetings.style-filter {
+    margin-top: 43px;
+  }
 }
 
 @media (max-width: 991px) {
@@ -504,6 +587,18 @@ button.btn.btn-secondary {}
     max-width: 45% !important;
     margin: 0 !important;
     right: -55.1%;
+  }
+
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area {
+    width: 100%;
+  }
+
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box h3 {
+    font-size: 21px;
+  }
+
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box span {
+    font-size: 20px;
   }
 }
 
@@ -513,6 +608,10 @@ button.btn.btn-secondary {}
     max-width: 55% !important;
     margin: 0 !important;
     right: -45.1%;
+  }
+
+  .upcoming-meetings.style-filter .upcoming-inner .counting-area .counting-box{
+    width: 100%;
   }
 }
 

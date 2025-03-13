@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Switch, Route, useLocation } from "react-route
 import Login from './Login/index';
 import Manager from './Manager/index';
 import ListMeetings from './ListMeetings/index';
+import DetailSelect from './detailSelect/index';
 
 import '../static/css/style.css';
 import 'jquery/dist/jquery.min.js';
@@ -87,8 +88,9 @@ const RoutesWithLoader = () => {
     <Switch>
       <Route exact path="/" component={Login} />
       <Route exact path="/Login" component={Login} />
-      <Route exact path="/list-meetings" component={ListMeetings} />
       <Route exact path="/manager" component={Manager} />
+      <Route exact path="/list-meetings" component={ListMeetings} />
+      <Route exact path="/detailSelect" component={DetailSelect} />
     </Switch>
   );
 };

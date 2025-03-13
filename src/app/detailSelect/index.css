@@ -1,0 +1,102 @@
+.list-page .list-page-inner .selection-area {
+  position: relative;
+  padding: 145px 0 50px;
+  min-height: 81vh;
+}
+
+.list-page .list-page-inner .selection-area .selection-detail-box {
+  position: relative;
+  background-color: #e0e0e0;
+  padding: 25px;
+  border-radius: 10px;
+  min-height: 435px;
+  margin-bottom: 30px;
+}
+
+.list-page .list-page-inner .selection-area .selection-detail-box .select-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.list-page .list-page-inner .selection-area .selection-detail-box .select-box .MuiFormControl-root {
+  width: 100%;
+}
+
+.list-page .list-page-inner .selection-area .selection-detail-box .select-box .MuiFormControl-root .MuiInputBase-root {
+  background-color: #fff;
+  border-radius: 7px;
+  padding: 10px;
+  color: #000000;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.list-page .list-page-inner .selection-area .selection-detail-box .select-box .MuiFormControl-root .MuiInputBase-root fieldset {
+  border: none;
+}
+
+.select-panel-dropdown ul li:first-child {
+  display: none;
+}
+
+.select-panel-dropdown.style-two ul li {
+  position: relative;
+  padding-left: 35px;
+}
+
+.select-panel-dropdown.style-two ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 20px;
+  height: 5px;
+  background-color: #9565e7;
+  transform: translateY(-50%);
+}
+
+.list-page .list-page-inner .selection-area .selection-detail-box .select-box .MuiFormControl-root .MuiInputBase-root .MuiSelect-select em {
+  font-style: normal;
+}
+
+
+@media screen and (max-width: 1690px) {
+  .list-page .list-page-inner .selection-area {
+    padding: 112px 0 50px;
+    min-height: 80vh;
+  }
+}
+
+@media screen and (max-width: 1610px) {
+  .list-page .list-page-inner .selection-area {
+    padding: 39px 0 0;
+    min-height: auto;
+  }
+
+  .list-page .list-page-inner .selection-area .selection-detail-box {
+    min-height: 425px;
+  }
+}
+
+@media screen and (max-width: 1410px) {
+  .list-page .list-page-inner .selection-area .selection-detail-box .select-box .MuiFormControl-root .MuiInputBase-root {
+    padding: 0px 5px;
+    font-size: 15px;
+  }
+
+  .list-page .list-page-inner .selection-area .selection-detail-box .select-box {
+    margin-bottom: 20px;
+  }
+
+  .list-page .list-page-inner .selection-area .selection-detail-box {
+    min-height: 327px;
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .list-page .list-page-inner .selection-area .selection-detail-box {
+    min-height: auto;
+    padding-bottom: 11px;
+  }
+}
