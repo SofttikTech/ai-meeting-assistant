@@ -1,7 +1,8 @@
 import Select from '@mui/material/Select';
 import { useHistory } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
 import MenuItem from '@mui/material/MenuItem';
+import React, { useState, useEffect } from 'react';
+import TextField from '@material-ui/core/TextField';
 import FormControl from '@mui/material/FormControl';
 
 
@@ -100,26 +101,18 @@ function DetailSelect() {
                     </FormControl>
                   </div>
                   <div className='select-box'>
-                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                      <Select
-                        value={whatCompany}
-                        onChange={handleWhatCompany}
-                        displayEmpty
-                        inputProps={{ 'aria-label': 'Without label' }}
-                        MenuProps={{
-                          PaperProps: {
-                            className: "select-panel-dropdown",
-                          },
-                        }}
-                      >
-                        <MenuItem value="" disabled>
-                          <em>What Company?</em>
-                        </MenuItem>
-                        <MenuItem value="softtik technologes">softtik technologes</MenuItem>
-                        <MenuItem value="Sell Agent">Sell Agent</MenuItem>
-                        <MenuItem value="Store">Store</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <div className='froup-form'>
+                      <label>What Company?</label>
+                      <TextField
+                        hiddenLabel
+                        variant="standard"
+                        placeholder='What Company?'
+                        size="small"
+                        value="softtik technologes"
+                        // onChange={handleEditChange}
+                        name='type'
+                      />
+                    </div>
                   </div>
                   <div className='select-box'>
                     <FormControl sx={{ m: 1, minWidth: 120 }}>
@@ -168,26 +161,18 @@ function DetailSelect() {
                     </FormControl>
                   </div>
                   <div className='select-box'>
-                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                      <Select
-                        value={annualPremium}
-                        onChange={handleAnnualPremium}
-                        displayEmpty
-                        inputProps={{ 'aria-label': 'Without label' }}
-                        MenuProps={{
-                          PaperProps: {
-                            className: "select-panel-dropdown",
-                          },
-                        }}
-                      >
-                        <MenuItem value="" disabled>
-                          <em>What was the annual premium?</em>
-                        </MenuItem>
-                        <MenuItem value="5164 $">5164 $</MenuItem>
-                        <MenuItem value="8164 $">8164 $</MenuItem>
-                        <MenuItem value="10164 $">10164 $</MenuItem>
-                      </Select>
-                    </FormControl>
+                  <div className='froup-form'>
+                      <label>What was the annual premium?</label>
+                      <TextField
+                        hiddenLabel
+                        variant="standard"
+                        placeholder='What was the annual premium?'
+                        size="small"
+                        value="5164 $"
+                        // onChange={handleEditChange}
+                        name='type'
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -244,9 +229,9 @@ function DetailSelect() {
                 </div>
               </div>
               <div className='col-12'>
-              <div className='btn-area text-center mt-4'>
-                <button className='btn-style-new'>Submit</button>
-              </div>
+                <div className='btn-area text-center mt-4'>
+                  <button className='btn-style-new'>Submit</button>
+                </div>
               </div>
             </div>
           </div>
