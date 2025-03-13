@@ -3,7 +3,6 @@ import axios from "axios";
 import { saveAs } from "file-saver";
 import io from "socket.io-client";
 import { Link, useHistory } from "react-router-dom";
-
 import "react-table-6/react-table.css";
 import "./index.css";
 import { URL } from "../../store/config";
@@ -25,6 +24,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const socketRef = useRef(null);
   const lastMessageRef = useRef("");
   const lastTranscriptRef = useRef("");
+
 
   useEffect(() => {
     const socket = io(SERVER_URL);
@@ -267,7 +267,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
           </div>
         </div>
       </div>
+
     </div>
+
   );
 };
 
