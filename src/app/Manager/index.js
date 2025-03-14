@@ -9,6 +9,8 @@ import { Modal, ModalBody, ModalHeader, Dropdown, DropdownToggle, DropdownMenu, 
 import "react-table-6/react-table.css";
 import './index.css';
 
+import AgentProgress from './agentProgress';
+
 function ListMeetings() {
   const history = useHistory();
 
@@ -25,6 +27,7 @@ function ListMeetings() {
   const [modalDeleteAdvisor, setModalDeleteAdvisor] = useState(false);
   const [modalAddNewAdvisor, setModalAddNewAdvisor] = useState(false);
   const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
+  const [isVisibleAgentProgress, setIsVisibleAgentProgress] = useState(false);
 
   // Dropdown state for action column (one dropdown open at a time)
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -60,7 +63,7 @@ function ListMeetings() {
   const fetchAdvisors = async () => {
     setLoading(true);
     const data = await getAllAdvisors();
-    if(data){
+    if (data) {
       setAdvisors(data);
       setLoading(false);
     }
@@ -78,33 +81,33 @@ function ListMeetings() {
   // Handlers for sample endpoints (implement these endpoints in your backend)
   const handleAddAdvisor = async () => {
     const data = await addAdvisor(newAdvisorData);
-    if (data){
+    if (data) {
       fetchAdvisors();
       toggleAddNewAdvisor();
     }
-    else{
+    else {
       console.error("ERROR in adding advisor");
     }
   };
 
   const handleEditAdvisor = async () => {
     const data = await editAdvisor(currentID, editAdvisorData);
-    if (data){
+    if (data) {
       fetchAdvisors();
       toggleEditAdvisor();
     }
-    else{
+    else {
       console.error("ERROR in editing advisor");
     }
   };
 
   const handleDeleteAdvisor = async () => {
     const data = await deleteAdvisor(deleteID);
-    if (data){
+    if (data) {
       fetchAdvisors();
       toggleDeleteAdvisor();
     }
-    else{
+    else {
       console.error("ERROR in deleting advisor");
     }
   };
@@ -196,77 +199,82 @@ function ListMeetings() {
       },
     },
   ];
+
   return (
     <div className='list-page'>
-      <div className='list-page-inner'>
-        {/* Top Navigation */}
-        <div className='top-nav-area'>
-          <div className='auto-container'>
-            <div className='row'>
-              <div className='col-12'>
-                <div className='nav-area-inner'>
-                  <div className='left-logo-area'>
-                    <Link className='logo-area' to="/"><img src={require("../../static/images/logo.png")} alt="" /></Link>
-                  </div>
-                  <div className='right-icon-area'>
-                    <button className='btn-profile-img' onClick={toggleProfileAdvisor}>
-                      <img src={require("../../static/images/avatar-face.png")} alt="" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Banner Area */}
-        <div className='banner-area'>
-          <div className='auto-container'>
-            <div className='row'>
-              <div className='col-12'>
-                <div className='banner-inner'>
-                  <div className='banner-content'>
-                    <h2>AI-Powered Meeting<br />Management Made Simple</h2>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Advisors Table */}
-        <div className='upcoming-meetings'>
-          <div className='auto-container'>
-            <div className='row'>
-              <div className='col-12'>
-                <div className='upcoming-inner'>
-                  <div className='upcoming-content'>
-                    <div className='advisor-title'>
-                      <h3>Manage Advisors</h3>
-                      <button className='btn-style-new' onClick={toggleAddNewAdvisor}>Add Advisor</button>
+      {isVisibleAgentProgress
+        ? <AgentProgress isVisibleAgentProgress={isVisibleAgentProgress} setIsVisibleAgentProgress={setIsVisibleAgentProgress} />
+        : <div className='list-page-inner'>
+          {/* Top Navigation */}
+          <div className='top-nav-area'>
+            <div className='auto-container'>
+              <div className='row'>
+                <div className='col-12'>
+                  <div className='nav-area-inner'>
+                    <div className='left-logo-area'>
+                      <Link className='logo-area' to="/"><img src={require("../../static/images/logo.png")} alt="" /></Link>
                     </div>
-                    <div className='table'>
-                      {loading ? (
-                        <p>Loading advisors...</p>
-                      ) : fetchError ? (
-                        <p style={{ color: 'red' }}>{fetchError}</p>
-                      ) : (
-                        <ReactTable
-                          width='100'
-                          className='table responsive meetings-table'
-                          minRows={6}
-                          columns={columnsManageAdvisors}
-                          filterable={false}
-                          showPagination={false}
-                          data={advisors}
-                        />
-                      )}
+                    <div className='right-icon-area'>
+                      <button className='btn-profile-img' onClick={toggleProfileAdvisor}>
+                        <img src={require("../../static/images/avatar-face.png")} alt="" />
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          {/* Banner Area */}
+          <div className='banner-area'>
+            <div className='auto-container'>
+              <div className='row'>
+                <div className='col-12'>
+                  <div className='banner-inner'>
+                    <div className='banner-content'>
+                      <h2>AI-Powered Meeting<br />Management Made Simple</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Advisors Table */}
+          <div className='upcoming-meetings'>
+            <div className='auto-container'>
+              <div className='row'>
+                <div className='col-12'>
+                  <div className='upcoming-inner'>
+                    <div className='upcoming-content'>
+                      <div className='advisor-title'>
+                        <h3>Manage Advisors</h3>
+                        <button className='btn-style-new' onClick={toggleAddNewAdvisor}>Add Advisor</button>
+                      </div>
+                      <div className='table'>
+                        {loading ? (
+                          <p>Loading advisors...</p>
+                        ) : fetchError ? (
+                          <p style={{ color: 'red' }}>{fetchError}</p>
+                        ) : (
+                          <ReactTable
+                            width='100'
+                            className='table responsive meetings-table'
+                            minRows={6}
+                            columns={columnsManageAdvisors}
+                            filterable={false}
+                            showPagination={false}
+                            data={advisors}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      }
+
 
       {/* ------------------ Add New Advisor Modal ------------------ */}
       <Modal isOpen={modalAddNewAdvisor} className={`main-modal new-advisor-modal modal-dialog-centered`}>
