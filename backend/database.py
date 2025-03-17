@@ -11,20 +11,20 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 # openai.api_key = os.getenv("OPENAI_API_KEY")
-# app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-52-15-132-215.us-east-2.compute.amazonaws.com')
-# app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'AMA')
-# app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Root1234$')
-# app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
-
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'ec2-52-15-132-215.us-east-2.compute.amazonaws.com')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'AMA')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Root1234$')
 app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
+
+# app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
+# app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
+# app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'root')
+# app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'AIMeetingAssistant_DB')
 
 mysql = MySQL(app)
 
 campaign_values = []
-userID = 9 #Admin id
+userID = 0 #Admin id
 name = ""
 
 @app.route('/test-db', methods=['GET'])
@@ -628,7 +628,7 @@ def meeting_stats(user_id):
                 SUM(CASE WHEN clientPurchased = 'Yes' THEN 1 ELSE 0 END) AS total_submissions,
                 SUM(CASE WHEN receivedReferrals = 'Yes' THEN 1 ELSE 0 END) AS total_referrals
             FROM Meetings
-            WHERE user_id = %s
+            WHERE admin_id = %s
         """
         cursor.execute(query, (user_id,))
         result = cursor.fetchone()
@@ -681,7 +681,7 @@ def meeting_stats_filtered(user_id):
                 SUM(CASE WHEN Meetings.receivedReferrals = 'Yes' THEN 1 ELSE 0 END) AS total_referrals
             FROM Meetings
             JOIN clientRequests ON Meetings.user_id = clientRequests.id
-            WHERE Meetings.user_id = %s
+            WHERE Meetings.admin_id = %s
               AND {filter_condition}
         """
         cursor.execute(query, (user_id,))

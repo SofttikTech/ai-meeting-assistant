@@ -3,7 +3,7 @@ import logging
 
 
 def send_data_to_n8n_and_log(data: dict) -> (str):
-    n8n_url = "http://52.15.132.215:5678/webhook-test/387023de-af6e-46fe-bae1-8b554ab375e1"
+    n8n_url = "http://52.15.132.215:5678/webhook/387023de-af6e-46fe-bae1-8b554ab375e1"
     
     try:
         response = requests.post(n8n_url, json=data)

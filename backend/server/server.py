@@ -113,7 +113,6 @@ def transcribe():
 
 @app.route('/generate_summary', methods=['GET'])
 def generate_summary():
-    # Retrieve parameters from the URL query string.
     ai_response = request.args.get('ai_response')
     transcript = request.args.get('transcript')
     user_id = request.args.get('user_id')
@@ -124,7 +123,6 @@ def generate_summary():
     phoneNumber = request.args.get('phoneNumber')
     campaign = request.args.get('campaign')
 
-    # Check for the required transcript (conversation history).
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400
 

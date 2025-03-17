@@ -2,9 +2,10 @@ import ReactTable from 'react-table-6';
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
-import { isElementAccessExpression } from 'typescript';
 import { addAdvisor, deleteAdvisor, editAdvisor, getAllAdvisors } from '../../store/config';
 import { Modal, ModalBody, ModalHeader, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { getMeetingStats } from '../../store/config';
+
 
 import "react-table-6/react-table.css";
 import './index.css';
@@ -14,24 +15,20 @@ import AgentProgress from './agentProgress';
 function ListMeetings() {
   const history = useHistory();
 
-  // State for dynamic data and loading/error indicators
   const [advisors, setAdvisors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState('');
+  const [id,setID] = useState(0);
 
-  // Modal states and selected advisor
   const [currentID, setCurrentID] = useState(0);
   const [deleteID, setDeleteID] = useState(0);
-  const [selectedAdvisor, setSelectedAdvisor] = useState(null);
   const [modalEditAdvisor, setModalEditAdvisor] = useState(false);
   const [modalDeleteAdvisor, setModalDeleteAdvisor] = useState(false);
   const [modalAddNewAdvisor, setModalAddNewAdvisor] = useState(false);
   const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
   const [isVisibleAgentProgress, setIsVisibleAgentProgress] = useState(false);
+  const [meetingStats, setMeetingStats] = useState(null); // new state for meeting stats
 
-  // Dropdown state for action column (one dropdown open at a time)
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggleDropDwon = () => setDropdownOpen(!dropdownOpen);
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
 
   const [newAdvisorData, setNewAdvisorData] = useState({
@@ -50,12 +47,9 @@ function ListMeetings() {
     localStorage.removeItem('manager_name');
     localStorage.removeItem('manager_email');
     localStorage.removeItem('manager_id');
-
     history.push('/login');
-
   };
 
-  // Fetch advisors data on mount
   useEffect(() => {
     fetchAdvisors();
   }, []);
@@ -66,9 +60,8 @@ function ListMeetings() {
     if (data) {
       setAdvisors(data);
       setLoading(false);
-    }
-    else {
-      setLoading(false)
+    } else {
+      setLoading(false);
     }
   };
 
@@ -78,14 +71,12 @@ function ListMeetings() {
   const toggleAddNewAdvisor = () => setModalAddNewAdvisor(!modalAddNewAdvisor);
   const toggleProfileAdvisor = () => setModalProfileAdvisor(!modalProfileAdvisor);
 
-  // Handlers for sample endpoints (implement these endpoints in your backend)
   const handleAddAdvisor = async () => {
     const data = await addAdvisor(newAdvisorData);
     if (data) {
       fetchAdvisors();
       toggleAddNewAdvisor();
-    }
-    else {
+    } else {
       console.error("ERROR in adding advisor");
     }
   };
@@ -95,8 +86,7 @@ function ListMeetings() {
     if (data) {
       fetchAdvisors();
       toggleEditAdvisor();
-    }
-    else {
+    } else {
       console.error("ERROR in editing advisor");
     }
   };
@@ -106,9 +96,18 @@ function ListMeetings() {
     if (data) {
       fetchAdvisors();
       toggleDeleteAdvisor();
-    }
-    else {
+    } else {
       console.error("ERROR in deleting advisor");
+    }
+  };
+
+  const handleRowClick = async (userId) => {
+    try {
+      const stats = await getMeetingStats(userId);
+      setMeetingStats(stats);
+      setIsVisibleAgentProgress(true);
+    } catch (error) {
+      console.error("Error fetching meeting stats:", error);
     }
   };
 
@@ -144,7 +143,8 @@ function ListMeetings() {
       Header: 'Action',
       minWidth: 30,
       Cell: ({ original, index }) => {
-        const toggleRowDropdown = () => {
+        const toggleRowDropdown = (e) => {
+          e.stopPropagation();
           if (openDropdownRow === index) {
             setOpenDropdownRow(null);
           } else {
@@ -156,11 +156,10 @@ function ListMeetings() {
           <div className='content-area'>
             <Dropdown
               className="create-btn dropdwon-email"
-              // Only open the dropdown if the openDropdownRow equals this row's index
               isOpen={openDropdownRow === index}
               toggle={toggleRowDropdown}
             >
-              <DropdownToggle>
+              <DropdownToggle onClick={(e) => e.stopPropagation()}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" fill="#242424" />
                   <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" fill="#242424" />
@@ -168,7 +167,7 @@ function ListMeetings() {
                 </svg>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={() => { toggleEditAdvisor(); setCurrentID(original.id) }}>
+                <DropdownItem onClick={(e) => { e.stopPropagation(); toggleEditAdvisor(); setCurrentID(original.id); }}>
                   <div className='dropdwon-detail'>
                     <i className='icon'>
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -179,7 +178,7 @@ function ListMeetings() {
                     <p>Edit</p>
                   </div>
                 </DropdownItem>
-                <DropdownItem onClick={() => { toggleDeleteAdvisor(); setDeleteID(original.id) }}>
+                <DropdownItem onClick={(e) => { e.stopPropagation(); toggleDeleteAdvisor(); setDeleteID(original.id); }}>
                   <div className='dropdwon-detail'>
                     <i className='icon'>
                       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -202,9 +201,10 @@ function ListMeetings() {
 
   return (
     <div className='list-page'>
-      {isVisibleAgentProgress
-        ? <AgentProgress isVisibleAgentProgress={isVisibleAgentProgress} setIsVisibleAgentProgress={setIsVisibleAgentProgress} />
-        : <div className='list-page-inner'>
+      {isVisibleAgentProgress ? (
+        <AgentProgress setIsVisibleAgentProgress={setIsVisibleAgentProgress} meetingStats={meetingStats} userId={id} />
+      ) : (
+        <div className='list-page-inner'>
           {/* Top Navigation */}
           <div className='top-nav-area'>
             <div className='auto-container'>
@@ -212,7 +212,9 @@ function ListMeetings() {
                 <div className='col-12'>
                   <div className='nav-area-inner'>
                     <div className='left-logo-area'>
-                      <Link className='logo-area' to="/"><img src={require("../../static/images/logo.png")} alt="" /></Link>
+                      <Link className='logo-area' to="/">
+                        <img src={require("../../static/images/logo.png")} alt="" />
+                      </Link>
                     </div>
                     <div className='right-icon-area'>
                       <button className='btn-profile-img' onClick={toggleProfileAdvisor}>
@@ -263,6 +265,21 @@ function ListMeetings() {
                             filterable={false}
                             showPagination={false}
                             data={advisors}
+                            // Attach an onClick handler for each row that calls the meeting stats endpoint
+                            getTrProps={(state, rowInfo) => {
+                              if (rowInfo && rowInfo.row) {
+                                return {
+                                  onClick: (e, handleOriginal) => {
+                                    handleRowClick(rowInfo.original.id);
+                                    setID(rowInfo.original.id)
+                                    if (handleOriginal) {
+                                      handleOriginal();
+                                    }
+                                  }
+                                };
+                              }
+                              return {};
+                            }}
                           />
                         )}
                       </div>
@@ -273,8 +290,7 @@ function ListMeetings() {
             </div>
           </div>
         </div>
-      }
-
+      )}
 
       {/* ------------------ Add New Advisor Modal ------------------ */}
       <Modal isOpen={modalAddNewAdvisor} className={`main-modal new-advisor-modal modal-dialog-centered`}>
@@ -302,7 +318,6 @@ function ListMeetings() {
                   style={{ backgroundColor: 'white' }}
                 />
               </div>
-
               <div className='froup-form'>
                 <label>Password</label>
                 <TextField
@@ -322,7 +337,6 @@ function ListMeetings() {
                   style={{ backgroundColor: 'white' }}
                 />
               </div>
-
               <div className='froup-form'>
                 <label>Email</label>
                 <TextField
@@ -342,7 +356,6 @@ function ListMeetings() {
                   style={{ backgroundColor: 'white' }}
                 />
               </div>
-
               <div className='froup-form btn-groups'>
                 <button className='btn-style-border' onClick={toggleAddNewAdvisor}>Cancel</button>
                 <button className='btn-style-new' onClick={handleAddAdvisor}>Add</button>
@@ -351,8 +364,6 @@ function ListMeetings() {
           </div>
         </ModalBody>
       </Modal>
-
-
 
       {/* ------------------ Edit Advisor Modal ------------------ */}
       <Modal isOpen={modalEditAdvisor} className="main-modal new-advisor-modal modal-dialog-centered">
@@ -380,7 +391,6 @@ function ListMeetings() {
                   style={{ backgroundColor: 'white' }}
                 />
               </div>
-
               <div className='froup-form'>
                 <label>Password</label>
                 <TextField
@@ -400,7 +410,6 @@ function ListMeetings() {
                   style={{ backgroundColor: 'white' }}
                 />
               </div>
-
               <div className='froup-form'>
                 <label>Email</label>
                 <TextField
@@ -422,17 +431,12 @@ function ListMeetings() {
               </div>
               <div className='froup-form btn-groups'>
                 <button className='btn-style-border' onClick={toggleEditAdvisor}>Cancel</button>
-                <button className='btn-style-new'
-                  onClick={() => {
-                    handleEditAdvisor();
-                  }}
-                >Save</button>
+                <button className='btn-style-new' onClick={handleEditAdvisor}>Save</button>
               </div>
             </div>
           </div>
         </ModalBody>
       </Modal>
-
 
       {/* ------------------ Delete Advisor Modal ------------------ */}
       <Modal isOpen={modalDeleteAdvisor} className="main-modal new-advisor-modal modal-dialog-centered">
@@ -445,9 +449,7 @@ function ListMeetings() {
               <div className='form-area'>
                 <div className='btns-box text-right'>
                   <button className='btn-style-border' onClick={toggleDeleteAdvisor}>Cancel</button>
-                  <button className='btn-style-new' onClick={() => {
-                    handleDeleteAdvisor()
-                  }}>Delete</button>
+                  <button className='btn-style-new' onClick={handleDeleteAdvisor}>Delete</button>
                 </div>
               </div>
             </div>
@@ -471,7 +473,6 @@ function ListMeetings() {
               <h4>{localStorage.getItem("manager_name")}</h4>
               <p>{localStorage.getItem("manager_email")}</p>
             </div>
-
             <button className='btn-style-border' onClick={handleLogout}>Logout</button>
           </div>
         </ModalBody>

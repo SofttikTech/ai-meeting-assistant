@@ -1,23 +1,43 @@
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import React, { useState, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { Modal, ModalBody, ModalHeader, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { getFilteredMeetingStats } from '../../store/config';
 
 import "react-table-6/react-table.css";
 import './index.css';
 
-const AgentProgress = ({ setIsVisibleAgentProgress }) => {
+const AgentProgress = ({ setIsVisibleAgentProgress, meetingStats, userId }) => {
     const history = useHistory();
-    const [filtersManager, setFiltersManager] = useState('');
+    const [stats, setStats] = useState(meetingStats);
+    const [campaign, setCampaign] = useState('');
     const [modalProfileAdvisor, setModalProfileAdvisor] = useState(false);
+    const [loadingFilter, setLoadingFilter] = useState(false);
+    const [error, setError] = useState(null);
 
     const toggleProfileAdvisor = () => setModalProfileAdvisor(!modalProfileAdvisor);
 
-    const handleFiltersManager = (event) => {
-        setFiltersManager(event.target.value);
-      };
+    const handleCampaignChange = (event) => {
+        setCampaign(event.target.value);
+    };
+
+    const handleFilterSubmit = async () => {
+        if (!campaign) return; 
+        setLoadingFilter(true);
+        setError(null);
+        try {
+            const filteredStats = await getFilteredMeetingStats(userId, campaign);
+            setStats(filteredStats);
+            toggleProfileAdvisor();
+          } catch (err) {
+            console.error("Filter error:", err);
+            setError(err.message);
+          } finally {
+            setLoadingFilter(false);
+          }
+    };
 
     return (
         <div className='list-page'>
@@ -54,7 +74,7 @@ const AgentProgress = ({ setIsVisibleAgentProgress }) => {
                         </div>
                     </div>
                 </div>
-                {/* Top Navigation */}
+                {/* Dynamic Progress Section */}
                 <div className='upcoming-meetings style-filter'>
                     <div className='auto-container'>
                         <div className='row'>
@@ -63,29 +83,36 @@ const AgentProgress = ({ setIsVisibleAgentProgress }) => {
                                     <div className='counting-area'>
                                         <div className='counting-box'>
                                             <h3>Total Appointments</h3>
-                                            <span>5321</span>
+                                            <span>{stats ? stats.total_appointments : 0}</span>
                                         </div>
                                         <div className='counting-box'>
-                                            <h3>Total Appointments</h3>
-                                            <span>5321</span>
+                                            <h3>Total Asks</h3>
+                                            <span>{stats ? stats.total_asks : 0}</span>
                                         </div>
                                         <div className='counting-box'>
-                                            <h3>Total Appointments</h3>
-                                            <span>5321</span>
+                                            <h3>Total Submissions</h3>
+                                            <span>{stats ? stats.total_submissions : 0}</span>
                                         </div>
                                         <div className='counting-box'>
-                                            <h3>Total Appointments</h3>
-                                            <span>5321</span>
+                                            <h3>Total Referrals</h3>
+                                            <span>{stats ? stats.total_referrals : 0}</span>
                                         </div>
                                     </div>
+                                    {error && <p className="error-message">{error}</p>}
+                                    {loadingFilter && <p>Loading filtered data...</p>}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {/* ------------------ Profile Advisor Modal ------------------ */}
-            <Modal isOpen={modalProfileAdvisor} toggle={toggleProfileAdvisor} modalClassName="right" className="main-modal right right-side-modal">
+            {/* Filter Modal */}
+            <Modal 
+                isOpen={modalProfileAdvisor} 
+                toggle={toggleProfileAdvisor} 
+                modalClassName="right" 
+                className="main-modal right right-side-modal"
+            >
                 <ModalHeader toggle={toggleProfileAdvisor}></ModalHeader>
                 <ModalBody>
                     <div className='profile-content'>
@@ -97,8 +124,8 @@ const AgentProgress = ({ setIsVisibleAgentProgress }) => {
                             <div className='select-box'>
                                 <FormControl sx={{ m: 1, minWidth: 120 }}>
                                     <Select
-                                        value={filtersManager}
-                                        onChange={handleFiltersManager}
+                                        value={campaign}
+                                        onChange={handleCampaignChange}
                                         displayEmpty
                                         inputProps={{ 'aria-label': 'Without label' }}
                                         MenuProps={{
@@ -108,18 +135,19 @@ const AgentProgress = ({ setIsVisibleAgentProgress }) => {
                                         }}
                                     >
                                         <MenuItem value="" disabled>
-                                            <em>Filters Select</em>
+                                            <em>Select Campaign</em>
                                         </MenuItem>
-                                        <MenuItem value="Advisor">Advisor</MenuItem>
-                                        <MenuItem value="Manager">Manager</MenuItem>
-                                        <MenuItem value="Nnew">Nnew</MenuItem>
-                                        <MenuItem value="New Manager">New Manager</MenuItem>
+                                        <MenuItem value="medicare">Medicare</MenuItem>
+                                        <MenuItem value="lifeInsurance">Life Insurance</MenuItem>
+                                        <MenuItem value="wealthPlanning">Wealth Planning</MenuItem>
+                                        <MenuItem value="longTermCare">Long Term Care</MenuItem>
                                     </Select>
                                 </FormControl>
                             </div>
                         </div>
-
-                        <button className='btn-style-border' >Submit</button>
+                        <button className='btn-style-border' onClick={handleFilterSubmit}>
+                            Submit
+                        </button>
                     </div>
                 </ModalBody>
             </Modal>
