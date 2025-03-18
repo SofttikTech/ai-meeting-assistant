@@ -49,7 +49,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('http://52.15.132.215:4000/getAdvisors')
+    fetch('https://database.softtik.com/getAdvisors')
       .then((response) => response.json())
       .then((data) => setAdvisors(data))
       .catch((error) => console.error('Error fetching advisors:', error));
@@ -98,7 +98,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
     };
 
     try {
-      const response = await fetch('http://52.15.132.215:4000/users', {
+      const response = await fetch('https://database.softtik.com/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

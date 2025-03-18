@@ -162,7 +162,7 @@ def generate_summary():
 
 
     try:
-        db_response = requests.post("http://52.15.132.215:4000/addMeetings", json=db_payload)
+        db_response = requests.post("https://database.softtik.com/addMeetings", json=db_payload)
         if db_response.status_code != 200:
             return jsonify({
                 "error": "Failed to store meeting data in database",

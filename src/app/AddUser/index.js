@@ -108,14 +108,6 @@ function AddUser() {
   // Feedback messages
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
-  // Fetch advisors from the /getAdvisors endpoint when component mounts
-  // useEffect(() => {
-  //   fetch('http://52.15.132.215:4000/getAdvisors')
-  //     .then((response) => response.json())
-  //     .then((data) => setAdvisors(data))
-  //     .catch((error) => console.error('Error fetching advisors:', error));
-  // }, []);
   useEffect(() => {
     getAdvisors()
       .then((data) => setAdvisors(data))
@@ -165,11 +157,6 @@ function AddUser() {
     };
 
     try {
-      // const response = await fetch('http://52.15.132.215:4000/users', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(payload),
-      // });
       try {
         const data = await createUser(payload);
         console.log('User created:', data);
