@@ -3,14 +3,18 @@ version: 0.2
 phases:
   install: 
     commands:
-      - npm i npm@8.19.2 -g
+      - npm i npm@6.14.18 -g
       - pip install --upgrade pip
+      - pip install --upgrade awscli
       - apt-get update
+      - apt-get install libssl-dev g++ make --yes
       - npm i n
-      - n 18.12.0
+      - n 18.19.0
   pre_build:
     commands:
-      - sudo npm i --force
+      - sudo npm install --force
+      - npm i pm2 -g
+      - npm i nodemon -g
   build:
     commands:
       - npm run build
@@ -20,5 +24,3 @@ artifacts:
     - '**/*'
   discard-paths: no
   base-directory: build
-
-  
