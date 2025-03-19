@@ -1,6 +1,6 @@
-const BASE_URL = 'https://database.softtik.com';
+const BASE_URL = 'http://52.15.132.215:4000';
 
-export const URL = 'https://server2.softtik.com';
+export const URL = 'http://52.15.132.215:5000';
 
 // Generic API call helper
 const apiCall = async (url, method = 'GET', data = null, extraOptions = {}) => {
@@ -32,10 +32,10 @@ const apiCall = async (url, method = 'GET', data = null, extraOptions = {}) => {
   }
 };
 
-// 2. Create User (POST /users)
+// 2. Create User
 export const createUser = (payload) => apiCall(`${BASE_URL}/users`, 'POST', payload);
 
-// 3. Get Advisor Clients (GET /advisor/clients)
+// 3. Get Advisor Clients
 export const getAdvisorClients = async () => {
   try {
     const response = await fetch(`${BASE_URL}/advisor/clients`, {
@@ -52,51 +52,47 @@ export const getAdvisorClients = async () => {
     console.error(`Error in getAdvisorClients:`, error);
     throw error;
   }
-
 }
 
-// 4. Get Previous Clients (GET /advisor/clientsPrevious)
+// 4. Get Previous Clients
 export const getPreviousClients = async () => {
-  try{
-    const response = await fetch('https://database.softtik.com//advisor/clientsPrevious', {
+  try {
+    const response = await fetch(`${BASE_URL}/advisor/clientsPrevious`, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     });
     const data = await response.json();
-      if (!response.ok) {
-        throw new Error("Error fetching advisor clients");
-      }
-      return data;
+    if (!response.ok) {
+      throw new Error("Error fetching advisor clients");
+    }
+    return data;
   } catch (error) {
     console.error(`Error in getPreviousClients:`, error);
     throw error;
   }
 }
 
-
-
-// 5. Get Meeting Count for Advisor (GET /advisor/meetings/count/:name)
-export const getMeetingCount = async (name) =>{
-  try{
+// 5. Get Meeting Count for Advisor
+export const getMeetingCount = async (name) => {
+  try {
     const response = await fetch(`${BASE_URL}/advisor/meetings/count/${name}`, {
       method: 'GET',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     });
     const data = await response.json();
-      if (!response.ok) {
-        throw new Error("Error fetching meeting count");
-      }
-      return data;
+    if (!response.ok) {
+      throw new Error("Error fetching meeting count");
+    }
+    return data;
   } catch (error) {
     console.error(`Error in getMeetingCount:`, error);
     throw error;
   }
-  
 }
 
-// 7. Get Campaign (GET /campaign/:id)
+// 7. Get Campaign
 export const getCampaignD = async (id) => {
   try {
     const response = await fetch(`${BASE_URL}/campaign/${id}`, {
@@ -151,8 +147,6 @@ export const getSummary = async (id) => {
   }
 };
 
-
-
 export const StorePreMeetingQuestions = async (userId, questions) => {
   try {
     const response = await fetch(`${BASE_URL}/clientRequests/${userId}/preMeetingQuestions`, {
@@ -166,7 +160,6 @@ export const StorePreMeetingQuestions = async (userId, questions) => {
     } else {
       console.error("Error storing pre meeting questions:", data.error);
     }
-
     return { storedData: data };
   } catch (error) {
     console.error("Error in storePreMeetingQuestions:", error);
@@ -181,25 +174,18 @@ export const fetchPreMeetingQuestions = async (meetingId) => {
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' }
     });
-    
     const data = await response.json();
-    
     if (!response.ok) {
       throw new Error("Failed to fetch pre meeting questions");
     }
     return data;
-
   } catch (error) {
     console.error("Error in fetchPreMeetingQuestions:", error);
     throw error;
   }
 };
 
-
-// 9. Get Summary (GET /getSummary/:id)
-// export const getSummary = (id) => apiCall(`${BASE_URL}/getSummary/${id}`, 'GET');
-
-// 10. Admin Login (POST /admin/login)
+// 10. Admin Login
 export const adminLogin = async (credentials) => {
   try {
     const response = await fetch(`${BASE_URL}/admin/login`, {
@@ -207,12 +193,10 @@ export const adminLogin = async (credentials) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
     });
-
     const data = await response.json();
     if (!response.ok) {
       throw new Error('Login failed');
     }
-    // console.log(data);
     return data;
   } catch (error) {
     console.error('Error during admin login:', error);
@@ -220,8 +204,7 @@ export const adminLogin = async (credentials) => {
   }
 };
 
-// 11. Get All Advisors (GET /getAllAdvisors)
-// Converts each returned array row into an object with meaningful keys.
+// 11. Get All Advisors
 export const getAllAdvisors = async () => {
   try {
     const response = await fetch(`${BASE_URL}/getAllAdvisors`);
@@ -282,6 +265,59 @@ export const deleteAdvisor = async (deleteID) => {
   }
 };
 
+// Update Meeting Details
+export const updateMeetingDetails = async (payload) => {
+  // const url = 'http://localhost:4000/meetings/update_details';
+  const url = `${BASE_URL}/meetings/update_details`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Error ${response.status}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error updating meeting details:', error);
+    throw error;
+  }
+};
+
+export const getMeetingStats = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/meetings/stats/${userId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const stats = await response.json();
+    return stats;
+  } catch (error) {
+    console.error("Error fetching meeting stats:", error);
+    throw error;
+  }
+};
+
+export const getFilteredMeetingStats = async (userId, campaign) => {
+  try {
+    const response = await fetch(`${BASE_URL}/meetings/stats_filtered/${userId}?campaign=${campaign}`);
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error || 'Error fetching filtered data');
+    }
+    const filteredStats = await response.json();
+    return filteredStats;
+  } catch (err) {
+    console.error("Filter error:", err);
+    throw err;
+  }
+};
 
 const api = {
   createUser,
@@ -299,6 +335,9 @@ const api = {
   fetchPreMeetingQuestions,
   StorePreMeetingQuestions,
   getPreQ,
+  updateMeetingDetails,
+  getMeetingStats,
+  getFilteredMeetingStats,
   URL
 };
 
