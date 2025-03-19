@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "react-table-6/react-table.css";
 import "./index.css";
-import { URL } from "../../store/config";
+import { URL, startMeeting } from "../../store/config";
 
 const SERVER_URL = URL;
 
@@ -80,6 +80,44 @@ const Talk = ({ setIsVisibleAssistant }) => {
   }, []);
 
   // Start recording and processing.
+  // const startRecording = async () => {
+  //   try {
+  //     setIsProcessing(true);
+  //     setIsRecording(true);
+  //     setAIResponse("");
+  //     setTranscript("");
+  //     audioChunksRef.current = [];
+
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     mediaRecorderRef.current = new MediaRecorder(stream, {
+  //       mimeType: "audio/webm",
+  //     });
+  //     mediaRecorderRef.current.ondataavailable = (event) => {
+  //       if (event.data.size > 0) {
+  //         console.log(`Received chunk: ${event.data.size} bytes`);
+  //         audioChunksRef.current.push(event.data);
+  //       }
+  //     };
+  //     mediaRecorderRef.current.start(1000);
+  //     console.log("Recording started");
+  //     setIsProcessing(false);
+
+  //     // Send audio every 10 seconds.
+  //     intervalIdRef.current = setInterval(() => {
+  //       if (audioChunksRef.current.length > 0) {
+  //         console.log(
+  //           `Sending ${audioChunksRef.current.length} audio chunks to backend`
+  //         );
+  //         sendAudioToBackend();
+  //       }
+  //     }, 10000);
+  //   } catch (error) {
+  //     console.error("Error starting recording:", error);
+  //     setIsRecording(false);
+  //     setIsProcessing(false);
+  //   }
+  // };
+
   const startRecording = async () => {
     try {
       setIsProcessing(true);
@@ -87,11 +125,25 @@ const Talk = ({ setIsVisibleAssistant }) => {
       setAIResponse("");
       setTranscript("");
       audioChunksRef.current = [];
-
+  
+      // Retrieve user_id and admin_id from localStorage
+      const user_id = localStorage.getItem("user_id");
+      const admin_id = localStorage.getItem("admin_id");
+  
+      if (!user_id || !admin_id) {
+        console.error("Missing user_id or admin_id");
+        setIsProcessing(false);
+        setIsRecording(false);
+        return;
+      }
+  
+      // Call the startMeeting endpoint to create a new meeting entry
+      const meetingResponse = await startMeeting({ user_id, admin_id });
+      console.log("Meeting started:", meetingResponse);
+      localStorage.setItem("meeting_id", meetingResponse.meeting_id);
+  
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: "audio/webm",
-      });
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
           console.log(`Received chunk: ${event.data.size} bytes`);
@@ -101,13 +153,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
       mediaRecorderRef.current.start(1000);
       console.log("Recording started");
       setIsProcessing(false);
-
-      // Send audio every 20 seconds.
+  
+      // Set an interval to periodically send audio chunks to your backend
       intervalIdRef.current = setInterval(() => {
         if (audioChunksRef.current.length > 0) {
-          console.log(
-            `Sending ${audioChunksRef.current.length} audio chunks to backend`
-          );
+          console.log(`Sending ${audioChunksRef.current.length} audio chunks to backend`);
           sendAudioToBackend();
         }
       }, 10000);
@@ -117,6 +167,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       setIsProcessing(false);
     }
   };
+  
 
   const stopRecording = () => {
     if (
@@ -145,6 +196,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
             ai_response: ai_response,
             transcript: transcript,
             user_id: localStorage.getItem("user_id"),
+            meeting_id:localStorage.getItem("meeting_id"),
             admin_id: localStorage.getItem("admin_id"),
             FirstName: localStorage.getItem("FirstName"),
             LastName: localStorage.getItem("LastName"),

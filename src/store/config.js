@@ -1,4 +1,5 @@
-const BASE_URL = 'https://database.softtik.com';
+const BASE_URL = 'http://127.0.0.1:4000';
+// const BASE_URL = 'https://database.softtik.com';
 
 export const URL = 'https://server2.softtik.com';
 
@@ -319,6 +320,9 @@ export const getFilteredMeetingStats = async (userId, campaign) => {
   }
 };
 
+export const startMeeting = (payload) => apiCall(`${BASE_URL}/startMeeting`, 'POST', payload);
+
+
 const api = {
   createUser,
   getAdvisorClients,
@@ -338,6 +342,7 @@ const api = {
   updateMeetingDetails,
   getMeetingStats,
   getFilteredMeetingStats,
+  startMeeting,
   URL
 };
 

@@ -244,7 +244,7 @@
 // export default DetailSelect;
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -268,8 +268,19 @@ function DetailSelect() {
     history.push('/list-meetings');
   };
 
+  useEffect(() => {
+  const hasReloaded = sessionStorage.getItem("hasReloaded");
+  
+  if (!hasReloaded) {
+    sessionStorage.setItem("hasReloaded", "true");
+    window.location.reload();
+  }
+}, []);
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("user_id",localStorage.getItem("user_id"));
     const payload = {
       askedToBuy: clientBuy,
       clientPurchased: clientPurchase,

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang=en>
+<title>415 Unsupported Media Type</title>
+<h1>Unsupported Media Type</h1>
+<p>Did not attempt to load JSON data because the request Content-Type was not &#39;application/json&#39;.</p>
+--_curl_--
+>            "askedToBuy": true
+--_curl_--
+>            "clientPurchased": true
+--_curl_--
+>            "productType": "Insurance"
+--_curl_--
+>            "company": "ABC Corp"
+--_curl_--
+>            "annualPremium": 1200
+--_curl_--
+>            "receivedReferrals": true
+--_curl_--
+>            "presentedSage": true
+--_curl_--
+>            "client_id": "24"
+>          

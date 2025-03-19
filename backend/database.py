@@ -26,6 +26,7 @@ mysql = MySQL(app)
 campaign_values = []
 userID = 0 #Admin id
 name = ""
+# meeting_id = 0
 
 @app.route('/test-db', methods=['GET'])
 def test_db():
@@ -200,41 +201,96 @@ def add_user():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# call it when meeting starts
+@app.route('/startMeeting', methods=['POST'])
+def start_meeting():
+    try:
+        data = request.json
+        if not data or 'user_id' not in data or 'admin_id' not in data:
+            return jsonify({"error": "Missing user_id or admin_id in request data"}), 400
 
+        user_id = data.get('user_id')
+        admin_id = data.get('admin_id')
+
+        cursor = mysql.connection.cursor()
+        query = """
+            INSERT INTO Meetings (user_id, admin_id, meeting_status)
+            VALUES (%s, %s, 'scheduled')
+        """
+        cursor.execute(query, (user_id, admin_id))
+        mysql.connection.commit()
+        meeting_id = cursor.lastrowid
+        cursor.close()
+
+        return jsonify({"message": "Meeting started successfully", "meeting_id": meeting_id}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+# @app.route('/addMeetings', methods=['POST'])
+# def add_meeting():
+#     try:
+#         data = request.json
+#         if not data or 'user_id' not in data:
+#             return jsonify({"error": "Missing user_id in request data"}), 400
+
+#         user_id = data.get('user_id')
+#         admin_id = data.get('admin_id')
+#         transcript = data.get('transcript')
+#         ai_response = data.get('ai_response')
+#         summary = data.get('summary')
+        
+#         cursor = mysql.connection.cursor()
+#         query = """
+#             INSERT INTO Meetings (user_id, admin_id, transcript, ai_response, summary, meeting_status)
+#             VALUES (%s, %s, %s, %s, %s, 'completed')
+#         """
+#         cursor.execute(query, (user_id, admin_id, transcript, ai_response, summary))
+#         mysql.connection.commit()
+#         meeting_id = cursor.lastrowid
+#         cursor.close()
+
+#         second = mysql.connection.cursor()
+#         update_query = "UPDATE clientRequests SET status = 'completed' WHERE id = %s"
+#         second.execute(update_query, (user_id,))
+#         mysql.connection.commit()
+        
+#         second.close()
+        
+#         return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 @app.route('/addMeetings', methods=['POST'])
 def add_meeting():
     try:
         data = request.json
-        if not data or 'user_id' not in data:
-            return jsonify({"error": "Missing user_id in request data"}), 400
-
-        user_id = data.get('user_id')
-        admin_id = data.get('admin_id')
+        if not data:
+            return jsonify({"error": "Missing data"}), 400
+        meeting_id = data.get("meeting_id")
         transcript = data.get('transcript')
         ai_response = data.get('ai_response')
         summary = data.get('summary')
-        
+
         cursor = mysql.connection.cursor()
         query = """
-            INSERT INTO Meetings (user_id, admin_id, transcript, ai_response, summary, meeting_status)
-            VALUES (%s, %s, %s, %s, %s, 'completed')
+            UPDATE Meetings 
+            SET transcript = %s, ai_response = %s, summary = %s, meeting_status = 'completed'
+            WHERE meeting_id = %s
         """
-        cursor.execute(query, (user_id, admin_id, transcript, ai_response, summary))
+        cursor.execute(query, (transcript, ai_response, summary, meeting_id))
         mysql.connection.commit()
-        meeting_id = cursor.lastrowid
+        affected_rows = cursor.rowcount
         cursor.close()
 
-        second = mysql.connection.cursor()
-        update_query = "UPDATE clientRequests SET status = 'completed' WHERE id = %s"
-        second.execute(update_query, (user_id,))
-        mysql.connection.commit()
-        
-        second.close()
-        
-        return jsonify({"message": "Meeting Details added successfully", "meeting_id": meeting_id}), 200
+        if affected_rows == 0:
+            return jsonify({"error": "Meeting not found"}), 404
+
+        return jsonify({"message": "Meeting details updated successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route('/preMeetingQuestions/<int:user_id>', methods=['GET'])
 def preMeetingQuestions(user_id):
@@ -565,7 +621,6 @@ def delete_advisor():
 @app.route('/meetings/update_details', methods=['POST'])
 def update_meeting_details():
     global userID
-
 
     data = request.json
 
