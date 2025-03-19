@@ -1,5 +1,5 @@
-const BASE_URL = 'http://127.0.0.1:4000';
-// const BASE_URL = 'https://database.softtik.com';
+// const BASE_URL = 'http://127.0.0.1:4000';
+const BASE_URL = 'https://database.softtik.com';
 
 export const URL = 'https://server2.softtik.com';
 
