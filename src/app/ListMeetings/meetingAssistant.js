@@ -80,44 +80,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
   }, []);
 
   // Start recording and processing.
-  // const startRecording = async () => {
-  //   try {
-  //     setIsProcessing(true);
-  //     setIsRecording(true);
-  //     setAIResponse("");
-  //     setTranscript("");
-  //     audioChunksRef.current = [];
-
-  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //     mediaRecorderRef.current = new MediaRecorder(stream, {
-  //       mimeType: "audio/webm",
-  //     });
-  //     mediaRecorderRef.current.ondataavailable = (event) => {
-  //       if (event.data.size > 0) {
-  //         console.log(`Received chunk: ${event.data.size} bytes`);
-  //         audioChunksRef.current.push(event.data);
-  //       }
-  //     };
-  //     mediaRecorderRef.current.start(1000);
-  //     console.log("Recording started");
-  //     setIsProcessing(false);
-
-  //     // Send audio every 10 seconds.
-  //     intervalIdRef.current = setInterval(() => {
-  //       if (audioChunksRef.current.length > 0) {
-  //         console.log(
-  //           `Sending ${audioChunksRef.current.length} audio chunks to backend`
-  //         );
-  //         sendAudioToBackend();
-  //       }
-  //     }, 10000);
-  //   } catch (error) {
-  //     console.error("Error starting recording:", error);
-  //     setIsRecording(false);
-  //     setIsProcessing(false);
-  //   }
-  // };
-
   const startRecording = async () => {
     try {
       setIsProcessing(true);
@@ -125,25 +87,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
       setAIResponse("");
       setTranscript("");
       audioChunksRef.current = [];
-  
-      // Retrieve user_id and admin_id from localStorage
-      const user_id = localStorage.getItem("user_id");
-      const admin_id = localStorage.getItem("admin_id");
-  
-      if (!user_id || !admin_id) {
-        console.error("Missing user_id or admin_id");
-        setIsProcessing(false);
-        setIsRecording(false);
-        return;
-      }
-  
-      // Call the startMeeting endpoint to create a new meeting entry
-      const meetingResponse = await startMeeting({ user_id, admin_id });
-      console.log("Meeting started:", meetingResponse);
-      localStorage.setItem("meeting_id", meetingResponse.meeting_id);
-  
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: "audio/webm",
+      });
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {
           console.log(`Received chunk: ${event.data.size} bytes`);
@@ -153,11 +101,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
       mediaRecorderRef.current.start(1000);
       console.log("Recording started");
       setIsProcessing(false);
-  
-      // Set an interval to periodically send audio chunks to your backend
+
+      // Send audio every 10 seconds.
       intervalIdRef.current = setInterval(() => {
         if (audioChunksRef.current.length > 0) {
-          console.log(`Sending ${audioChunksRef.current.length} audio chunks to backend`);
+          console.log(
+            `Sending ${audioChunksRef.current.length} audio chunks to backend`
+          );
           sendAudioToBackend();
         }
       }, 10000);
@@ -167,6 +117,66 @@ const Talk = ({ setIsVisibleAssistant }) => {
       setIsProcessing(false);
     }
   };
+
+  // const startRecording = async () => {
+  //   try {
+  //     setIsProcessing(true);
+  //     setIsRecording(true);
+  //     setAIResponse("");
+  //     setTranscript("");
+  //     audioChunksRef.current = [];
+  
+  //     // Retrieve user_id and admin_id from localStorage
+  //     const user_id = localStorage.getItem("user_id");
+  //     const admin_id = localStorage.getItem("admin_id");
+  
+  //     if (!user_id || !admin_id) {
+  //       console.error("Missing user_id or admin_id");
+  //       setIsProcessing(false);
+  //       setIsRecording(false);
+  //       return;
+  //     }
+
+  //     try{
+
+  //       const meetingResponse = await startMeeting({ user_id, admin_id });
+  //       console.log("Meeting started:", meetingResponse);
+  //       localStorage.setItem("meeting_id", meetingResponse.meeting_id);
+  //       console.log(meetingResponse.meeting_id,"id");
+  //     }
+
+  //     catch(error){
+  //       console.log("Error in starting meeting")
+
+  //     }
+  
+  //     // Call the startMeeting endpoint to create a new meeting entry
+  
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
+  //     mediaRecorderRef.current.ondataavailable = (event) => {
+  //       if (event.data.size > 0) {
+  //         console.log(`Received chunk: ${event.data.size} bytes`);
+  //         audioChunksRef.current.push(event.data);
+  //       }
+  //     };
+  //     mediaRecorderRef.current.start(1000);
+  //     console.log("Recording started");
+  //     setIsProcessing(false);
+  
+  //     // Set an interval to periodically send audio chunks to your backend
+  //     intervalIdRef.current = setInterval(() => {
+  //       if (audioChunksRef.current.length > 0) {
+  //         console.log(`Sending ${audioChunksRef.current.length} audio chunks to backend`);
+  //         sendAudioToBackend();
+  //       }
+  //     }, 10000);
+  //   } catch (error) {
+  //     console.error("Error starting recording:", error);
+  //     setIsRecording(false);
+  //     setIsProcessing(false);
+  //   }
+  // };
   
 
   const stopRecording = () => {

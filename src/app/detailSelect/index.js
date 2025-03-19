@@ -268,14 +268,14 @@ function DetailSelect() {
     history.push('/list-meetings');
   };
 
-  useEffect(() => {
-  const hasReloaded = sessionStorage.getItem("hasReloaded");
+//   useEffect(() => {
+//   const hasReloaded = sessionStorage.getItem("hasReloaded");
   
-  if (!hasReloaded) {
-    sessionStorage.setItem("hasReloaded", "true");
-    window.location.reload();
-  }
-}, []);
+//   if (!hasReloaded) {
+//     sessionStorage.setItem("hasReloaded", "true");
+//     window.location.reload();
+//   }
+// }, []);
 
 
   const handleSubmit = async (e) => {
