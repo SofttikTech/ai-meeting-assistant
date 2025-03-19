@@ -47,7 +47,7 @@ function ListMeetings() {
     localStorage.removeItem('manager_name');
     localStorage.removeItem('manager_email');
     localStorage.removeItem('manager_id');
-    history.push('/login');
+    history.replace('/login');
   };
 
   useEffect(() => {

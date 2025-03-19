@@ -35,7 +35,7 @@ function ListMeetings() {
     localStorage.removeItem("phoneNumber")
     localStorage.removeItem("campaign")
 
-    history.push('/login');
+    history.replace('/login');
 
   };
 
