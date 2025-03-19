@@ -1,6 +1,6 @@
-const BASE_URL = 'http://52.15.132.215:4000';
+const BASE_URL = 'https://database.softtik.com';
 
-export const URL = 'http://52.15.132.215:5000';
+export const URL = 'https://server2.softtik.com/';
 
 // Generic API call helper
 const apiCall = async (url, method = 'GET', data = null, extraOptions = {}) => {
