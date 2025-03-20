@@ -2,13 +2,12 @@ import axios from "axios";
 import io from "socket.io-client";
 import { saveAs } from "file-saver";
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import "react-table-6/react-table.css";
 import "./index.css";
-import { URL, startMeeting } from "../../store/config";
+import { URL } from "../../store/config";
 
 const SERVER_URL = URL;
-
 
 const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
@@ -16,7 +15,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [ai_response, setAIResponse] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isVisibleDetailSelect, setIsVisibleDetailSelect] = useState(false);
   const [transcript, setTranscript] = useState("Waiting for transcription...");
 
   const mediaRecorderRef = useRef(null);
@@ -26,15 +24,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const lastMessageRef = useRef("");
   const lastTranscriptRef = useRef("");
 
-
+  // Socket initialization for real-time updates.
   useEffect(() => {
     const socket = io(SERVER_URL);
     socket.on("connect", () => {
       console.log("Connected to server");
     });
     socket.on("update", (data) => {
-      console.log("Update received:", data);
-      // Update AI response only if it's new
       if (data.ai_response) {
         const newAIMessage = data.ai_response.trim();
         if (lastMessageRef.current !== newAIMessage) {
@@ -44,7 +40,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
           );
         }
       }
-      // Update transcript only if it's new
       if (data.transcript) {
         const newTranscript = data.transcript.trim();
         if (lastTranscriptRef.current !== newTranscript) {
@@ -66,7 +61,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
   }, []);
 
-
+  // Cleanup on unmount.
   useEffect(() => {
     return () => {
       if (intervalIdRef.current) clearInterval(intervalIdRef.current);
@@ -79,13 +74,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
   }, []);
 
-  // Start recording and processing.
   const startRecording = async () => {
     try {
-      setIsProcessing(true);
+      // Reset states and clear any previous data.
+      setIsProcessing(false);
       setIsRecording(true);
       setAIResponse("");
-      setTranscript("");
+      setTranscript("Waiting for transcription...");
       audioChunksRef.current = [];
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -100,9 +95,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
       };
       mediaRecorderRef.current.start(1000);
       console.log("Recording started");
-      setIsProcessing(false);
 
-      // Send audio every 10 seconds.
+      // Periodically send audio chunks every 10 seconds.
       intervalIdRef.current = setInterval(() => {
         if (audioChunksRef.current.length > 0) {
           console.log(
@@ -114,79 +108,19 @@ const Talk = ({ setIsVisibleAssistant }) => {
     } catch (error) {
       console.error("Error starting recording:", error);
       setIsRecording(false);
-      setIsProcessing(false);
     }
   };
-
-  // const startRecording = async () => {
-  //   try {
-  //     setIsProcessing(true);
-  //     setIsRecording(true);
-  //     setAIResponse("");
-  //     setTranscript("");
-  //     audioChunksRef.current = [];
-  
-  //     // Retrieve user_id and admin_id from localStorage
-  //     const user_id = localStorage.getItem("user_id");
-  //     const admin_id = localStorage.getItem("admin_id");
-  
-  //     if (!user_id || !admin_id) {
-  //       console.error("Missing user_id or admin_id");
-  //       setIsProcessing(false);
-  //       setIsRecording(false);
-  //       return;
-  //     }
-
-  //     try{
-
-  //       const meetingResponse = await startMeeting({ user_id, admin_id });
-  //       console.log("Meeting started:", meetingResponse);
-  //       localStorage.setItem("meeting_id", meetingResponse.meeting_id);
-  //       console.log(meetingResponse.meeting_id,"id");
-  //     }
-
-  //     catch(error){
-  //       console.log("Error in starting meeting")
-
-  //     }
-  
-  //     // Call the startMeeting endpoint to create a new meeting entry
-  
-  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  //     mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "audio/webm" });
-  //     mediaRecorderRef.current.ondataavailable = (event) => {
-  //       if (event.data.size > 0) {
-  //         console.log(`Received chunk: ${event.data.size} bytes`);
-  //         audioChunksRef.current.push(event.data);
-  //       }
-  //     };
-  //     mediaRecorderRef.current.start(1000);
-  //     console.log("Recording started");
-  //     setIsProcessing(false);
-  
-  //     // Set an interval to periodically send audio chunks to your backend
-  //     intervalIdRef.current = setInterval(() => {
-  //       if (audioChunksRef.current.length > 0) {
-  //         console.log(`Sending ${audioChunksRef.current.length} audio chunks to backend`);
-  //         sendAudioToBackend();
-  //       }
-  //     }, 10000);
-  //   } catch (error) {
-  //     console.error("Error starting recording:", error);
-  //     setIsRecording(false);
-  //     setIsProcessing(false);
-  //   }
-  // };
-  
 
   const stopRecording = () => {
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === "recording"
     ) {
+      // Stop the media recorder and clear the interval.
       mediaRecorderRef.current.stop();
-      console.log("Recording stopped");
-      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      mediaRecorderRef.current.stream.getTracks().forEach((track) =>
+        track.stop()
+      );
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
         intervalIdRef.current = null;
@@ -196,38 +130,49 @@ const Talk = ({ setIsVisibleAssistant }) => {
         sendAudioToBackend();
       }
       setIsRecording(false);
-      console.log(ai_response)
-      console.log("WAIT")
-      console.log(transcript)
 
+      // Immediately show processing overlay.
+      setIsProcessing(true);
+
+      // Fetch the summary after a delay.
       setTimeout(() => {
         axios.get(`${SERVER_URL}/generate_summary`, {
-          params: {
-            ai_response: ai_response,
-            transcript: transcript,
-            user_id: localStorage.getItem("user_id"),
-            meeting_id:localStorage.getItem("meeting_id"),
-            admin_id: localStorage.getItem("admin_id"),
-            FirstName: localStorage.getItem("FirstName"),
-            LastName: localStorage.getItem("LastName"),
-            Email: localStorage.getItem("email"),
-            phoneNumber: localStorage.getItem("phoneNumber"),
-            campaign: localStorage.getItem("campaign")
-          }
-        })
-        .then((response) => {
-          if (response.data.summary) {
-            console.log("Summary:", response.data.summary);
-            setSummary(response.data.summary);
-          } else {
-            console.error("Error generating summary:", response.data.error);
-          }
-        })
-        .catch((error) => {
-          console.error("Error calling summary endpoint:", error);
-        });
-      }, 50000);
-
+            params: {
+              ai_response: ai_response,
+              transcript: transcript,
+              user_id: localStorage.getItem("user_id"),
+              meeting_id: localStorage.getItem("meeting_id"),
+              admin_id: localStorage.getItem("admin_id"),
+              FirstName: localStorage.getItem("FirstName"),
+              LastName: localStorage.getItem("LastName"),
+              Email: localStorage.getItem("email"),
+              phoneNumber: localStorage.getItem("phoneNumber"),
+              campaign: localStorage.getItem("campaign"),
+            },
+          })
+          .then((response) => {
+            if (response.data.summary) {
+              console.log("Summary:", response.data.summary);
+              console.log("HELLO");
+              setSummary(response.data.summary);
+              setIsProcessing(false);
+              // Redirect to the DetailSelect page.
+              history.push("/DetailSelect");
+            } else {
+              console.log("HELLO");
+              console.error("Error generating summary:", response.data.error);
+              setIsProcessing(false);
+            }
+          })
+          .catch((error) => {
+            console.log("HELLO");
+            console.error("Error calling summary endpoint:", error);
+            setIsProcessing(false);
+          });
+          setTimeout(()=>{
+            history.push("/DetailSelect");
+          },15000)
+      }, 4000);
     }
   };
 
@@ -239,15 +184,15 @@ const Talk = ({ setIsVisibleAssistant }) => {
     try {
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       console.log(`Created blob of size: ${audioBlob.size} bytes`);
-      // Save locally for debugging.
-      // saveAs(audioBlob, `conversation-${Date.now()}.webm`);
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "conversation.webm");
 
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData);
-      setTranscript(response.data.transcript);
-      console.log("Transcription received:", response.data.transcript);
+      if (response.data.transcript) {
+        setTranscript(response.data.transcript);
+        console.log("Transcription received:", response.data.transcript);
+      }
       audioChunksRef.current = [];
     } catch (error) {
       console.error("Error sending audio:", error);
@@ -268,19 +213,28 @@ const Talk = ({ setIsVisibleAssistant }) => {
       startRecording();
     }
     setIsVisibleAssistant(true);
-
-    // Navigate to detailsSelect.js page
-    history.push("/DetailSelect");
   };
-  
 
   return (
     <div className="list-page-inner">
+      {/* Professional Processing Overlay */}
+      {isProcessing && (
+        <div className="processing-overlay">
+          <div className="processing-container">
+            <div className="spinner"></div>
+            <p>Processing your recording. Please wait...</p>
+          </div>
+        </div>
+      )}
+
       <div className="top-back-area">
         <div className="auto-container">
           <div className="row">
             <div className="col-12">
-              <div className="back-btn-area style-two" onClick={() => setIsVisibleAssistant(false)}>
+              <div
+                className="back-btn-area style-two"
+                onClick={() => setIsVisibleAssistant(false)}
+              >
                 <button className="btn-style-new">
                   <svg
                     width="24"
@@ -309,27 +263,27 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="voice-area">
                 <h1>AI Meeting Assistant</h1>
                 <p>Speak naturally and get real-time AI meeting responses</p>
-                {isRecording
-                  ? <>
-                    <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={handleClickRecording}>
-                      <img
-                        src={require("../../static/images/speek-btn.png")}
-                        alt="Speak Button"
-                      />
-                    </button>
-                    <div className="processing-indicator">
-                      {isProcessing && (
-                        <p>Processing...</p>
-                      )}
-                    </div>
-                  </>
-                  : <button className={isRecording ? 'speek-btn style-animation' : 'speek-btn'} onClick={isRecording ? stopRecording : startRecording}>
+                {isRecording ? (
+                  <button
+                    className="speek-btn style-animation"
+                    onClick={handleClickRecording}
+                  >
                     <img
                       src={require("../../static/images/speek-btn.png")}
                       alt="Speak Button"
                     />
                   </button>
-                }
+                ) : (
+                  <button
+                    className="speek-btn"
+                    onClick={isRecording ? stopRecording : startRecording}
+                  >
+                    <img
+                      src={require("../../static/images/speek-btn.png")}
+                      alt="Speak Button"
+                    />
+                  </button>
+                )}
               </div>
 
               <div className="information-box response-box">
@@ -344,9 +298,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
           </div>
         </div>
       </div>
-
     </div>
-
   );
 };
 
