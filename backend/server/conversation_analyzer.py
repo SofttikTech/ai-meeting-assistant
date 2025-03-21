@@ -29,7 +29,7 @@ def analyze_conversation(query, conversation_history):
 
     if query:
         # Calling RAG endpoint
-        rag_url = "https://rag.softtik.com/query/"
+        rag_url = "https://rag.epiphanyadvisor.com/query/"
         rag_payload = {"query": query}
         try:
             rag_response = requests.post(rag_url, json=rag_payload)
@@ -47,7 +47,7 @@ def analyze_conversation(query, conversation_history):
 
     # campaign = ""
     try:
-        res = requests.get("https://database.softtik.com/get_campaign")
+        res = requests.get("https://database.epiphanyadvisor.com/get_campaign")
         if res.status_code == 200:
             data = res.json()
             campaign = data.get("campaign")
@@ -142,7 +142,7 @@ def analyze_conversation_telephonic(query, conversation_history):
 
     if query:
         # Calling RAG endpoint
-        rag_url = "https://rag.softtik.com/query/"
+        rag_url = "https://rag.epiphanyadvisor.com/query/"
         rag_payload = {"query": query}
         try:
             rag_response = requests.post(rag_url, json=rag_payload)
@@ -160,7 +160,7 @@ def analyze_conversation_telephonic(query, conversation_history):
 
     # campaign = ""
     try:
-        res = requests.get("https://database.softtik.com/get_campaign")
+        res = requests.get("https://database.epiphanyadvisor.com/get_campaign")
         if res.status_code == 200:
             data = res.json()
             campaign = data.get("campaign")

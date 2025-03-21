@@ -33,6 +33,7 @@ def allowed_file(filename):
 
 MAX_HISTORY = 100
 conversation_history = []
+ai_response = ""
 
 def update_conversation_history(new_transcript):
     """Update conversation history and ensure it doesn't exceed the max limit."""
@@ -171,7 +172,7 @@ def generate_summary():
 
 
     try:
-        db_response = requests.post("https://database.softtik.com/addMeetings", json=db_payload)
+        db_response = requests.post("https://database.epiphanyadvisor.com/addMeetings", json=db_payload)
         if db_response.status_code != 200:
             return jsonify({
                 "error": "Failed to store meeting data in database",

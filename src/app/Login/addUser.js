@@ -52,7 +52,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('https://database.softtik.com/getAdvisors')
+    fetch('https://database.epiphanyadvisor.com/getAdvisors')
       .then((response) => response.json())
       .then((data) => setAdvisors(data))
       .catch((error) => console.error('Error fetching advisors:', error));
@@ -102,7 +102,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
     };
 
     try {
-      const response = await fetch('https://database.softtik.com/users', {
+      const response = await fetch('https://database.epiphanyadvisor.com/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
