@@ -148,6 +148,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
               Email: localStorage.getItem("email"),
               phoneNumber: localStorage.getItem("phoneNumber"),
               campaign: localStorage.getItem("campaign"),
+              meetingType: localStorage.getItem("meetingType")
             },
           })
           .then((response) => {
@@ -187,6 +188,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "conversation.webm");
+      formData.append("meetingType", localStorage.getItem("meetingType"));
+
 
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData);
       if (response.data.transcript) {

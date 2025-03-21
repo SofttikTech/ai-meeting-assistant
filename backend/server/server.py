@@ -8,7 +8,7 @@ from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
 import openai
-from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests
+from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests, analyze_conversation_telephonic
 from ghl_integration import send_data_to_n8n_and_log
 
 
@@ -51,6 +51,10 @@ def home():
 def transcribe():
     try:
         logging.info("Received transcription request")
+
+        meetingType = request.form.get("meetingType")
+        # getting meeting type
+        logging.info(f"Meeting Type: {meetingType}")
         
         if 'audio' not in request.files:
             logging.error("No audio file received")
@@ -94,7 +98,11 @@ def transcribe():
             logging.info(f"Transcript received: {transcript[:50]}...")
             
             update_conversation_history(transcript)
-            ai_response = analyze_conversation(transcript,conversation_history)
+            # using meeting type 
+            if meetingType == "In Place":
+                ai_response = analyze_conversation(transcript,conversation_history)
+            elif meetingType == "Telephonic":
+                ai_response = analyze_conversation_telephonic(transcript,conversation_history)
 
             if ai_response:
                 logging.info(f"AI Response: {ai_response[:50]}...")
@@ -122,9 +130,10 @@ def generate_summary():
     email = request.args.get('Email')
     phoneNumber = request.args.get('phoneNumber')
     campaign = request.args.get('campaign')
+    # meetingType = data.args.get("MeetingType")
 
     if not transcript:
-        return jsonify({"error": "conversation_history is required"}), 400
+        return jsonify({"error": "conversation_history is required"}), 400        
 
     summary = generate_post_meeting_summary(conversation_history)
     client_summary = generate_client_meeting_summary(conversation_history)

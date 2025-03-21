@@ -68,6 +68,7 @@ const MeetingsDetail = ({ isVisibleMeetingDetailPrevious, setIsVisibleMeetingDet
       localStorage.setItem("LastName",meeting.clientLastName)
       localStorage.setItem("email",meeting.clientEmail)
       localStorage.setItem("phoneNumber",meeting.clientPhone)
+      localStorage.setItem("meetingType", meeting.MeetingType)
       localStorage.setItem("campaign",value)
       
       try {

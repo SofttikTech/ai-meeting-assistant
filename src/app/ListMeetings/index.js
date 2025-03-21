@@ -99,6 +99,14 @@ function ListMeetings() {
       )
     },
     {
+      id: 'meetingtype',
+      Header: 'Meeting Type',
+      accessor: 'meetingType',
+      Cell: ({ value }) => (
+        <button className='btn-details-agent'>{value}</button>
+      )
+    },
+    {
       id: 'campaign',
       Header: 'Campaign',
       accessor: row => {

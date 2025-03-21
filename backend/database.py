@@ -163,6 +163,8 @@ def add_user():
         # Advisor selection from payload
         advisor_name = data.get('advisorName', None)
 
+        meeting_type = data.get('meetingType') or None
+
         cursor = mysql.connection.cursor()
         query = """
             INSERT INTO clientRequests (
@@ -172,7 +174,7 @@ def add_user():
                 clientPhone, clientEmail, spousePhone, spouseEmail,
                 childrenNames, grandChildren,
                 medicare, lifeInsurance, wealthPlanning, LTC_Planning,
-                advisor
+                meetingType, advisor
             ) VALUES (
                 %s, %s, %s,
                 %s, %s, %s,
@@ -180,7 +182,7 @@ def add_user():
                 %s, %s, %s, %s,
                 %s, %s,
                 %s, %s, %s, %s,
-                %s
+                %s, %s
             )
         """
         cursor.execute(query, (
@@ -190,7 +192,7 @@ def add_user():
             cell_phone_client, email_client, cell_phone_spouse, email_spouse,
             children_names, num_grandchildren,
             medicare, life_insurance, wealth_planning, long_term_care_planning,
-            advisor_name
+            meeting_type, advisor_name
         ))
         mysql.connection.commit()
         user_id = cursor.lastrowid

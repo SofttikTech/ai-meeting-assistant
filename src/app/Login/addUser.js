@@ -41,6 +41,9 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
     longTermCarePlanning: false,
   });
 
+  // Meeting Type (radio buttons)
+  const [meetingType, setMeetingType] = useState('');
+
   // Advisor Selection
   const [advisorName, setAdvisorName] = useState('');
   const [advisors, setAdvisors] = useState([]);
@@ -94,6 +97,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
         numGrandchildren: parseInt(numGrandchildren, 10) || 0,
       },
       campaignTypes,
+      meetingType,
       advisorName,
     };
 
@@ -130,6 +134,7 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
           wealthPlanning: false,
           longTermCarePlanning: false,
         });
+        setMeetingType('');
         setAdvisorName('');
       } else {
         setError(data.error || 'Error adding user');
@@ -181,8 +186,8 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
                     <label>Last Name:</label>
                     <input
                       type="text"
-                      value={lastName}
                       placeholder="Add last name here"
+                      value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       required
                     />
@@ -392,6 +397,40 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
                   </div>
                 </div>
               </div>
+              {/* Meeting Type */}
+              <div className='row'>
+                <div className='col-12'>
+                  <h4 className='group-title'>Meeting Type</h4>
+                </div>
+                <div className='col-lg-6 col-md-12'>
+                  <div className='group-form radio-group'>
+                    <FormControlLabel 
+                      control={
+                        <Radio 
+                          value="In Place" 
+                          checked={meetingType === 'In Place'} 
+                          onChange={(e) => setMeetingType(e.target.value)}
+                        />
+                      } 
+                      label="In Place" 
+                    />
+                  </div>
+                </div>
+                <div className='col-lg-6 col-md-12'>
+                  <div className='group-form radio-group'>
+                    <FormControlLabel 
+                      control={
+                        <Radio 
+                          value="Telephonic" 
+                          checked={meetingType === 'Telephonic'} 
+                          onChange={(e) => setMeetingType(e.target.value)}
+                        />
+                      } 
+                      label="Telephonic" 
+                    />
+                  </div>
+                </div>
+              </div>
               {/* Advisor Selection */}
               <div className='row'>
                 <div className='col-12'>
@@ -399,9 +438,19 @@ const AddUser = ({ isVisibleAddUser, setIsVisibleAddUser }) => {
                 </div>
                 {advisors.length > 0 ? (
                   advisors.map((advisor) => (
-                    <div className='col-lg-6 col-md-12'>
+                    <div className='col-lg-6 col-md-12' key={advisor}>
                       <div className='group-form radio-group'>
-                        <FormControlLabel key={advisor} value={advisor} control={<Radio value={advisor} checked={advisorName === advisor} onChange={(e) => setAdvisorName(e.target.value)}/>} label={advisor} />
+                        <FormControlLabel 
+                          value={advisor} 
+                          control={
+                            <Radio 
+                              value={advisor} 
+                              checked={advisorName === advisor} 
+                              onChange={(e) => setAdvisorName(e.target.value)}
+                            />
+                          } 
+                          label={advisor} 
+                        />
                       </div>
                     </div>
                   ))

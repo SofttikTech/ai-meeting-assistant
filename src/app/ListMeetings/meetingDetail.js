@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 
 import MeetingAssistant from './meetingAssistant';
 import {StorePreMeetingQuestions} from '../../store/config';
-import { fetchPreMeetingQuestions } from '../../store/config';
+import { fetchPreMeetingQuestions, getCampaignD } from '../../store/config';
 
 import "react-table-6/react-table.css";
 import './index.css';
@@ -16,11 +16,17 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
   const [loadingSummary, setLoadingSummary] = useState(true);
   const [isVisibleAssistant, setIsVisibleAssistant] = useState(false);
 
+  const getCampaign = async (id) => {
+    const data  = await getCampaignD(id);
+    console.log("Campaign data:", data);
+  };
+
   useEffect(() => {
     const storedMeeting = localStorage.getItem("selectedMeeting");
     if (storedMeeting) {
       const meeting = JSON.parse(storedMeeting);
       setSelectedMeeting(meeting);
+      getCampaign(meeting.id);
       console.log(meeting)
       let value = "";
 
@@ -35,6 +41,7 @@ const MeetingsDetail = ({ setIsVisibleMeetingDetail }) => {
       localStorage.setItem("LastName",meeting.clientLastName)
       localStorage.setItem("email",meeting.clientEmail)
       localStorage.setItem("phoneNumber",meeting.clientPhone)
+      localStorage.setItem("meetingType",meeting.meetingType)
       localStorage.setItem("campaign",value)
       fetchPreMeetingQuestions(meeting.id)
       .then((data) => {

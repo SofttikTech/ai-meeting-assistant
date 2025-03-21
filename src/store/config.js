@@ -2,6 +2,7 @@
 const BASE_URL = 'https://database.softtik.com';
 
 export const URL = 'https://server2.softtik.com';
+// export const URL = 'http://127.0.0.1:5000';
 
 // Generic API call helper
 const apiCall = async (url, method = 'GET', data = null, extraOptions = {}) => {
