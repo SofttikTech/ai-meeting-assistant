@@ -7,7 +7,9 @@ import "react-table-6/react-table.css";
 import "./index.css";
 import { URL } from "../../store/config";
 
-const SERVER_URL = URL;
+const SERVER_URL = 'URL';
+// export const URL = 'http://127.0.0.1:5000';
+
 
 function formatAIResponse(text) {
   const lines = text.split('?').map(line => line.trim()).filter(Boolean);
@@ -21,6 +23,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcript, setTranscript] = useState("Waiting for transcription...");
+  const [count, setCount] = useState(0);
 
   const [messages, setMessages] = useState([]);
 
@@ -164,7 +167,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("audio", audioBlob, "conversation.webm");
       formData.append("meetingType", localStorage.getItem("meetingType"));
 
-      const response = await axios.post(`${SERVER_URL}/transcribe`, formData);
+      const response = await axios.post(`${SERVER_URL}/transcribe`, formData, {timeout: 1200000});
+
       if (response.data.transcript) {
         setTranscript(response.data.transcript);
         console.log("Transcription received:", response.data.transcript);
@@ -203,6 +207,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
           mimeType: "audio/webm",
         });
         mediaRecorderRef.current.ondataavailable = (event) => {
+          // audioChunksRef.current = []
           if (event.data.size > 0) {
             console.log(`Received chunk: ${event.data.size} bytes`);
             audioChunksRef.current.push(event.data);
@@ -217,6 +222,10 @@ const Talk = ({ setIsVisibleAssistant }) => {
               `Sending ${audioChunksRef.current.length} audio chunks to backend`
             );
             sendAudioToBackend();
+            // audioChunksRef.current = []
+            // if(count>=5){
+            //   audioChunksRef.current = [];
+            // }
           }
         }, 10000);
       } catch (error) {
@@ -226,7 +235,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
     startRecording();
     setIsVisibleAssistant(true);
-  }, [setIsVisibleAssistant]);
+  }, []);
 
   return (
     <div className="list-page-inner">
@@ -253,6 +262,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 {isRecording ? (
                   <button
                     className="speek-btn style-animation"
+                    onClick={handleClickRecording}
                   >
                     <img
                       src={require("../../static/images/speek-btn.png")}
