@@ -50,6 +50,7 @@ def home():
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
+    ai_response = ""
     try:
         logging.info("Received transcription request")
 
