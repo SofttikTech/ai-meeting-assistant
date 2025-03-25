@@ -7,7 +7,7 @@ import "react-table-6/react-table.css";
 import "./index.css";
 import { URL } from "../../store/config";
 
-const SERVER_URL = 'URL';
+const SERVER_URL = URL;
 // export const URL = 'http://127.0.0.1:5000';
 
 
