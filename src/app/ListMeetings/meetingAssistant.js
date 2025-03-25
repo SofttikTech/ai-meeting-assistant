@@ -11,7 +11,7 @@ const SERVER_URL = URL;
 
 function formatAIResponse(text) {
   const lines = text.split('?').map(line => line.trim()).filter(Boolean);
-  return lines.map(line => `• ${line}?`).join('\n');
+  return lines.map(line => `${line}?`).join('\n');
 }
 
 const Talk = ({ setIsVisibleAssistant }) => {
