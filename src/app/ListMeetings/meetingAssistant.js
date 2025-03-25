@@ -74,43 +74,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
   }, []);
 
-  const startRecording = async () => {
-    try {
-      // Reset states and clear any previous data.
-      setIsProcessing(false);
-      setIsRecording(true);
-      setAIResponse("");
-      setTranscript("Waiting for transcription...");
-      audioChunksRef.current = [];
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: "audio/webm",
-      });
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          console.log(`Received chunk: ${event.data.size} bytes`);
-          audioChunksRef.current.push(event.data);
-        }
-      };
-      mediaRecorderRef.current.start(1000);
-      console.log("Recording started");
-
-      // Periodically send audio chunks every 10 seconds.
-      intervalIdRef.current = setInterval(() => {
-        if (audioChunksRef.current.length > 0) {
-          console.log(
-            `Sending ${audioChunksRef.current.length} audio chunks to backend`
-          );
-          sendAudioToBackend();
-        }
-      }, 10000);
-    } catch (error) {
-      console.error("Error starting recording:", error);
-      setIsRecording(false);
-    }
-  };
-
   const stopRecording = () => {
     if (
       mediaRecorderRef.current &&
@@ -212,11 +175,55 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const handleClickRecording = () => {
     if (isRecording) {
       stopRecording();
-    } else {
-      startRecording();
-    }
+    } 
+    // else {
+    //   startRecording();
+    // }
     setIsVisibleAssistant(true);
   };
+
+
+  useEffect(() => {
+    const startRecording = async () => {
+      try {
+        // Reset states and clear any previous data.
+        setIsProcessing(false);
+        setIsRecording(true);
+        setAIResponse("");
+        setTranscript("Waiting for transcription...");
+        audioChunksRef.current = [];
+  
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(stream, {
+          mimeType: "audio/webm",
+        });
+        mediaRecorderRef.current.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            console.log(`Received chunk: ${event.data.size} bytes`);
+            audioChunksRef.current.push(event.data);
+          }
+        };
+        mediaRecorderRef.current.start(1000);
+        console.log("Recording started");
+  
+        // Periodically send audio chunks every 10 seconds.
+        intervalIdRef.current = setInterval(() => {
+          if (audioChunksRef.current.length > 0) {
+            console.log(
+              `Sending ${audioChunksRef.current.length} audio chunks to backend`
+            );
+            sendAudioToBackend();
+          }
+        }, 10000);
+      } catch (error) {
+        console.error("Error starting recording:", error);
+        setIsRecording(false);
+      }
+    };
+    startRecording();
+    // Make the assistant visible when the page appears.
+    setIsVisibleAssistant(true);
+  }, [setIsVisibleAssistant]);
 
   return (
     <div className="list-page-inner">
@@ -279,7 +286,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 ) : (
                   <button
                     className="speek-btn"
-                    onClick={isRecording ? stopRecording : startRecording}
+                    onClick={stopRecording}
                   >
                     <img
                       src={require("../../static/images/speek-btn.png")}

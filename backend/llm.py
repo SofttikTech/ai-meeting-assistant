@@ -38,7 +38,7 @@ def generate_pre_meeting_questions(first_name, last_name, campaigns):
     Retrieved Documents:
     {retrieved_docs_text}
 
-    Generate 10 personalized pre-meeting questions that a {campaigns} advisor should ask. 
+    Generate 3 personalized pre-meeting questions that a {campaigns} advisor should ask. 
     Focus on the client's goals, concerns, and any information needed to tailor financial advice.
     Give me questions in bullets in good format.
     """

@@ -59,21 +59,25 @@ def analyze_conversation(query, conversation_history):
         campaign = "medicare"
 
     prompt = f"""
-        You are an AI assistant specialized in analyzing discussions across multiple areas: Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning. Your goal is to support the advisor during client conversations by providing analysis that covers both the primary campaign focus ({campaign}) and any other related topics that emerge during the conversation.
+        You are an AI assistant specialized in client conversations across Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning. In a 30-minute meeting, your role is to help the advisor ask concise, focused follow-up questions—without summarizing the conversation—to guide the discussion in three phases:
 
-        Identifying Key Discussion Topics:
-        - Recognize and summarize concerns such as healthcare needs, long-term care planning, retirement, estate planning, and legacy issues.
-        - Note financial pain points like high healthcare costs, inadequate insurance coverage, or investment risks.
-        - Highlight positive actions like policy purchases or successful investments.
-        - While the primary focus is on {campaign}, also acknowledge if other campaign-related issues arise during the conversation.
+        1. **Introduction (First 10 minutes):**
+        - Ask brief introductory questions to establish rapport.
+        - Explore the client's basic needs and expectations.
 
-        Generating Follow-Up Questions:
-        - Based on the conversation history and the client's profile, suggest follow-up questions that help the advisor explore the client’s concerns related to {campaign} as well as other relevant topics (e.g., if aspects of Medicare or Life Insurance are mentioned, include follow-up questions for those areas).
+        2. **Service Exploration (Next 15 minutes):**
+        - Focus on the primary campaign: {campaign}. Ask targeted questions to uncover concerns, opportunities, and needs (e.g., financial pain points, healthcare needs, or coverage gaps).
+        - If other relevant topics emerge (such as Medicare, Life Insurance, or Long-Term Care), include brief follow-up questions for those areas.
 
-        Relevance Filter:
-        - Generate a response if there is any new or significant information regarding the client's financial, healthcare, or insurance needs, even if these cross over into areas outside the primary campaign ({campaign}). 
+        3. **Closing (Final 5 minutes):**
+        - Pose closing questions that help summarize next steps and confirm the client’s interest.
+        - Guide the conversation toward wrapping up the meeting.
 
-        Use the following context to generate your analysis:
+        **Guidelines:**
+        - Do not provide a summary of the conversation.
+        - Keep questions clear and concise.
+        - Only generate output if new, significant topics emerge from the context.
+        - Base your questions on the context provided below.
 
         User Query:
         {query}
@@ -85,23 +89,24 @@ def analyze_conversation(query, conversation_history):
         {retrieved_docs_text}
 
         Campaign Focus:
-        While the primary area of interest is {campaign}, provide insights and follow-up questions that also address other relevant campaigns if they emerge during the discussion.
+        The primary focus is on {campaign}. Tailor your questions primarily around this campaign while being alert to related topics.
     """
 
+
     # prompt = f"""
-    #     You are an AI assistant specialized in analyzing four types of discussions: Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning. Your main goal is to support the advisor during client conversations by:
+    #     You are an AI assistant specialized in analyzing discussions across multiple areas: Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning. Your goal is to support the advisor during client conversations by providing analysis that covers both the primary campaign focus ({campaign}) and any other related topics that emerge during the conversation.
 
     #     Identifying Key Discussion Topics:
-    #     Recognize and summarize concerns such as healthcare needs, long-term care planning, retirement, estate planning, and legacy issues; note financial pain points like high healthcare costs, inadequate insurance coverage, and investment risks; and highlight positive actions like policy purchases or successful investments.
+    #     - Recognize and summarize concerns such as healthcare needs, long-term care planning, retirement, estate planning, and legacy issues.
+    #     - Note financial pain points like high healthcare costs, inadequate insurance coverage, or investment risks.
+    #     - Highlight positive actions like policy purchases or successful investments.
+    #     - While the primary focus is on {campaign}, also acknowledge if other campaign-related issues arise during the conversation.
 
     #     Generating Follow-Up Questions:
-    #     Based on the conversation history and the client's profile, suggest relevant follow-up questions that help the advisor probe further into the client’s concerns or confirm positive signals.
-
-    #     Tailoring Your Analysis to the Campaign Focus:
-    #     The primary focus of this discussion is on {campaign}. Ensure that your analysis, insights, and follow-up questions are specifically tailored to address issues related to this campaign.
+    #     - Based on the conversation history and the client's profile, suggest follow-up questions that help the advisor explore the client’s concerns related to {campaign} as well as other relevant topics (e.g., if aspects of Medicare or Life Insurance are mentioned, include follow-up questions for those areas).
 
     #     Relevance Filter:
-    #     Only generate a response if a relevant topic or concern emerges in the conversation. If the discussion does not include any new or significant information related to the client's financial, healthcare, or insurance needs, do not generate unnecessary output.
+    #     - Generate a response if there is any new or significant information regarding the client's financial, healthcare, or insurance needs, even if these cross over into areas outside the primary campaign ({campaign}). 
 
     #     Use the following context to generate your analysis:
 
@@ -115,9 +120,7 @@ def analyze_conversation(query, conversation_history):
     #     {retrieved_docs_text}
 
     #     Campaign Focus:
-    #     The primary topic of interest is {campaign}. 
-    #     Based on this, analyze the conversation, identify concerns, highlight any financial or healthcare pain points, note positive actions, 
-    #     and suggest appropriate follow-up questions and recommendations that the advisor can use to guide the conversation effectively.
+    #     While the primary area of interest is {campaign}, provide insights and follow-up questions that also address other relevant campaigns if they emerge during the discussion.
     # """
 
     print("Inside In Place")
@@ -172,19 +175,25 @@ def analyze_conversation_telephonic(query, conversation_history):
         campaign = "medicare"
 
     prompt = f"""
-        You are an AI assistant specialized in analyzing discussions specifically related to the {campaign} campaign. Your goal is to support the advisor during client conversations by focusing solely on the issues relevant to {campaign}.
+        You are an AI assistant specialized in client conversations specifically related to the {campaign} campaign. Your goal is to support the advisor by generating clear, concise follow-up questions—without summarizing the conversation—that guide the discussion in three phases of a 30-minute meeting.
 
-        Identifying Key Discussion Topics:
-        - Recognize and summarize concerns and opportunities directly related to {campaign} such as [for example, if campaign is Wealth Planning: financial pain points like high healthcare costs, inadequate insurance coverage, or investment risks].
-        - Highlight any positive actions (e.g., policy purchases or successful investments) that pertain to {campaign}.
+        1. **Introduction (First 10 minutes):**
+        - Ask brief introductory questions to build rapport and understand the client's basic background and expectations.
+        
+        2. **Service Exploration (Next 15 minutes):**
+        - Focus exclusively on issues relevant to {campaign}.
+        - Ask targeted questions to uncover:
+            - Key concerns and opportunities specific to {campaign}, such as financial pain points (e.g., high healthcare costs, inadequate insurance coverage, or investment risks).
+            - Positive actions already taken (e.g., policy purchases or successful investments).
+            
+        3. **Closing (Final 5 minutes):**
+        - Pose closing questions that confirm next steps and the client’s interest.
+        - Guide the conversation to a clear wrap-up.
 
-        Generating Follow-Up Questions:
-        - Based on the conversation history and the client's profile, suggest follow-up questions that help the advisor probe further into {campaign}-related concerns or confirm signals pertinent to this campaign.
-
-        Relevance Filter:
-        - Only generate a response if there is new or significant information directly related to {campaign}. Do not produce unnecessary output if no relevant topics emerge.
-
-        Use the following context to generate your analysis:
+        **Guidelines:**
+        - Only generate output if new or significant topics emerge.
+        - Keep your questions concise and strictly relevant to {campaign}.
+        - Use the context provided below to base your questions.
 
         User Query:
         {query}
@@ -196,8 +205,36 @@ def analyze_conversation_telephonic(query, conversation_history):
         {retrieved_docs_text}
 
         Campaign Focus:
-        The discussion should be analyzed exclusively with regard to {campaign}. Provide insights, identify specific concerns, and suggest tailored follow-up questions that are strictly related to {campaign}.
+        The discussion is solely focused on {campaign}. Provide insights and follow-up questions tailored strictly to this campaign.
     """
+
+    # prompt = f"""
+    #     You are an AI assistant specialized in analyzing discussions specifically related to the {campaign} campaign. Your goal is to support the advisor during client conversations by focusing solely on the issues relevant to {campaign}.
+
+    #     Identifying Key Discussion Topics:
+    #     - Recognize and summarize concerns and opportunities directly related to {campaign} such as [for example, if campaign is Wealth Planning: financial pain points like high healthcare costs, inadequate insurance coverage, or investment risks].
+    #     - Highlight any positive actions (e.g., policy purchases or successful investments) that pertain to {campaign}.
+
+    #     Generating Follow-Up Questions:
+    #     - Based on the conversation history and the client's profile, suggest follow-up questions that help the advisor probe further into {campaign}-related concerns or confirm signals pertinent to this campaign.
+
+    #     Relevance Filter:
+    #     - Only generate a response if there is new or significant information directly related to {campaign}. Do not produce unnecessary output if no relevant topics emerge.
+
+    #     Use the following context to generate your analysis:
+
+    #     User Query:
+    #     {query}
+
+    #     Conversation History:
+    #     {context}
+
+    #     Retrieved Documents:
+    #     {retrieved_docs_text}
+
+    #     Campaign Focus:
+    #     The discussion should be analyzed exclusively with regard to {campaign}. Provide insights, identify specific concerns, and suggest tailored follow-up questions that are strictly related to {campaign}.
+    # """
 
     print("Inside telephonic")
     response = openai.ChatCompletion.create(
