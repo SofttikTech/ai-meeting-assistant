@@ -78,7 +78,7 @@ def analyze_conversation(query, conversation_history):
         {retrieved_docs_text}
 
         Campaign Focus:
-        The primary focus is on {campaign}. Provide only follow-up questions in bullet points.
+        The primary focus is on {campaign}. Provide only follow-up questions (only 3-4 per query).
     """
 
 
@@ -181,7 +181,7 @@ def analyze_conversation_telephonic(query, conversation_history):
         - Only generate questions if new or significant topics emerge from the context.
         - Ensure all questions are clear, concise, and strictly focused on the {campaign} campaign.
 
-        Output only the bullet point follow-up questions.
+        Output only the follow-up questions  (only 3-4 per query).
     """
 
 

@@ -9,6 +9,11 @@ import { URL } from "../../store/config";
 
 const SERVER_URL = URL;
 
+function formatAIResponse(text) {
+  const lines = text.split('?').map(line => line.trim()).filter(Boolean);
+  return lines.map(line => `• ${line}?`).join('\n');
+}
+
 const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
   const [summary, setSummary] = useState('');
@@ -17,6 +22,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcript, setTranscript] = useState("Waiting for transcription...");
 
+  const [messages, setMessages] = useState([]);
+
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const intervalIdRef = useRef(null);
@@ -24,7 +31,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const lastMessageRef = useRef("");
   const lastTranscriptRef = useRef("");
 
-  // Socket initialization for real-time updates.
   useEffect(() => {
     const socket = io(SERVER_URL);
     socket.on("connect", () => {
@@ -38,6 +44,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
           setAIResponse((prev) =>
             prev ? prev + "\n" + data.ai_response : data.ai_response
           );
+          // Add AI message to chat
+          setMessages((prev) => [
+            ...prev,
+            { sender: "AI Agent", text: newAIMessage },
+          ]);
         }
       }
       if (data.transcript) {
@@ -49,6 +60,10 @@ const Talk = ({ setIsVisibleAssistant }) => {
               ? data.transcript
               : prev + "\n" + data.transcript
           );
+          setMessages((prev) => [
+            ...prev,
+            { sender: "User", text: newTranscript },
+          ]);
         }
       }
     });
@@ -79,7 +94,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === "recording"
     ) {
-      // Stop the media recorder and clear the interval.
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach((track) =>
         track.stop()
@@ -94,10 +108,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
       }
       setIsRecording(false);
 
-      // Immediately show processing overlay.
       setIsProcessing(true);
 
-      // Fetch the summary after a delay.
       setTimeout(() => {
         axios.get(`${SERVER_URL}/generate_summary`, {
             params: {
@@ -120,7 +132,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
               console.log("HELLO");
               setSummary(response.data.summary);
               setIsProcessing(false);
-              // Redirect to the DetailSelect page.
               history.push("/DetailSelect");
             } else {
               console.log("HELLO");
@@ -153,7 +164,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("audio", audioBlob, "conversation.webm");
       formData.append("meetingType", localStorage.getItem("meetingType"));
 
-
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData);
       if (response.data.transcript) {
         setTranscript(response.data.transcript);
@@ -175,18 +185,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const handleClickRecording = () => {
     if (isRecording) {
       stopRecording();
-    } 
-    // else {
-    //   startRecording();
-    // }
+    }
     setIsVisibleAssistant(true);
   };
-
 
   useEffect(() => {
     const startRecording = async () => {
       try {
-        // Reset states and clear any previous data.
         setIsProcessing(false);
         setIsRecording(true);
         setAIResponse("");
@@ -206,7 +211,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
         mediaRecorderRef.current.start(1000);
         console.log("Recording started");
   
-        // Periodically send audio chunks every 10 seconds.
         intervalIdRef.current = setInterval(() => {
           if (audioChunksRef.current.length > 0) {
             console.log(
@@ -221,13 +225,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
       }
     };
     startRecording();
-    // Make the assistant visible when the page appears.
     setIsVisibleAssistant(true);
   }, [setIsVisibleAssistant]);
 
   return (
     <div className="list-page-inner">
-      {/* Professional Processing Overlay */}
       {isProcessing && (
         <div className="processing-overlay">
           <div className="processing-container">
@@ -238,31 +240,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       )}
 
       <div className="top-back-area">
-        <div className="auto-container">
-          <div className="row">
-            <div className="col-12">
-              <div
-                className="back-btn-area style-two"
-                onClick={() => setIsVisibleAssistant(false)}
-              >
-                <button className="btn-style-new">
-                  <svg
-                    width="24"
-                    height="25"
-                    viewBox="0 0 24 25"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M7.57895 7.5V12.5L0 6.25L7.57895 0V5H13.8947C16.5748 5 19.1451 6.05357 21.0402 7.92893C22.9353 9.8043 24 12.3478 24 15C24 17.6522 22.9353 20.1957 21.0402 22.0711C19.1451 23.9464 16.5748 25 13.8947 25H2.52632V22.5H13.8947C15.9048 22.5 17.8325 21.7098 19.2539 20.3033C20.6752 18.8968 21.4737 16.9891 21.4737 15C21.4737 13.0109 20.6752 11.1032 19.2539 9.6967C17.8325 8.29018 15.9048 7.5 13.8947 7.5H7.57895Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Main Information Section */}
@@ -276,7 +253,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 {isRecording ? (
                   <button
                     className="speek-btn style-animation"
-                    onClick={handleClickRecording}
                   >
                     <img
                       src={require("../../static/images/speek-btn.png")}
@@ -286,7 +262,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 ) : (
                   <button
                     className="speek-btn"
-                    onClick={stopRecording}
+                    onClick={handleClickRecording}
                   >
                     <img
                       src={require("../../static/images/speek-btn.png")}
@@ -296,14 +272,38 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 )}
               </div>
 
+              {/* Chat-like UI */}
               <div className="information-box response-box">
-                <h3>AI Response</h3>
+                <h3>Conversation</h3>
                 <div className="summery-box">
-                  <pre style={responseStyle}>
-                    {ai_response || "Waiting for AI Response...."}
-                  </pre>
+                {messages.map((msg, index) => {
+                  if (msg.sender === "AI Agent") {
+                    return (
+                      <div key={index} className="chat-bubble ai">
+                        <strong>AI Agent:</strong>
+                        <pre
+                          style={{
+                            whiteSpace: "pre-wrap",
+                            wordWrap: "break-word",
+                            overflowX: "hidden",
+                            margin: 0
+                          }}
+                        >
+                          {formatAIResponse(msg.text)}
+                        </pre>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={index} className="chat-bubble user">
+                        <strong>User:</strong> {msg.text}
+                      </div>
+                    );
+                  }
+                })}
                 </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -313,3 +313,4 @@ const Talk = ({ setIsVisibleAssistant }) => {
 };
 
 export default Talk;
+
