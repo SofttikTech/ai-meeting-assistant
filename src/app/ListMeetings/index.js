@@ -122,6 +122,7 @@ function ListMeetings() {
       )
     },
   ];
+  
 
   const handleRowClick = (rowData) => {
     localStorage.setItem("selectedMeeting", JSON.stringify(rowData));
