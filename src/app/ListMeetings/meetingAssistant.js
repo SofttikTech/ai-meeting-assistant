@@ -7,7 +7,7 @@ import "react-table-6/react-table.css";
 import "./index.css";
 import { URL } from "../../store/config";
 
-const SERVER_URL = 'URL';
+const SERVER_URL = URL;
 // export const URL = 'http://127.0.0.1:5000';
 
 
@@ -115,20 +115,20 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
       setTimeout(() => {
         axios.get(`${SERVER_URL}/generate_summary`, {
-            params: {
-              ai_response: ai_response,
-              transcript: transcript,
-              user_id: localStorage.getItem("user_id"),
-              meeting_id: localStorage.getItem("meeting_id"),
-              admin_id: localStorage.getItem("admin_id"),
-              FirstName: localStorage.getItem("FirstName"),
-              LastName: localStorage.getItem("LastName"),
-              Email: localStorage.getItem("email"),
-              phoneNumber: localStorage.getItem("phoneNumber"),
-              campaign: localStorage.getItem("campaign"),
-              meetingType: localStorage.getItem("meetingType")
-            },
-          })
+          params: {
+            ai_response: ai_response,
+            transcript: transcript,
+            user_id: localStorage.getItem("user_id"),
+            meeting_id: localStorage.getItem("meeting_id"),
+            admin_id: localStorage.getItem("admin_id"),
+            FirstName: localStorage.getItem("FirstName"),
+            LastName: localStorage.getItem("LastName"),
+            Email: localStorage.getItem("email"),
+            phoneNumber: localStorage.getItem("phoneNumber"),
+            campaign: localStorage.getItem("campaign"),
+            meetingType: localStorage.getItem("meetingType")
+          },
+        })
           .then((response) => {
             if (response.data.summary) {
               console.log("Summary:", response.data.summary);
@@ -147,9 +147,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
             console.error("Error calling summary endpoint:", error);
             setIsProcessing(false);
           });
-          setTimeout(()=>{
-            history.push("/DetailSelect");
-          },15000)
+        setTimeout(() => {
+          history.push("/DetailSelect");
+        }, 15000)
       }, 4000);
     }
   };
@@ -167,7 +167,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("audio", audioBlob, "conversation.webm");
       formData.append("meetingType", localStorage.getItem("meetingType"));
 
-      const response = await axios.post(`${SERVER_URL}/transcribe`, formData, {timeout: 1200000});
+      const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 
       if (response.data.transcript) {
         setTranscript(response.data.transcript);
@@ -201,7 +201,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
         setAIResponse("");
         setTranscript("Waiting for transcription...");
         audioChunksRef.current = [];
-  
+
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorderRef.current = new MediaRecorder(stream, {
           mimeType: "audio/webm",
@@ -215,7 +215,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
         };
         mediaRecorderRef.current.start(1000);
         console.log("Recording started");
-  
+
         intervalIdRef.current = setInterval(() => {
           if (audioChunksRef.current.length > 0) {
             console.log(
@@ -262,6 +262,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 {isRecording ? (
                   <button
                     className="speek-btn style-animation"
+                    onClick={handleClickRecording}
                   >
                     <img
                       src={require("../../static/images/speek-btn.png")}
@@ -285,31 +286,33 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="information-box response-box">
                 <h3>Conversation</h3>
                 <div className="summery-box">
-                {messages.map((msg, index) => {
-                  if (msg.sender === "AI Agent") {
-                    return (
-                      <div key={index} className="chat-bubble ai">
-                        <strong>AI Agent:</strong>
-                        <pre
-                          style={{
-                            whiteSpace: "pre-wrap",
-                            wordWrap: "break-word",
-                            overflowX: "hidden",
-                            margin: 0
-                          }}
-                        >
-                          {formatAIResponse(msg.text)}
-                        </pre>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div key={index} className="chat-bubble user">
-                        <strong>User:</strong> {msg.text}
-                      </div>
-                    );
-                  }
-                })}
+                  {messages.map((msg, index) => {
+                    if (msg.sender === "AI Agent") {
+                      return (
+                        <div key={index} className="chat-bubble ai">
+                          <p>
+                            <strong>AI Agent:</strong>
+                            <pre
+                              style={{
+                                whiteSpace: "pre-wrap",
+                                wordWrap: "break-word",
+                                overflowX: "hidden",
+                                margin: 0
+                              }}
+                            >
+                              {formatAIResponse(msg.text)}
+                            </pre>
+                          </p>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div key={index} className="chat-bubble user">
+                          <p><strong>User:</strong> {msg.text}</p>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
               </div>
 

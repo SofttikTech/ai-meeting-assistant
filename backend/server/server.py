@@ -19,7 +19,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'webm'}
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 1000 * 1024 * 1024
 openai.api_key = os.getenv("OPENAI_API_KEY")
 # CORS(app)
 
@@ -31,7 +31,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-MAX_HISTORY = 100
+MAX_HISTORY = 1000
 conversation_history = []
 ai_response = ""
 
@@ -50,6 +50,7 @@ def home():
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
+    ai_response = ""
     try:
         logging.info("Received transcription request")
 
