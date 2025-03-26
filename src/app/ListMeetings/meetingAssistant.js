@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import io from "socket.io-client";
 import { saveAs } from "file-saver";
@@ -8,8 +9,6 @@ import "./index.css";
 import { URL } from "../../store/config";
 
 const SERVER_URL = URL;
-// export const URL = 'http://127.0.0.1:5000';
-
 
 function formatAIResponse(text) {
   const lines = text.split('?').map(line => line.trim()).filter(Boolean);
@@ -23,9 +22,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transcript, setTranscript] = useState("Waiting for transcription...");
-  const [count, setCount] = useState(0);
-
-  const [messages, setMessages] = useState([]);
+  // Replace messages with conversationTurns state (each turn will contain a user message and its corresponding AI response)
+  const [conversationTurns, setConversationTurns] = useState([]);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -40,20 +38,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       console.log("Connected to server");
     });
     socket.on("update", (data) => {
-      if (data.ai_response) {
-        const newAIMessage = data.ai_response.trim();
-        if (lastMessageRef.current !== newAIMessage) {
-          lastMessageRef.current = newAIMessage;
-          setAIResponse((prev) =>
-            prev ? prev + "\n" + data.ai_response : data.ai_response
-          );
-          // Add AI message to chat
-          setMessages((prev) => [
-            ...prev,
-            { sender: "AI Agent", text: newAIMessage },
-          ]);
-        }
-      }
       if (data.transcript) {
         const newTranscript = data.transcript.trim();
         if (lastTranscriptRef.current !== newTranscript) {
@@ -63,10 +47,30 @@ const Talk = ({ setIsVisibleAssistant }) => {
               ? data.transcript
               : prev + "\n" + data.transcript
           );
-          setMessages((prev) => [
-            ...prev,
-            { sender: "User", text: newTranscript },
+          setConversationTurns((prevTurns) => [
+            ...prevTurns,
+            { user: newTranscript, ai: "" }
           ]);
+        }
+      }
+      if (data.ai_response) {
+        const newAIMessage = data.ai_response.trim();
+        if (lastMessageRef.current !== newAIMessage) {
+          lastMessageRef.current = newAIMessage;
+          setAIResponse((prev) =>
+            prev ? prev + "\n" + data.ai_response : data.ai_response
+          );
+          setConversationTurns((prevTurns) => {
+            if (prevTurns.length === 0) {
+              return [{ user: "", ai: newAIMessage }];
+            }
+            const updatedTurns = [...prevTurns];
+            updatedTurns[updatedTurns.length - 1] = {
+              ...updatedTurns[updatedTurns.length - 1],
+              ai: newAIMessage
+            };
+            return updatedTurns;
+          });
         }
       }
     });
@@ -110,7 +114,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
         sendAudioToBackend();
       }
       setIsRecording(false);
-
       setIsProcessing(true);
 
       setTimeout(() => {
@@ -132,24 +135,21 @@ const Talk = ({ setIsVisibleAssistant }) => {
           .then((response) => {
             if (response.data.summary) {
               console.log("Summary:", response.data.summary);
-              console.log("HELLO");
               setSummary(response.data.summary);
               setIsProcessing(false);
               history.push("/DetailSelect");
             } else {
-              console.log("HELLO");
               console.error("Error generating summary:", response.data.error);
               setIsProcessing(false);
             }
           })
           .catch((error) => {
-            console.log("HELLO");
             console.error("Error calling summary endpoint:", error);
             setIsProcessing(false);
           });
         setTimeout(() => {
           history.push("/DetailSelect");
-        }, 15000)
+        }, 15000);
       }, 4000);
     }
   };
@@ -207,7 +207,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
           mimeType: "audio/webm",
         });
         mediaRecorderRef.current.ondataavailable = (event) => {
-          // audioChunksRef.current = []
           if (event.data.size > 0) {
             console.log(`Received chunk: ${event.data.size} bytes`);
             audioChunksRef.current.push(event.data);
@@ -222,12 +221,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
               `Sending ${audioChunksRef.current.length} audio chunks to backend`
             );
             sendAudioToBackend();
-            // audioChunksRef.current = []
-            // if(count>=5){
-            //   audioChunksRef.current = [];
-            // }
           }
-        }, 10000);
+        }, 20000);
       } catch (error) {
         console.error("Error starting recording:", error);
         setIsRecording(false);
@@ -248,8 +243,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
         </div>
       )}
 
-      <div className="top-back-area">
-      </div>
+      <div className="top-back-area"></div>
 
       {/* Main Information Section */}
       <div className="information-sec">
@@ -270,10 +264,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                     />
                   </button>
                 ) : (
-                  <button
-                    className="speek-btn"
-                    onClick={handleClickRecording}
-                  >
+                  <button className="speek-btn" onClick={handleClickRecording}>
                     <img
                       src={require("../../static/images/speek-btn.png")}
                       alt="Speak Button"
@@ -286,33 +277,30 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="information-box response-box">
                 <h3>Conversation</h3>
                 <div className="summery-box">
-                  {messages.map((msg, index) => {
-                    if (msg.sender === "AI Agent") {
-                      return (
-                        <div key={index} className="chat-bubble ai">
+                  {conversationTurns.map((turn, index) => (
+                    <div key={index} className="chat-turn">
+                      {turn.user && (
+                        <div className="chat-bubble user">
+                          <p><strong>User:</strong> {turn.user}</p>
+                        </div>
+                      )}
+                      {turn.ai && (
+                        <div className="chat-bubble ai">
                           <p>
                             <strong>AI Agent:</strong>
                             <pre
                               style={{
-                                whiteSpace: "pre-wrap",
-                                wordWrap: "break-word",
-                                overflowX: "hidden",
+                                ...responseStyle,
                                 margin: 0
                               }}
                             >
-                              {formatAIResponse(msg.text)}
+                              {formatAIResponse(turn.ai)}
                             </pre>
                           </p>
                         </div>
-                      );
-                    } else {
-                      return (
-                        <div key={index} className="chat-bubble user">
-                          <p><strong>User:</strong> {msg.text}</p>
-                        </div>
-                      );
-                    }
-                  })}
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -325,4 +313,3 @@ const Talk = ({ setIsVisibleAssistant }) => {
 };
 
 export default Talk;
-
