@@ -136,6 +136,9 @@ function ListMeetings() {
 
   const toggleProfileAdvisor = () => setModalProfileAdvisor(!modalProfileAdvisor);
 
+  console.log('*******previousClients', previousClients);
+  
+
   return (
     <div className='list-page'>
       {isVisibleMeetingDetail ? (
@@ -191,7 +194,7 @@ function ListMeetings() {
                           minRows={6}
                           columns={columnsAgents}
                           filterable={false}
-                          showPagination={false}
+                          showPagination={true}
                           data={upcomingClients}
                           getTrProps={(state, rowInfo) => {
                             return rowInfo
@@ -224,7 +227,7 @@ function ListMeetings() {
                           minRows={6}
                           columns={columnsAgents}
                           filterable={false}
-                          showPagination={false}
+                          showPagination={true}
                           data={previousClients}
                           getTrProps={(state, rowInfo) => {
                             return rowInfo
