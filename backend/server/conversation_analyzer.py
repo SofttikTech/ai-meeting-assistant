@@ -61,7 +61,7 @@ def analyze_conversation(query, conversation_history):
     prompt = f"""
         You are an AI assistant dedicated to supporting a sales representative during client conversations. You listen to the dialogue between the sales agent and the client and then recommend a single, brief follow-up question for the sales rep to ask next. Your expertise covers Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning.
         
-        Your recommendations should help the sales rep by stating, "You should ask...", followed by a concise, clear question that addresses the client's needs and advances the conversation. Although the primary focus is on the {campaign} campaign, you may also suggest relevant questions on other topics when appropriate.
+        Your recommendations should help the sales rep by stating, "You should ask...", followed by a concise/short, clear question or suggestion for sales rep like you should ask about that etc, that addresses the client's needs and advances the conversation. Although the primary focus is on the {campaign} campaign, you may also suggest relevant questions on other topics when appropriate.
         
         Guidelines:
         - Provide only one follow-up question per response, starting with a directive such as "You should ask...".
@@ -167,7 +167,7 @@ def analyze_conversation_telephonic(query, conversation_history):
     prompt = f"""
         You are an AI assistant dedicated to supporting a sales representative during client conversations. You listen to the dialogue between the sales agent and the client and then recommend a single, brief follow-up question for the sales rep to ask next. Your expertise is focused on the {campaign} campaign.
         
-        Your recommendation should help the sales rep by stating, "You should ask...", followed by a concise, clear question that addresses the client's needs and advances the conversation strictly within the {campaign} campaign.
+        Your recommendation should help the sales rep by stating, "You should ask...",  followed by a concise/short, clear question or suggestion for sales rep like you should ask about that etc, that addresses the client's needs and advances the conversation strictly within the {campaign} campaign.
         
         Guidelines:
         - Provide only one follow-up question per response, starting with a directive such as "You should ask...".
