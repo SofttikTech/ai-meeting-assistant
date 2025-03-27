@@ -18,19 +18,18 @@ function formatAIResponse(text) {
 const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
   const [summary, setSummary] = useState('');
+  const [transcript, setTranscript] = useState("Waiting for transcription...");
   const [ai_response, setAIResponse] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [transcript, setTranscript] = useState("Waiting for transcription...");
-  // Replace messages with conversationTurns state (each turn will contain a user message and its corresponding AI response)
   const [conversationTurns, setConversationTurns] = useState([]);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const intervalIdRef = useRef(null);
   const socketRef = useRef(null);
+  const fullTranscriptRef = useRef("");
   const lastMessageRef = useRef("");
-  const lastTranscriptRef = useRef("");
 
   useEffect(() => {
     const socket = io(SERVER_URL);
@@ -38,21 +37,24 @@ const Talk = ({ setIsVisibleAssistant }) => {
       console.log("Connected to server");
     });
     socket.on("update", (data) => {
+      // When transcript is received, only extract the new one
       if (data.transcript) {
-        const newTranscript = data.transcript.trim();
-        if (lastTranscriptRef.current !== newTranscript) {
-          lastTranscriptRef.current = newTranscript;
-          setTranscript((prev) =>
-            prev === "Waiting for transcription..."
-              ? data.transcript
-              : prev + "\n" + data.transcript
-          );
+        const newFullTranscript = data.transcript.trim();
+        let newPortion = newFullTranscript;
+        if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
+          newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
+        }
+        fullTranscriptRef.current = newFullTranscript;
+        // If we have a new portion, update the UI
+        if (newPortion) {
+          setTranscript(newPortion);
           setConversationTurns((prevTurns) => [
             ...prevTurns,
-            { user: newTranscript, ai: "" }
+            { user: newPortion, ai: "" }
           ]);
         }
       }
+      // Process AI response
       if (data.ai_response) {
         const newAIMessage = data.ai_response.trim();
         if (lastMessageRef.current !== newAIMessage) {
@@ -120,7 +122,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
         axios.get(`${SERVER_URL}/generate_summary`, {
           params: {
             ai_response: ai_response,
-            transcript: transcript,
+            transcript: fullTranscriptRef.current,
             user_id: localStorage.getItem("user_id"),
             meeting_id: localStorage.getItem("meeting_id"),
             admin_id: localStorage.getItem("admin_id"),
@@ -170,7 +172,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 
       if (response.data.transcript) {
-        setTranscript(response.data.transcript);
         console.log("Transcription received:", response.data.transcript);
       }
       audioChunksRef.current = [];
@@ -199,7 +200,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
         setIsProcessing(false);
         setIsRecording(true);
         setAIResponse("");
+        // Reset transcript and full transcript storage on new recording
         setTranscript("Waiting for transcription...");
+        fullTranscriptRef.current = "";
         audioChunksRef.current = [];
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
