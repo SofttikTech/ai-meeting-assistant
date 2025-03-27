@@ -70,10 +70,10 @@ def analyze_conversation(query, conversation_history):
         Guidelines:
         - Provide only one recommendation per response, starting with a directive such as "You can ask...".
         - Do not include any headings, labels, or summaries.
-        - Ensure the recommendation is extremely concise, directly relevant to the client’s previous responses, and helps the sales rep gather more information.
+        - Ensure the recommendation is extremely concise (5-7 words only), directly relevant to the client’s previous responses, and helps the sales rep gather more information.
         - Base your recommendation on the details provided in the user query, conversation history, and any retrieved documents.
         - Adapt your recommendation dynamically according to the evolving conversation.
-        - Even though the main focus is {campaign}, feel free to incorporate questions about Financial, Life Insurance, or Long-Term Care Planning when it makes sense.
+        - Even though the main focus is {campaign}, feel free to incorporate recommendation about Financial, Life Insurance, or Long-Term Care Planning when it makes sense.
 
         
         Although the main focus is on the {campaign} campaign, feel free to include cross-campaign recommendations when relevant. Base your recommendation on the user query, conversation history, and retrieved documents, and adapt dynamically to the evolving conversation.
