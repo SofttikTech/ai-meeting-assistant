@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import io from "socket.io-client";
 import { saveAs } from "file-saver";
@@ -8,8 +9,6 @@ import "./index.css";
 import { URL } from "../../store/config";
 
 const SERVER_URL = URL;
-// export const URL = 'http://127.0.0.1:5000';
-
 
 function formatAIResponse(text) {
   const lines = text.split('?').map(line => line.trim()).filter(Boolean);
@@ -19,20 +18,18 @@ function formatAIResponse(text) {
 const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
   const [summary, setSummary] = useState('');
+  const [transcript, setTranscript] = useState("Waiting for transcription...");
   const [ai_response, setAIResponse] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [transcript, setTranscript] = useState("Waiting for transcription...");
-  const [count, setCount] = useState(0);
-
-  const [messages, setMessages] = useState([]);
+  const [conversationTurns, setConversationTurns] = useState([]);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const intervalIdRef = useRef(null);
   const socketRef = useRef(null);
+  const fullTranscriptRef = useRef("");
   const lastMessageRef = useRef("");
-  const lastTranscriptRef = useRef("");
 
   useEffect(() => {
     const socket = io(SERVER_URL);
@@ -40,6 +37,24 @@ const Talk = ({ setIsVisibleAssistant }) => {
       console.log("Connected to server");
     });
     socket.on("update", (data) => {
+      // When transcript is received, only extract the new one
+      if (data.transcript) {
+        const newFullTranscript = data.transcript.trim();
+        let newPortion = newFullTranscript;
+        if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
+          newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
+        }
+        fullTranscriptRef.current = newFullTranscript;
+        // If we have a new portion, update the UI
+        if (newPortion) {
+          setTranscript(newPortion);
+          setConversationTurns((prevTurns) => [
+            ...prevTurns,
+            { user: newPortion, ai: "" }
+          ]);
+        }
+      }
+      // Process AI response
       if (data.ai_response) {
         const newAIMessage = data.ai_response.trim();
         if (lastMessageRef.current !== newAIMessage) {
@@ -47,26 +62,17 @@ const Talk = ({ setIsVisibleAssistant }) => {
           setAIResponse((prev) =>
             prev ? prev + "\n" + data.ai_response : data.ai_response
           );
-          // Add AI message to chat
-          setMessages((prev) => [
-            ...prev,
-            { sender: "AI Agent", text: newAIMessage },
-          ]);
-        }
-      }
-      if (data.transcript) {
-        const newTranscript = data.transcript.trim();
-        if (lastTranscriptRef.current !== newTranscript) {
-          lastTranscriptRef.current = newTranscript;
-          setTranscript((prev) =>
-            prev === "Waiting for transcription..."
-              ? data.transcript
-              : prev + "\n" + data.transcript
-          );
-          setMessages((prev) => [
-            ...prev,
-            { sender: "User", text: newTranscript },
-          ]);
+          setConversationTurns((prevTurns) => {
+            if (prevTurns.length === 0) {
+              return [{ user: "", ai: newAIMessage }];
+            }
+            const updatedTurns = [...prevTurns];
+            updatedTurns[updatedTurns.length - 1] = {
+              ...updatedTurns[updatedTurns.length - 1],
+              ai: newAIMessage
+            };
+            return updatedTurns;
+          });
         }
       }
     });
@@ -110,14 +116,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
         sendAudioToBackend();
       }
       setIsRecording(false);
-
       setIsProcessing(true);
 
       setTimeout(() => {
         axios.get(`${SERVER_URL}/generate_summary`, {
           params: {
             ai_response: ai_response,
-            transcript: transcript,
+            transcript: fullTranscriptRef.current,
             user_id: localStorage.getItem("user_id"),
             meeting_id: localStorage.getItem("meeting_id"),
             admin_id: localStorage.getItem("admin_id"),
@@ -132,24 +137,21 @@ const Talk = ({ setIsVisibleAssistant }) => {
           .then((response) => {
             if (response.data.summary) {
               console.log("Summary:", response.data.summary);
-              console.log("HELLO");
               setSummary(response.data.summary);
               setIsProcessing(false);
               history.push("/DetailSelect");
             } else {
-              console.log("HELLO");
               console.error("Error generating summary:", response.data.error);
               setIsProcessing(false);
             }
           })
           .catch((error) => {
-            console.log("HELLO");
             console.error("Error calling summary endpoint:", error);
             setIsProcessing(false);
           });
         setTimeout(() => {
           history.push("/DetailSelect");
-        }, 15000)
+        }, 15000);
       }, 4000);
     }
   };
@@ -170,7 +172,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 
       if (response.data.transcript) {
-        setTranscript(response.data.transcript);
         console.log("Transcription received:", response.data.transcript);
       }
       audioChunksRef.current = [];
@@ -199,7 +200,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
         setIsProcessing(false);
         setIsRecording(true);
         setAIResponse("");
+        // Reset transcript and full transcript storage on new recording
         setTranscript("Waiting for transcription...");
+        fullTranscriptRef.current = "";
         audioChunksRef.current = [];
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -207,7 +210,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
           mimeType: "audio/webm",
         });
         mediaRecorderRef.current.ondataavailable = (event) => {
-          // audioChunksRef.current = []
           if (event.data.size > 0) {
             console.log(`Received chunk: ${event.data.size} bytes`);
             audioChunksRef.current.push(event.data);
@@ -222,12 +224,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
               `Sending ${audioChunksRef.current.length} audio chunks to backend`
             );
             sendAudioToBackend();
-            // audioChunksRef.current = []
-            // if(count>=5){
-            //   audioChunksRef.current = [];
-            // }
           }
-        }, 10000);
+        }, 20000);
       } catch (error) {
         console.error("Error starting recording:", error);
         setIsRecording(false);
@@ -248,8 +246,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
         </div>
       )}
 
-      <div className="top-back-area">
-      </div>
+      <div className="top-back-area"></div>
 
       {/* Main Information Section */}
       <div className="information-sec">
@@ -270,10 +267,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                     />
                   </button>
                 ) : (
-                  <button
-                    className="speek-btn"
-                    onClick={handleClickRecording}
-                  >
+                  <button className="speek-btn" onClick={handleClickRecording}>
                     <img
                       src={require("../../static/images/speek-btn.png")}
                       alt="Speak Button"
@@ -286,33 +280,30 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="information-box response-box">
                 <h3>Conversation</h3>
                 <div className="summery-box">
-                  {messages.map((msg, index) => {
-                    if (msg.sender === "AI Agent") {
-                      return (
-                        <div key={index} className="chat-bubble ai">
+                  {conversationTurns.map((turn, index) => (
+                    <div key={index} className="chat-turn">
+                      {turn.user && (
+                        <div className="chat-bubble user">
+                          <p><strong>User:</strong> {turn.user}</p>
+                        </div>
+                      )}
+                      {turn.ai && (
+                        <div className="chat-bubble ai">
                           <p>
                             <strong>AI Agent:</strong>
                             <pre
                               style={{
-                                whiteSpace: "pre-wrap",
-                                wordWrap: "break-word",
-                                overflowX: "hidden",
+                                ...responseStyle,
                                 margin: 0
                               }}
                             >
-                              {formatAIResponse(msg.text)}
+                              {formatAIResponse(turn.ai)}
                             </pre>
                           </p>
                         </div>
-                      );
-                    } else {
-                      return (
-                        <div key={index} className="chat-bubble user">
-                          <p><strong>User:</strong> {msg.text}</p>
-                        </div>
-                      );
-                    }
-                  })}
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -325,4 +316,3 @@ const Talk = ({ setIsVisibleAssistant }) => {
 };
 
 export default Talk;
-
