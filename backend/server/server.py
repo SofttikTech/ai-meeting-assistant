@@ -7,10 +7,8 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
-import openai
 from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests, analyze_conversation_telephonic
 from ghl_integration import send_data_to_n8n_and_log
-
 
 load_dotenv()
 
@@ -19,9 +17,9 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'webm'}
-app.config['MAX_CONTENT_LENGTH'] = 1000 * 1024 * 1024
-openai.api_key = os.getenv("OPENAI_API_KEY")
-# CORS(app)
+app.config['MAX_CONTENT_LENGTH'] = 1000 * 1024 * 1024  
+
+DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,18 +29,15 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-MAX_HISTORY = 1000
+MAX_HISTORY = 100
 conversation_history = []
 ai_response = ""
 
 def update_conversation_history(new_transcript):
-    """Update conversation history and ensure it doesn't exceed the max limit."""
     global conversation_history
     conversation_history.append(new_transcript)
-
     if len(conversation_history) > MAX_HISTORY:
         conversation_history.pop(0)
-
 
 @app.route('/')
 def home():
@@ -53,9 +48,7 @@ def transcribe():
     ai_response = ""
     try:
         logging.info("Received transcription request")
-
         meetingType = request.form.get("meetingType")
-        # getting meeting type
         logging.info(f"Meeting Type: {meetingType}")
         
         if 'audio' not in request.files:
@@ -82,39 +75,41 @@ def transcribe():
                 return jsonify({"error": "Empty audio file."}), 400
             audio_data = BytesIO(audio_content)
 
-        headers = {"Authorization": f"Bearer {openai.api_key}"}
-        files = {
-            "file": (filename, audio_data, "audio/webm"),
-            "model": (None, "whisper-1"),
+        headers = {
+            "Authorization": f"Token {DEEPGRAM_API_KEY}",
+            "Content-Type": "audio/webm"
         }
+        deepgram_url = "https://api.deepgram.com/v1/listen?async=true&punctuate=true"
 
-        logging.info("Sending to OpenAI Whisper API")
+        logging.info("Sending audio to Deepgram API for transcription")
         response = requests.post(
-            "https://api.openai.com/v1/audio/transcriptions",
+            deepgram_url,
             headers=headers,
-            files=files
+            data=audio_data
         )
 
         if response.status_code == 200:
-            transcript = response.json().get('text', '')
+            json_response = response.json()
+            transcript = json_response.get("results", {}) \
+                      .get("channels", [{}])[0] \
+                      .get("alternatives", [{}])[0] \
+                      .get("transcript", "")
             logging.info(f"Transcript received: {transcript[:50]}...")
+            print(transcript)
             
             update_conversation_history(transcript)
-            # using meeting type 
             if meetingType == "In Place":
-                ai_response = analyze_conversation(transcript,conversation_history)
+                ai_response = analyze_conversation(transcript, conversation_history)
             elif meetingType == "Telephonic":
-                ai_response = analyze_conversation_telephonic(transcript,conversation_history)
+                ai_response = analyze_conversation_telephonic(transcript, conversation_history)
 
             if ai_response:
                 logging.info(f"AI Response: {ai_response[:50]}...")
-                # socket broadcast
                 socketio.emit('update', {'ai_response': ai_response, 'transcript': transcript})
-                # socketio.emit('ai_update',ai_response)
 
             return jsonify({"transcript": transcript})
         else:
-            logging.error(f"OpenAI API Error: {response.status_code} - {response.text}")
+            logging.error(f"Deepgram API Error: {response.status_code} - {response.text}")
             return jsonify({"error": "Transcription failed"}), 500
 
     except Exception as error:
@@ -132,7 +127,6 @@ def generate_summary():
     email = request.args.get('Email')
     phoneNumber = request.args.get('phoneNumber')
     campaign = request.args.get('campaign')
-    # meetingType = data.args.get("MeetingType")
 
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400        
@@ -144,7 +138,6 @@ def generate_summary():
     print("AI response:", ai_response)
     print("Transcript:", transcript)
 
-    # Prepare data to send to n8n.
     data_to_send = {
         "FirstName": firstName,
         "LastName": lastName,
@@ -155,13 +148,12 @@ def generate_summary():
         "summary": summary,
         "campaign": campaign,
         "clientSummary": client_summary,
-        "New Actionable":new_data
+        "New Actionable": new_data
     }
     
     message = send_data_to_n8n_and_log(data_to_send)
     print(message)
 
-    # Prepare payload for storing meeting data in your database.
     db_payload = {
         "user_id": user_id,
         "admin_id": admin_id,
@@ -170,7 +162,6 @@ def generate_summary():
         "summary": summary,
         "clientSummary": client_summary
     }
-
 
     try:
         db_response = requests.post("https://database.epiphanyadvisor.com/addMeetings", json=db_payload)
@@ -184,7 +175,6 @@ def generate_summary():
             "error": "Error calling database endpoint",
             "details": str(e)
         }), 500
-
 
     return jsonify({"summary": summary}), 200
 
