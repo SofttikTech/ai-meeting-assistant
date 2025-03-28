@@ -487,12 +487,33 @@
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble.user {
-  margin: 9px 0;
+  margin: 9px 0 20px;
   clear: both;
-  display: flex;
+  display: flex
+;
   justify-content: end;
 }
 
+.information-sec .information-box.response-box .summery-box .chat-bubble.ai p {
+  font-size: 14px;
+  background-color: #9565E7;
+  padding: 6px 8px;
+  border-radius: 7px;
+  width: auto;
+  display: inline-block;
+  color: #fff;
+  position: relative;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.ai p strong {
+  display: inline-block;
+  font-size: 17px;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.ai p pre {
+  display: inline;
+  font-size: 16px;
+}
 .information-sec .information-box.response-box .summery-box .chat-bubble.user p {
   font-size: 14px;
   background-color: #f2f2f2;
