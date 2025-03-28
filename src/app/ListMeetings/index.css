@@ -487,39 +487,84 @@
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble.user {
-  margin: 9px 0;
+  margin: 9px 0 20px;
   clear: both;
   display: flex;
   justify-content: end;
 }
 
-.information-sec .information-box.response-box .summery-box .chat-bubble.user p {
-  font-size: 14px;
-  background-color: #f2f2f2;
-  padding: 6px 8px;
-  border-radius: 7px;
-}
-
-.information-sec .information-box.response-box .summery-box .chat-bubble.user p {
-  font-size: 14px;
-  background-color: #f2f2f2;
-  padding: 6px 8px;
-  border-radius: 7px;
+.information-sec .information-box.response-box .summery-box .chat-bubble.ai {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 18px;
+  position: relative;
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble.ai p {
-  display: flex;
-  flex-wrap: wrap;
+  font-size: 14px;
+  background-color: #9565E7;
+  padding: 6px 8px;
+  border-radius: 7px;
+  width: auto;
+  display: inline-block;
+  color: #fff;
+  position: relative;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.ai p strong {
+  display: inline-block;
+  font-size: 17px;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.ai p pre {
+  display: inline;
+  font-size: 16px;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.user p {
+  font-size: 14px;
+  background-color: #f2f2f2;
+  padding: 6px 8px;
+  border-radius: 7px;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.user p {
+  font-size: 14px;
+  background-color: #f2f2f2;
+  padding: 6px 8px;
+  border-radius: 7px;
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble.ai p p strong {
-  width: 150px;
+  width: 170px;
 }
 
 
 .information-sec .information-box.response-box .summery-box .chat-bubble.ai p pre {
   width: 93%;
   padding-left: 14px;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble p {
+  position: relative;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble p:before {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: -9px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #9565E7;
+}
+
+.information-sec .information-box.response-box .summery-box .chat-bubble.user p:before{
+  right: auto;
+  left: 8px;
+  border-top-color: #f2f2f2;
 }
 
 @media (max-width: 1690px) {
