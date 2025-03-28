@@ -107,7 +107,6 @@ def analyze_conversation(query, conversation_history):
         {retrieved_docs_text}
 
     """
-<<<<<<< HEAD
         # You are an AI assistant dedicated to supporting a sales representative during client conversations. You listen to the dialogue between the sales agent and the client and then recommend a single, brief follow-up question for the sales rep to ask next. Your expertise covers Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning.
         
         # Your recommendations should help the sales rep by stating, "You can ask...", followed by a concise/short, clear question or suggestion for sales rep like you should ask about that etc, that addresses the client's needs and advances the conversation. Although the primary focus is on the {campaign} campaign, you may also suggest relevant questions on other topics when appropriate.
@@ -128,34 +127,6 @@ def analyze_conversation(query, conversation_history):
         
         # Retrieved Documents:
         # {retrieved_docs_text}
-=======
-
-
-    # prompt = f"""
-    #     You are an AI assistant dedicated to supporting a sales representative during client conversations. You listen to the dialogue between the sales agent and the client and then recommend a single, brief follow-up question for the sales rep to ask next. Your expertise covers Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning.
-        
-    #     Your recommendations should help the sales rep by stating, "You should ask...", followed by a concise/short, clear question or suggestion for sales rep like you should ask about that etc, that addresses the client's needs and advances the conversation. Although the primary focus is on the {campaign} campaign, you may also suggest relevant questions on other topics when appropriate.
-        
-    #     Guidelines:
-    #     - Provide only one follow-up question per response, starting with a directive such as "You should ask...".
-    #     - Do not include any headings, labels, or summaries.
-    #     - Ensure the question is extremely concise, directly relevant to the client’s previous responses, and helps the sales rep gather more information.
-    #     - Base your recommendation on the details provided in the user query, conversation history, and any retrieved documents.
-    #     - Adapt your recommendation dynamically according to the evolving conversation.
-    #     - Even though the main focus is {campaign}, feel free to incorporate questions about Financial, Life Insurance, or Long-Term Care Planning when it makes sense.
-        
-    #     User Query:
-    #     {query}
-        
-    #     Conversation History:
-    #     {context}
-        
-    #     Retrieved Documents:
-    #     {retrieved_docs_text}
-
-    # """
-
->>>>>>> e8ecae5fc97cb6c034da637c80e79a69ca3c16b3
 
     # prompt = f"""
     #     You are an AI assistant specialized in client conversations across Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning. In a 30-minute meeting, your role is to help the advisor ask concise, focused follow-up questions to guide the conversation. Your internal understanding is that the conversation occurs in three phases—an introductory phase, a service exploration phase, and a closing phase—but do not include any headings or phase labels in your output. 
