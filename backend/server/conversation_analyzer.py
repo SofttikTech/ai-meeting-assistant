@@ -221,28 +221,77 @@ def analyze_conversation_telephonic(query, conversation_history):
 
         Examples:
 
-        Example 1 (Immediate Health Concern – {campaign} focus):  
-        **Client:** "I’m really worried about my mounting medical bills."  
+        Example 1 (Immediate Health Concern):  
+        **Client:** "I'm really worried about my mounting medical bills."  
         **AI Response:**  
-        You can ask about their urgent {campaign} cost issues.
+        You can ask about their urgent medical cost concerns.
 
-        Example 2 (Long-Term Care Need – {campaign} focus):  
-        **Client:** "I’m worried I might need care as I age."  
+        Example 2 (Long-Term Care Need):  
+        **Client:** "I'm scared I might need long-term care soon."  
         **AI Response:**  
-        You can ask about their long-term {campaign} care plans.
+        You can ask about their planning for future care.
 
-        Example 3 (Income/Retirement Concern – {campaign} focus):  
-        **Client:** "I’m not sure I'll have enough for retirement."  
+        Example 3 (Income/Retirement Concern):  
+        **Client:** "I'm not sure I'll have enough to retire."  
         **AI Response:**  
-        You can ask about their {campaign} retirement strategy.
+        You can ask about their retirement income adequacy.
 
-        Example 4 (Legacy Concern – {campaign} focus):  
-        **Client:** "I want to secure my family's future."  
+        Example 4 (Legacy Concern):  
+        **Client:** "I want to ensure my family is secure after I'm gone."  
         **AI Response:**  
-        You can ask about their {campaign} legacy planning.
+        You can ask about securing their family legacy.
 
         User Query:  
         {query}
+
+        Conversation History:  
+        {context}
+
+        Retrieved Documents:  
+        {retrieved_docs_text}
+
+    """
+
+
+    # prompt = f"""
+    #     You are an AI assistant dedicated to supporting a sales representative during client conversations. You listen to the dialogue between the sales agent and the client and then recommend a single, brief follow-up question for the sales rep to ask next. Your expertise is focused on the {campaign} campaign.
+        
+    #     Your recommendation should help the sales rep by stating, "You should ask...",  followed by a concise/short, clear question or suggestion for sales rep like you should ask about that etc, that addresses the client's needs and advances the conversation strictly within the {campaign} campaign.
+        
+    #     Guidelines:
+    #     - Provide only one follow-up question per response, starting with a directive such as "You should ask...".
+    #     - Do not include any headings, labels, or summaries.
+    #     - Ensure the question is extremely concise, directly relevant to the client’s previous responses, and solely focused on the {campaign} campaign.
+    #     - Base your recommendation on the details provided in the user query, conversation history, and any retrieved documents.
+    #     - Adapt your recommendation dynamically according to the evolving conversation.
+        
+    #     User Query:
+    #     {query}
+        
+    #     Conversation History:
+    #     {context}
+        
+    #     Retrieved Documents:
+    #     {retrieved_docs_text}
+    # """
+
+    # prompt = f"""
+    #     You are an AI assistant specialized in analyzing discussions specifically related to the {campaign} campaign. Your goal is to support the advisor during client conversations by focusing solely on the issues relevant to {campaign}.
+
+    #     Identifying Key Discussion Topics:
+    #     - Recognize and summarize concerns and opportunities directly related to {campaign} such as [for example, if campaign is Wealth Planning: financial pain points like high healthcare costs, inadequate insurance coverage, or investment risks].
+    #     - Highlight any positive actions (e.g., policy purchases or successful investments) that pertain to {campaign}.
+
+    #     Generating Follow-Up Questions:
+    #     - Based on the conversation history and the client's profile, suggest follow-up questions that help the advisor probe further into {campaign}-related concerns or confirm signals pertinent to this campaign.
+
+    #     Relevance Filter:
+    #     - Only generate a response if there is new or significant information directly related to {campaign}. Do not produce unnecessary output if no relevant topics emerge.
+
+    #     Use the following context to generate your analysis:
+
+    #     User Query:
+    #     {query}
 
         Conversation History:  
         {context}

@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import io from "socket.io-client";
 import { saveAs } from "file-saver";
@@ -53,7 +54,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
           ]);
         }
       }
-      // Process AI response as before.
+      // Process AI response
       if (data.ai_response) {
         const newAIMessage = data.ai_response.trim();
         if (lastMessageRef.current !== newAIMessage) {
