@@ -17,7 +17,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'webm'}
-app.config['MAX_CONTENT_LENGTH'] = 1000 * 1024 * 1024  
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  
 
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 
@@ -29,7 +29,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-MAX_HISTORY = 100
+MAX_HISTORY = 80
 conversation_history = []
 ai_response = ""
 

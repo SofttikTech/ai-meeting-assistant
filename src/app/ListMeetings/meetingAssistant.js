@@ -8,7 +8,8 @@ import "react-table-6/react-table.css";
 import "./index.css";
 import { URL } from "../../store/config";
 
-const SERVER_URL = URL;
+// const SERVER_URL = URL;
+const SERVER_URL = 'http://127.0.0.1:5000';
 
 function formatAIResponse(text) {
   const lines = text.split('?').map(line => line.trim()).filter(Boolean);
@@ -36,46 +37,126 @@ const Talk = ({ setIsVisibleAssistant }) => {
     socket.on("connect", () => {
       console.log("Connected to server");
     });
+
+    // socket.on("update", (data) => {
+    //   // When transcript is received, only extract the new one
+    //   // if (data.transcript) {
+    //   //   const newFullTranscript = data.transcript.trim();
+    //   //   let newPortion = newFullTranscript;
+    //   //   if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
+    //   //     newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
+    //   //   }
+    //   //   fullTranscriptRef.current = newFullTranscript;
+    //   //   // If we have a new portion, update the UI
+    //   //   if (newPortion) {
+    //   //     setTranscript(newPortion);
+    //   //     setConversationTurns((prevTurns) => [
+    //   //       ...prevTurns,
+    //   //       { user: newPortion, ai: "" }
+    //   //     ]);
+    //   //   }
+    //   // }
+
+    //   // Update transcript handling in the socket.on("update") callback:
+    //   if (data.transcript) {
+    //     const newFullTranscript = data.transcript.trim();
+    //     let newPortion = newFullTranscript;
+        
+    //     if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
+    //       newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
+    //     }
+        
+    //     fullTranscriptRef.current = newFullTranscript;
+
+    //     if (newPortion) {
+    //       setTranscript(newPortion);
+          
+    //       setConversationTurns((prevTurns) => {
+    //         // If last turn has no AI response, append to user's message
+    //         if (prevTurns.length > 0 && prevTurns[prevTurns.length - 1].ai === "") {
+    //           const updatedTurns = [...prevTurns];
+    //           updatedTurns[updatedTurns.length - 1] = {
+    //             ...updatedTurns[updatedTurns.length - 1],
+    //             user: updatedTurns[updatedTurns.length - 1].user + " " + newPortion
+    //           };
+    //           return updatedTurns;
+    //         }
+    //         // Otherwise create new turn
+    //         return [...prevTurns, { user: newPortion, ai: "" }];
+    //       });
+    //     }
+    //   }
+    //   // Process AI response
+    //   if (data.ai_response) {
+    //     const newAIMessage = data.ai_response.trim();
+    //     if (lastMessageRef.current !== newAIMessage) {
+    //       lastMessageRef.current = newAIMessage;
+    //       setAIResponse((prev) =>
+    //         prev ? prev + "\n" + data.ai_response : data.ai_response
+    //       );
+    //       setConversationTurns((prevTurns) => {
+    //         if (prevTurns.length === 0) {
+    //           return [{ user: "", ai: newAIMessage }];
+    //         }
+    //         const updatedTurns = [...prevTurns];
+    //         updatedTurns[updatedTurns.length - 1] = {
+    //           ...updatedTurns[updatedTurns.length - 1],
+    //           ai: newAIMessage
+    //         };
+    //         return updatedTurns;
+    //       });
+    //     }
+    //   }
+    // });
+    
+    //checking
     socket.on("update", (data) => {
-      // When transcript is received, only extract the new one
       if (data.transcript) {
         const newFullTranscript = data.transcript.trim();
         let newPortion = newFullTranscript;
+    
+        // Only keep new portion of transcript
         if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
           newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
         }
+        
         fullTranscriptRef.current = newFullTranscript;
-        // If we have a new portion, update the UI
+    
         if (newPortion) {
-          setTranscript(newPortion);
-          setConversationTurns((prevTurns) => [
-            ...prevTurns,
-            { user: newPortion, ai: "" }
-          ]);
+          setConversationTurns(prev => {
+            // If last turn has no AI response, merge with previous user input
+            if (prev.length > 0 && !prev[prev.length - 1].ai) {
+              const updated = [...prev];
+              updated[updated.length - 1].user += " " + newPortion;
+              return updated;
+            }
+            // Otherwise create new user turn
+            return [...prev, { user: newPortion, ai: "" }];
+          });
         }
       }
-      // Process AI response
+    
       if (data.ai_response) {
         const newAIMessage = data.ai_response.trim();
         if (lastMessageRef.current !== newAIMessage) {
           lastMessageRef.current = newAIMessage;
-          setAIResponse((prev) =>
-            prev ? prev + "\n" + data.ai_response : data.ai_response
-          );
-          setConversationTurns((prevTurns) => {
-            if (prevTurns.length === 0) {
-              return [{ user: "", ai: newAIMessage }];
+          setConversationTurns(prev => {
+            // Add AI response to last user turn
+            const updated = [...prev];
+            if (updated.length > 0) {
+              updated[updated.length - 1].ai = newAIMessage;
             }
-            const updatedTurns = [...prevTurns];
-            updatedTurns[updatedTurns.length - 1] = {
-              ...updatedTurns[updatedTurns.length - 1],
-              ai: newAIMessage
-            };
-            return updatedTurns;
+            return updated;
           });
         }
       }
     });
+
+    // After processing AI response
+    setConversationTurns(prev => {
+      return prev.filter(turn => turn.user.trim() !== "" || turn.ai.trim() !== "");
+    });
+
     socket.on("status", (data) => {
       console.log("Server status:", data.message);
     });
