@@ -40,7 +40,7 @@ def generate_pre_meeting_questions(first_name, last_name, campaigns):
 
     Generate 3 personalized pre-meeting questions that a {campaigns} advisor should ask. 
     Focus on the client's goals, concerns, and any information needed to tailor financial advice.
-    Give me questions in bullets in good format.
+    Give me questions in bullets in good format and the questions should be concise one line.
     """
 
     response = client.chat.completions.create(
