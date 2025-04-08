@@ -307,7 +307,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
             );
             sendAudioToBackend();
           }
-        }, 20000);
+        }, 10000);
       } catch (error) {
         console.error("Error starting recording:", error);
         setIsRecording(false);
