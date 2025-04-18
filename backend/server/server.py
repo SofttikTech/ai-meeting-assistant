@@ -29,7 +29,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-MAX_HISTORY = 80
+MAX_HISTORY = 30
 conversation_history = []
 ai_response = ""
 

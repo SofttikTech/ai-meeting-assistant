@@ -125,7 +125,15 @@ def analyze_conversation(query, conversation_history):
         - Ensure the entire question is in bold formatting and extremely concise (around 7–10 words for the direct part).
         - Where useful, include a brief clause inviting further explanation (e.g., "Tell me more about why that concerns you").
         - Base your question on the details provided in the user query, conversation history, and any retrieved documents.
+        - **Before generating a question, review the conversation history. Never ask again about a pain point that has already been fully answered by the client.**
+        - **Do not stay too long on the same issue unless the client shows explicit ongoing concern. Shift to a new related topic if possible using the structured progression (Health → Long-Term Care → Income → Legacy).**
         - Adapt your question dynamically according to the evolving conversation.
+        - Never repeat the same topic or near‑duplicate phrasing that the AI just asked.
+        - Maintain a rotating focus through Health → Long‑Term Care → Income → Legacy.
+        - Vary your “detail inviter” clause. Choose one of:  
+            • “Tell me more about why that matters.”  
+            • “Can you elaborate on what you mean?”  
+            • “Help me understand the reason behind that.”
         - Although the primary focus is on the {campaign} campaign, feel free to incorporate topics from Financial, Life Insurance, Medicare, or Long-Term Care Planning when appropriate. Generate a broad range of questions relevant to that campaign by considering all context and retrieved documents.
 
 
@@ -329,6 +337,8 @@ def analyze_conversation_telephonic(query, conversation_history):
         - Ensure the entire question is in bold formatting and extremely concise (around 7–10 words for the direct part).
         - Where useful, include a brief clause inviting further explanation (e.g., "Tell me more about why that concerns you")—but add this clause only when it enhances understanding.
         - Base your question on the details provided in the user query, conversation history, and any retrieved documents.
+        - **Before generating a question, review the conversation history. Never ask again about a pain point that has already been fully answered by the client.**
+        - **Do not stay too long on the same issue unless the client shows explicit ongoing concern. Shift to a new related topic if possible using the structured progression (Health → Long-Term Care → Income → Legacy).**
         - Adapt your question dynamically according to the evolving conversation.
         - Although the primary focus is on the {campaign} campaign, generate a broad range of questions relevant to that campaign by considering all context and retrieved documents.
 
