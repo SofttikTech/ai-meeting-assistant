@@ -34,7 +34,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [index, setIndex] = useState(0);
   const [user, setUser] = useState("");
   const [ai, setAI] = useState("");
-  let messages = [];
+  const [messages, setMessages] = useState([]);
+  const messagesRef = useRef([]);
+
 
   // time getting 
 
@@ -64,6 +66,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
       if (data.transcript) {
         const newFullTranscript = data.transcript.trim();
         let newPortion = newFullTranscript;
+
+        // Todo: setMessages(data['messsages'])
     
         if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
           newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
@@ -100,6 +104,14 @@ const Talk = ({ setIsVisibleAssistant }) => {
           });
         }
       }
+      if (data["messages"]) {
+        console.log("IN socket: ", data["messages"]);
+        setMessages(prev => {
+          const updated = [...prev, ...data["messages"]];
+          messagesRef.current = updated;
+          return updated;
+        });
+      }
     });
 
     // After processing AI response
@@ -128,6 +140,10 @@ const Talk = ({ setIsVisibleAssistant }) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    console.log("messages state now is:", messages);
+  }, [messages]);
 
   // useEffect(() => {
   //   if (conversationTurns.length === 0) return;
@@ -180,7 +196,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
             Email: localStorage.getItem("email"),
             phoneNumber: localStorage.getItem("phoneNumber"),
             campaign: localStorage.getItem("campaign"),
-            meetingType: localStorage.getItem("meetingType")
+            meetingType: localStorage.getItem("meetingType"),
+            history:JSON.stringify(messagesRef.current)
           },
         })
           .then((response) => {
@@ -207,42 +224,12 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
   const sendAudioToBackend = async () => {
 
-    if (conversationTurns.length > 0){
-      const last = conversationTurns[conversationTurns.length - 1];
-      setUser(last.user);
-      const text =
-        last.ai.question     ||
-        last.ai.pain_point   ||
-        last.ai.recommendation ||
-        "";
-        setAI(text);
-        
-        messages.push({"role":"user","content":user});
-        messages.push({"role":"assistant","content":ai});
-
-        console.log("Messages: ",messages);
-        
-      }
+    
     if (audioChunksRef.current.length === 0) {
       console.log("No audio chunks to send");
       return;
     }
     try {
-      if(conversationTurns.length>0){
-        const last = conversationTurns[conversationTurns.length - 1];
-        setUser(last.user);
-        const text =
-          last.ai.question     ||
-          last.ai.pain_point   ||
-          last.ai.recommendation ||
-          "";
-        setAI(text);
-        
-        messages.push({"role":"user","content":user});
-        messages.push({"role":"assistant","content":ai});
-  
-        console.log("Messages: ",messages);
-      }
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       console.log(`Created blob of size: ${audioBlob.size} bytes`);
       // if(conversationTurns){
@@ -254,7 +241,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("meetingType", localStorage.getItem("meetingType"));
       formData.append("startTime", start_time);
       formData.append("currenTime", formatTime(new Date()));
-      formData.append("messages", messages);
+      formData.append("messages", JSON.stringify(messagesRef.current));
 
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 

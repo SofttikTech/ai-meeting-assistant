@@ -9,6 +9,8 @@ from io import BytesIO
 from dotenv import load_dotenv
 from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests, analyze_conversation_telephonic
 from ghl_integration import send_data_to_n8n_and_log
+from datetime import datetime
+import json
 
 load_dotenv()
 
@@ -29,9 +31,10 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-MAX_HISTORY = 30
+MAX_HISTORY = 80
 conversation_history = []
 ai_response = ""
+total_meeting_minutes = 15
 
 def update_conversation_history(new_transcript):
     global conversation_history
@@ -49,8 +52,29 @@ def transcribe():
     try:
         logging.info("Received transcription request")
         meetingType = request.form.get("meetingType")
+        start_str = request.form.get("startTime")
+        current_str = request.form.get("currenTime")
+        raw = request.form.get("messages")
+        messages =json.loads(raw)
+        logging.info(f"Messages: {messages}")
         logging.info(f"Meeting Type: {meetingType}")
-        
+        logging.info(f"start Time received: {start_str}")
+        logging.info(f"current Time received: {current_str}")
+
+        # calculating remaining time of meeting
+        fmt = "%H:%M:%S"
+        start_time = datetime.strptime(start_str, fmt)
+        current_time = datetime.strptime(current_str, fmt)
+
+        if current_time < start_time:
+            current_time = current_time.replace(day=start_time.day + 1)
+
+        diff_seconds = (current_time - start_time).total_seconds()
+
+        # Convert to minutes
+        diff_minutes = diff_seconds / 60
+        logging.info(f"Difference: {diff_minutes}")
+
         if 'audio' not in request.files:
             logging.error("No audio file received")
             return jsonify({"error": "No audio file received."}), 400
@@ -94,18 +118,32 @@ def transcribe():
                       .get("channels", [{}])[0] \
                       .get("alternatives", [{}])[0] \
                       .get("transcript", "")
-            logging.info(f"Transcript received: {transcript[:50]}...")
-            print(transcript)
+            # logging.info(f"Transcript received: {transcript[:50]}...")
+            # print(transcript)
             
+            messages.append({"role":"user","content":transcript})
+            print("Before sending: ", messages)
             update_conversation_history(transcript)
+            
             if meetingType == "In Place":
-                ai_response = analyze_conversation(transcript, conversation_history)
+                ai_response = analyze_conversation(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
+                print("Response in Server: ",ai_response)
             elif meetingType == "Telephonic":
-                ai_response = analyze_conversation_telephonic(transcript, conversation_history)
+                ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
+
+            if ai_response['type']=="question":            
+                messages.append({"role":"assistant","content":ai_response['question']})
+            elif ai_response["type"]=="pain_point":
+                messages.append({"role":"assistant","content":ai_response['pain_point']})
+            elif ai_response["type"]=="recommendation":
+                messages.append({"role":"assistant","content":ai_response['recommendation']})
+
+            
+            print("Messages array: ",messages)
 
             if ai_response:
-                logging.info(f"AI Response: {ai_response[:50]}...")
-                socketio.emit('update', {'ai_response': ai_response, 'transcript': transcript})
+                # logging.info(f"AI Response: {ai_response[:50]}...")
+                socketio.emit('update', {'ai_response': ai_response, 'transcript': transcript, 'messages':messages})
 
             return jsonify({"transcript": transcript})
         else:
@@ -127,13 +165,16 @@ def generate_summary():
     email = request.args.get('Email')
     phoneNumber = request.args.get('phoneNumber')
     campaign = request.args.get('campaign')
+    history = request.args.get('history')
+
+    print("History in Generate Summary: ", history)
 
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400        
 
-    summary = generate_post_meeting_summary(conversation_history)
-    client_summary = generate_client_meeting_summary(conversation_history)
-    new_data = find_additional_campaign_interests(conversation_history)
+    summary = generate_post_meeting_summary(history)
+    client_summary = generate_client_meeting_summary(history)
+    new_data = find_additional_campaign_interests(history)
     print("Summary:", summary)
     print("AI response:", ai_response)
     print("Transcript:", transcript)
