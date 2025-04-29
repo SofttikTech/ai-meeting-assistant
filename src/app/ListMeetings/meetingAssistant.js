@@ -31,91 +31,40 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const socketRef = useRef(null);
   const fullTranscriptRef = useRef("");
   const lastMessageRef = useRef("");
+  const [index, setIndex] = useState(0);
+  const [user, setUser] = useState("");
+  const [ai, setAI] = useState("");
+  let messages = [];
+
+  // time getting 
+
+  function formatTime(date) {
+    return date.toLocaleTimeString("en-GB", {
+      hour12: false,
+      hour:   "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  }
+  
+  const startTimeRef     = useRef(null);
+  const startTimeStrRef  = useRef(null);
+  startTimeRef.current = new Date();
+  startTimeStrRef.current = formatTime(startTimeRef.current);
+  const start_time = startTimeStrRef.current;
+
 
   useEffect(() => {
     const socket = io(SERVER_URL);
     socket.on("connect", () => {
       console.log("Connected to server");
     });
-
-    // socket.on("update", (data) => {
-    //   // When transcript is received, only extract the new one
-    //   // if (data.transcript) {
-    //   //   const newFullTranscript = data.transcript.trim();
-    //   //   let newPortion = newFullTranscript;
-    //   //   if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
-    //   //     newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
-    //   //   }
-    //   //   fullTranscriptRef.current = newFullTranscript;
-    //   //   // If we have a new portion, update the UI
-    //   //   if (newPortion) {
-    //   //     setTranscript(newPortion);
-    //   //     setConversationTurns((prevTurns) => [
-    //   //       ...prevTurns,
-    //   //       { user: newPortion, ai: "" }
-    //   //     ]);
-    //   //   }
-    //   // }
-
-    //   // Update transcript handling in the socket.on("update") callback:
-    //   if (data.transcript) {
-    //     const newFullTranscript = data.transcript.trim();
-    //     let newPortion = newFullTranscript;
-        
-    //     if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
-    //       newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
-    //     }
-        
-    //     fullTranscriptRef.current = newFullTranscript;
-
-    //     if (newPortion) {
-    //       setTranscript(newPortion);
-          
-    //       setConversationTurns((prevTurns) => {
-    //         // If last turn has no AI response, append to user's message
-    //         if (prevTurns.length > 0 && prevTurns[prevTurns.length - 1].ai === "") {
-    //           const updatedTurns = [...prevTurns];
-    //           updatedTurns[updatedTurns.length - 1] = {
-    //             ...updatedTurns[updatedTurns.length - 1],
-    //             user: updatedTurns[updatedTurns.length - 1].user + " " + newPortion
-    //           };
-    //           return updatedTurns;
-    //         }
-    //         // Otherwise create new turn
-    //         return [...prevTurns, { user: newPortion, ai: "" }];
-    //       });
-    //     }
-    //   }
-    //   // Process AI response
-    //   if (data.ai_response) {
-    //     const newAIMessage = data.ai_response.trim();
-    //     if (lastMessageRef.current !== newAIMessage) {
-    //       lastMessageRef.current = newAIMessage;
-    //       setAIResponse((prev) =>
-    //         prev ? prev + "\n" + data.ai_response : data.ai_response
-    //       );
-    //       setConversationTurns((prevTurns) => {
-    //         if (prevTurns.length === 0) {
-    //           return [{ user: "", ai: newAIMessage }];
-    //         }
-    //         const updatedTurns = [...prevTurns];
-    //         updatedTurns[updatedTurns.length - 1] = {
-    //           ...updatedTurns[updatedTurns.length - 1],
-    //           ai: newAIMessage
-    //         };
-    //         return updatedTurns;
-    //       });
-    //     }
-    //   }
-    // });
     
-    //checking
     socket.on("update", (data) => {
       if (data.transcript) {
         const newFullTranscript = data.transcript.trim();
         let newPortion = newFullTranscript;
     
-        // Only keep new portion of transcript
         if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
           newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
         }
@@ -134,10 +83,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
             return [...prev, { user: newPortion, ai: "" }];
           });
         }
+        
       }
     
-      if (data.ai_response) {
-        const newAIMessage = data.ai_response.trim();
+      if (data['ai_response']) {
+        const newAIMessage = data["ai_response"];
         if (lastMessageRef.current !== newAIMessage) {
           lastMessageRef.current = newAIMessage;
           setConversationTurns(prev => {
@@ -178,6 +128,24 @@ const Talk = ({ setIsVisibleAssistant }) => {
       }
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (conversationTurns.length === 0) return;
+  //   const last = conversationTurns[conversationTurns.length - 1];
+  //   setUser(last.user);
+  //   // pick the right field from last.ai:
+  //   const text =
+  //     last.ai.question     ||
+  //     last.ai.pain_point   ||
+  //     last.ai.recommendation ||
+  //     "";
+  //   setAI(text);
+
+  //   messages.push({"role":"user","content":user});
+  //   messages.push({"role":"assistant","content":ai});
+
+  // }, [conversationTurns]);
+
 
   const stopRecording = () => {
     if (
@@ -232,23 +200,61 @@ const Talk = ({ setIsVisibleAssistant }) => {
           });
         setTimeout(() => {
           history.push("/DetailSelect");
-        }, 15000);
+        }, 18000);
       }, 4000);
     }
   };
 
   const sendAudioToBackend = async () => {
+
+    if (conversationTurns.length > 0){
+      const last = conversationTurns[conversationTurns.length - 1];
+      setUser(last.user);
+      const text =
+        last.ai.question     ||
+        last.ai.pain_point   ||
+        last.ai.recommendation ||
+        "";
+        setAI(text);
+        
+        messages.push({"role":"user","content":user});
+        messages.push({"role":"assistant","content":ai});
+
+        console.log("Messages: ",messages);
+        
+      }
     if (audioChunksRef.current.length === 0) {
       console.log("No audio chunks to send");
       return;
     }
     try {
+      if(conversationTurns.length>0){
+        const last = conversationTurns[conversationTurns.length - 1];
+        setUser(last.user);
+        const text =
+          last.ai.question     ||
+          last.ai.pain_point   ||
+          last.ai.recommendation ||
+          "";
+        setAI(text);
+        
+        messages.push({"role":"user","content":user});
+        messages.push({"role":"assistant","content":ai});
+  
+        console.log("Messages: ",messages);
+      }
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       console.log(`Created blob of size: ${audioBlob.size} bytes`);
+      // if(conversationTurns){
+
+      // }
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "conversation.webm");
       formData.append("meetingType", localStorage.getItem("meetingType"));
+      formData.append("startTime", start_time);
+      formData.append("currenTime", formatTime(new Date()));
+      formData.append("messages", messages);
 
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 
@@ -362,30 +368,46 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="information-box response-box">
                 <h3>Conversation</h3>
                 <div className="summery-box">
-                  {conversationTurns.map((turn, index) => (
-                    <div key={index} className="chat-turn">
-                      {turn.user && (
-                        <div className="chat-bubble user">
-                          <p><strong>User:</strong> {turn.user}</p>
-                        </div>
-                      )}
-                      {turn.ai && (
-                        <div className="chat-bubble ai">
+                {conversationTurns.map((turn, index) => (
+                  <div key={index} className="chat-turn">
+                    {turn.user && (
+                      <div className="chat-bubble user">
+                        <p><strong>User:</strong> {turn.user}</p>
+                      </div>
+                    )}
+
+                    {turn.ai && (
+                      <div className="chat-bubble ai">
+                        {/* Question */}
+                        {turn.ai.type === "question" && (
                           <p>
-                            <strong>AI Agent:</strong>
-                            <pre
-                              style={{
-                                ...responseStyle,
-                                margin: 0
-                              }}
-                            >
-                              {formatAIResponse(turn.ai)}
-                            </pre>
+                            <strong>AI Agent (Question):</strong>{" "}
+                            {turn.ai.question}
                           </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                        )}
+
+                        {/* Pain-Point */}
+                        {turn.ai.type === "pain_point" && (
+                          <p>
+                            <strong>AI Agent (Pain Point):</strong>{" "}
+                            {turn.ai.pain_point}
+
+                          </p>
+                        )}
+
+                        {/* Recommendation */}
+                        {turn.ai.type === "recommendation" && (
+                          <p>
+                            <strong>AI Agent (Recommendation):</strong>{" "}
+                            {turn.ai.recommendation}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+
                 </div>
               </div>
 
@@ -398,3 +420,5 @@ const Talk = ({ setIsVisibleAssistant }) => {
 };
 
 export default Talk;
+
+
