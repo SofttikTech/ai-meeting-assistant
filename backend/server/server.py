@@ -126,7 +126,7 @@ def transcribe():
                 next(
                     (msg["content"] for msg in reversed(messages)
                     if msg.get("role") == "user"),
-                    ""      # default if no user messages yet
+                    ""
                 )
             )
 
