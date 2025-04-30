@@ -1,8 +1,8 @@
-const BASE_URL = 'http://127.0.0.1:4000';
-// const BASE_URL = 'https://database.epiphanyadvisor.com';
+// const BASE_URL = 'http://127.0.0.1:4000';
+const BASE_URL = 'https://database.epiphanyadvisor.com';
 
-// export const URL = 'https://server.epiphanyadvisor.com';
-export const URL = 'http://127.0.0.1:5000';
+export const URL = 'https://server.epiphanyadvisor.com';
+// export const URL = 'http://127.0.0.1:5000';
 
 // Generic API call helper
 const apiCall = async (url, method = 'GET', data = null, extraOptions = {}) => {
