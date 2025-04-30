@@ -592,15 +592,15 @@
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble .chat-ai-box .tooltip-top-ai.question {
-  background-color: #04AA6D;
+  background-color: #00c97f;
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble .chat-ai-box .tooltip-top-ai.recommendation {
-  background-color: #FCB454;
+  background-color: #fcbe6b;
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble .chat-ai-box .tooltip-top-ai.pain-point {
-  background-color: #f44336;
+  background-color: #ff5f53;
 }
 
 .information-sec .information-box.response-box .summery-box .chat-bubble .chat-ai-box .icon img {

@@ -376,7 +376,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                           {/* Question */}
                           {turn.ai.type === "question" && (
                             <div className="chat-ai-box">
-                              <span className="tooltip-top-ai question">(Question)</span>
+                              <span className="tooltip-top-ai question">Question</span>
                               <i className="icon">
                                 <img
                                   src={require("../../static/images/ai-assitant-img.png")}
@@ -393,7 +393,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                           {/* Pain-Point */}
                           {turn.ai.type === "pain_point" && (
                             <div className="chat-ai-box">
-                              <span className="tooltip-top-ai pain-point">(Pain Point)</span>
+                              <span className="tooltip-top-ai pain-point">Pain Point</span>
                               <i className="icon">
                                 <img
                                   src={require("../../static/images/ai-assitant-img.png")}
@@ -409,7 +409,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                           {/* Recommendation */}
                           {turn.ai.type === "recommendation" && (
                             <div className="chat-ai-box">
-                              <span className="tooltip-top-ai recommendation">(Recommendation)</span>
+                              <span className="tooltip-top-ai recommendation">Recommendation</span>
                               <i className="icon">
                                 <img
                                   src={require("../../static/images/ai-assitant-img.png")}
