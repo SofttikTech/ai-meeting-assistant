@@ -11,6 +11,7 @@ from conversation_analyzer import analyze_conversation, generate_post_meeting_su
 from ghl_integration import send_data_to_n8n_and_log
 from datetime import datetime
 import json
+from difflib import SequenceMatcher
 
 load_dotenv()
 
@@ -120,13 +121,60 @@ def transcribe():
                       .get("transcript", "")
             # logging.info(f"Transcript received: {transcript[:50]}...")
             # print(transcript)
+
+            last_full_transcript = str(
+                next(
+                    (msg["content"] for msg in reversed(messages)
+                    if msg.get("role") == "user"),
+                    ""      # default if no user messages yet
+                )
+            )
+
+            if transcript.startswith(last_full_transcript):
+                new_chunk = transcript[len(last_full_transcript):].lstrip()
+            else:
+                matcher = SequenceMatcher(None, last_full_transcript, transcript)
+                match = matcher.find_longest_match(0, len(last_full_transcript), 0, len(transcript))
+                if match.a == 0 and match.b == 0:
+                    new_chunk = transcript[match.size:].lstrip()
+                else:
+                   new_chunk = transcript[len(last_full_transcript):].lstrip()
+
+
+            # prev_user_messages = [msg["content"] for msg in messages if msg.get("role") == "user"]
+            # prev_user_text = prev_user_messages[-1] if prev_user_messages else ""
             
-            messages.append({"role":"user","content":transcript})
+            # common_len = 0
+            # for old_c, new_c in zip(prev_user_text, transcript):
+            #     if old_c == new_c:
+            #         common_len += 1
+            #     else:
+            #         break
+
+            # new_chunk = transcript[common_len:].lstrip()
+
+
+            # prev_user_text = "".join(
+            #     msg["content"] 
+            #     for msg in messages 
+            #         if msg.get("role") == "user"
+            # )
+
+            # if transcript.startswith(prev_user_text):
+            #     new_chunk = transcript[len(prev_user_text):]
+            # else:
+            #     matcher = SequenceMatcher(None, prev_user_text, transcript)
+            #     match = matcher.find_longest_match(0, len(prev_user_text), 0, len(transcript))
+            #     if match.a == 0 and match.b == 0:
+            #         new_chunk = transcript[match.size:]
+            #     else:
+            #         new_chunk = transcript
+            messages.append({"role":"user","content":new_chunk})
             print("Before sending: ", messages)
-            update_conversation_history(transcript)
+            update_conversation_history(new_chunk)
             
             if meetingType == "In Place":
-                ai_response = analyze_conversation(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
+                ai_response = analyze_conversation(new_chunk, messages.copy(), total_meeting_minutes, diff_minutes)
                 print("Response in Server: ",ai_response)
             elif meetingType == "Telephonic":
                 ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
@@ -143,7 +191,7 @@ def transcribe():
 
             if ai_response:
                 # logging.info(f"AI Response: {ai_response[:50]}...")
-                socketio.emit('update', {'ai_response': ai_response, 'transcript': transcript, 'messages':messages})
+                socketio.emit('update', {'ai_response': ai_response, 'transcript': new_chunk, 'messages':messages})
 
             return jsonify({"transcript": transcript})
         else:
@@ -230,4 +278,5 @@ def handle_disconnect():
 
 if __name__ == "__main__":
     logging.info("Starting server on port 5000")
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False)
+# allow_unsafe_werkzeug=True

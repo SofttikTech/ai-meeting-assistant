@@ -64,29 +64,35 @@ const Talk = ({ setIsVisibleAssistant }) => {
     
     socket.on("update", (data) => {
       if (data.transcript) {
-        const newFullTranscript = data.transcript.trim();
-        let newPortion = newFullTranscript;
+        setConversationTurns(prev => [
+          // push a new user turn; leave AI blank for now
+          ...prev,
+          { user: data.transcript, ai: "" }
+        ]);
 
-        // Todo: setMessages(data['messsages'])
+        // const newFullTranscript = data.transcript.trim();
+        // let newPortion = newFullTranscript;
+
+        // // Todo: setMessages(data['messsages'])
     
-        if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
-          newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
-        }
+        // if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
+        //   newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
+        // }
         
-        fullTranscriptRef.current = newFullTranscript;
+        // fullTranscriptRef.current = newFullTranscript;
     
-        if (newPortion) {
-          setConversationTurns(prev => {
-            // If last turn has no AI response, merge with previous user input
-            if (prev.length > 0 && !prev[prev.length - 1].ai) {
-              const updated = [...prev];
-              updated[updated.length - 1].user += " " + newPortion;
-              return updated;
-            }
-            // Otherwise create new user turn
-            return [...prev, { user: newPortion, ai: "" }];
-          });
-        }
+        // if (newPortion) {
+        //   setConversationTurns(prev => {
+        //     // If last turn has no AI response, merge with previous user input
+        //     if (prev.length > 0 && !prev[prev.length - 1].ai) {
+        //       const updated = [...prev];
+        //       updated[updated.length - 1].user += " " + newPortion;
+        //       return updated;
+        //     }
+        //     // Otherwise create new user turn
+        //     return [...prev, { user: newPortion, ai: "" }];
+        //   });
+        // }
         
       }
     
