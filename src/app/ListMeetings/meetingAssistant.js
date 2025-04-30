@@ -43,14 +43,14 @@ const Talk = ({ setIsVisibleAssistant }) => {
   function formatTime(date) {
     return date.toLocaleTimeString("en-GB", {
       hour12: false,
-      hour:   "2-digit",
+      hour: "2-digit",
       minute: "2-digit",
       second: "2-digit"
     });
   }
-  
-  const startTimeRef     = useRef(null);
-  const startTimeStrRef  = useRef(null);
+
+  const startTimeRef = useRef(null);
+  const startTimeStrRef = useRef(null);
   startTimeRef.current = new Date();
   startTimeStrRef.current = formatTime(startTimeRef.current);
   const start_time = startTimeStrRef.current;
@@ -61,20 +61,20 @@ const Talk = ({ setIsVisibleAssistant }) => {
     socket.on("connect", () => {
       console.log("Connected to server");
     });
-    
+
     socket.on("update", (data) => {
       if (data.transcript) {
         const newFullTranscript = data.transcript.trim();
         let newPortion = newFullTranscript;
 
         // Todo: setMessages(data['messsages'])
-    
+
         if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
           newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
         }
-        
+
         fullTranscriptRef.current = newFullTranscript;
-    
+
         if (newPortion) {
           setConversationTurns(prev => {
             // If last turn has no AI response, merge with previous user input
@@ -87,9 +87,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
             return [...prev, { user: newPortion, ai: "" }];
           });
         }
-        
+
       }
-    
+
       if (data['ai_response']) {
         const newAIMessage = data["ai_response"];
         if (lastMessageRef.current !== newAIMessage) {
@@ -197,7 +197,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
             phoneNumber: localStorage.getItem("phoneNumber"),
             campaign: localStorage.getItem("campaign"),
             meetingType: localStorage.getItem("meetingType"),
-            history:JSON.stringify(messagesRef.current)
+            history: JSON.stringify(messagesRef.current)
           },
         })
           .then((response) => {
@@ -224,7 +224,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
   const sendAudioToBackend = async () => {
 
-    
+
     if (audioChunksRef.current.length === 0) {
       console.log("No audio chunks to send");
       return;
@@ -355,46 +355,76 @@ const Talk = ({ setIsVisibleAssistant }) => {
               <div className="information-box response-box">
                 <h3>Conversation</h3>
                 <div className="summery-box">
-                {conversationTurns.map((turn, index) => (
-                  <div key={index} className="chat-turn">
-                    {turn.user && (
-                      <div className="chat-bubble user">
-                        <p><strong>User:</strong> {turn.user}</p>
-                      </div>
-                    )}
+                  {conversationTurns.map((turn, index) => (
+                    <div key={index} className="chat-turn">
+                      {turn.user && (
+                        <div className="chat-bubble user">
+                          <div className="chat-ai-box">
+                            <p>{turn.user}</p>
+                            <i className="icon">
+                              <img
+                                src={require("../../static/images/avatar-face.png")}
+                                alt="Speak Button"
+                              />
+                            </i>
+                          </div>
+                        </div>
+                      )}
 
-                    {turn.ai && (
-                      <div className="chat-bubble ai">
-                        {/* Question */}
-                        {turn.ai.type === "question" && (
-                          <p>
-                            <strong>AI Agent (Question):</strong>{" "}
-                            {turn.ai.question}
-                          </p>
-                        )}
+                      {turn.ai && (
+                        <div className="chat-bubble ai">
+                          {/* Question */}
+                          {turn.ai.type === "question" && (
+                            <div className="chat-ai-box">
+                              <span className="tooltip-top-ai question">(Question)</span>
+                              <i className="icon">
+                                <img
+                                  src={require("../../static/images/ai-assitant-img.png")}
+                                  alt="Speak Button"
+                                />
+                              </i>
+                              <p>
+                                {" "}{turn.ai.question}
+                              </p>
+                            </div>
 
-                        {/* Pain-Point */}
-                        {turn.ai.type === "pain_point" && (
-                          <p>
-                            <strong>AI Agent (Pain Point):</strong>{" "}
-                            {turn.ai.pain_point}
+                          )}
 
-                          </p>
-                        )}
+                          {/* Pain-Point */}
+                          {turn.ai.type === "pain_point" && (
+                            <div className="chat-ai-box">
+                              <span className="tooltip-top-ai pain-point">(Pain Point)</span>
+                              <i className="icon">
+                                <img
+                                  src={require("../../static/images/ai-assitant-img.png")}
+                                  alt="Speak Button"
+                                />
+                              </i>
+                              <p>
+                                {" "}{turn.ai.pain_point}
+                              </p>
+                            </div>
+                          )}
 
-                        {/* Recommendation */}
-                        {turn.ai.type === "recommendation" && (
-                          <p>
-                            <strong>AI Agent (Recommendation):</strong>{" "}
-                            {turn.ai.recommendation}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-
+                          {/* Recommendation */}
+                          {turn.ai.type === "recommendation" && (
+                            <div className="chat-ai-box">
+                              <span className="tooltip-top-ai recommendation">(Recommendation)</span>
+                              <i className="icon">
+                                <img
+                                  src={require("../../static/images/ai-assitant-img.png")}
+                                  alt="Speak Button"
+                                />
+                              </i>
+                              <p>
+                                {" "}{turn.ai.recommendation}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -407,5 +437,3 @@ const Talk = ({ setIsVisibleAssistant }) => {
 };
 
 export default Talk;
-
-
