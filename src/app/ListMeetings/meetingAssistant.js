@@ -230,7 +230,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
   const sendAudioToBackend = async () => {
 
-
     if (audioChunksRef.current.length === 0) {
       console.log("No audio chunks to send");
       return;
@@ -408,6 +407,10 @@ const Talk = ({ setIsVisibleAssistant }) => {
                               </i>
                               <p>
                                 {" "}{turn.ai.pain_point}
+                                <br/>
+                                {turn.ai.follow_up[0]}
+                                <br/>
+                                {turn.ai.follow_up[2]}
                               </p>
                             </div>
                           )}
@@ -424,6 +427,10 @@ const Talk = ({ setIsVisibleAssistant }) => {
                               </i>
                               <p>
                                 {" "}{turn.ai.recommendation}
+                                <br/>
+                                {turn.ai.follow_up[0]}
+                                <br/>
+                                {turn.ai.follow_up[2]}
                               </p>
                             </div>
                           )}

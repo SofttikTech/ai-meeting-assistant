@@ -1,6 +1,6 @@
-Flask
-Flask-MySQLdb
-Flask-Cors
+flask
+flask-MySQLdb
+flask_cors
 Flask-Session
 openai
 requests

@@ -12,6 +12,7 @@ from ghl_integration import send_data_to_n8n_and_log
 from datetime import datetime
 import json
 from difflib import SequenceMatcher
+import openai
 
 load_dotenv()
 
@@ -42,6 +43,47 @@ def update_conversation_history(new_transcript):
     conversation_history.append(new_transcript)
     if len(conversation_history) > MAX_HISTORY:
         conversation_history.pop(0)
+
+def extract_new_transcript_chunk(old_transcript, full_transcript):
+    """
+    Compare `old_transcript` (already processed) with 
+    `full_transcript` (Deepgram's latest full output) and return 
+    only the newly added portion as plain text. If nothing new, returns "".
+    """
+    prompt = f"""
+        OLD TRANSCRIPT (already processed):
+        ```
+        {old_transcript}
+        ```
+
+        FULL TRANSCRIPT (old + new speech):
+        ```
+        {full_transcript}
+        ```
+
+       Return only the text in FULL TRANSCRIPT that comes after the OLD TRANSCRIPT.  
+        - No repeats, no commentary, no extra formatting.  
+        - If there is no new text, return an empty string.
+    """
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4.1",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a precise text differencer. "
+                    "Your job is to find and return only the delta between two versions of a transcript."
+                )
+            },
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.0,
+    )
+
+    return response.choices[0].message.content
+
+
 
 @app.route('/')
 def home():
@@ -130,70 +172,52 @@ def transcribe():
                 )
             )
 
-            if transcript.startswith(last_full_transcript):
-                new_chunk = transcript[len(last_full_transcript):].lstrip()
-            else:
-                matcher = SequenceMatcher(None, last_full_transcript, transcript)
-                match = matcher.find_longest_match(0, len(last_full_transcript), 0, len(transcript))
-                if match.a == 0 and match.b == 0:
-                    new_chunk = transcript[match.size:].lstrip()
-                else:
-                   new_chunk = transcript[len(last_full_transcript):].lstrip()
+            # print("last_full_transcript: ", last_full_transcript)
+            # print("new Transcript:", transcript)
 
+            # separate new transcript using LLM 
+            new_chunk = extract_new_transcript_chunk(last_full_transcript, transcript)
+            print("NEW CHUNK", new_chunk)
 
-            # prev_user_messages = [msg["content"] for msg in messages if msg.get("role") == "user"]
-            # prev_user_text = prev_user_messages[-1] if prev_user_messages else ""
-            
-            # common_len = 0
-            # for old_c, new_c in zip(prev_user_text, transcript):
-            #     if old_c == new_c:
-            #         common_len += 1
-            #     else:
-            #         break
-
-            # new_chunk = transcript[common_len:].lstrip()
-
-
-            # prev_user_text = "".join(
-            #     msg["content"] 
-            #     for msg in messages 
-            #         if msg.get("role") == "user"
-            # )
-
-            # if transcript.startswith(prev_user_text):
-            #     new_chunk = transcript[len(prev_user_text):]
+            # method without LLM
+            # if transcript.startswith(last_full_transcript):
+            #     new_chunk = transcript[len(last_full_transcript):].lstrip()
             # else:
-            #     matcher = SequenceMatcher(None, prev_user_text, transcript)
-            #     match = matcher.find_longest_match(0, len(prev_user_text), 0, len(transcript))
+            #     matcher = SequenceMatcher(None, last_full_transcript, transcript)
+            #     match = matcher.find_longest_match(0, len(last_full_transcript), 0, len(transcript))
             #     if match.a == 0 and match.b == 0:
-            #         new_chunk = transcript[match.size:]
+            #         new_chunk = transcript[match.size:].lstrip()
             #     else:
-            #         new_chunk = transcript
-            messages.append({"role":"user","content":new_chunk})
-            print("Before sending: ", messages)
-            update_conversation_history(new_chunk)
-            
-            if meetingType == "In Place":
-                ai_response = analyze_conversation(new_chunk, messages.copy(), total_meeting_minutes, diff_minutes)
-                print("Response in Server: ",ai_response)
-            elif meetingType == "Telephonic":
-                ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
+            #        new_chunk = transcript[len(last_full_transcript):].lstrip()
 
-            if ai_response['type']=="question":            
-                messages.append({"role":"assistant","content":ai_response['question']})
-            elif ai_response["type"]=="pain_point":
-                messages.append({"role":"assistant","content":ai_response['pain_point']})
-            elif ai_response["type"]=="recommendation":
-                messages.append({"role":"assistant","content":ai_response['recommendation']})
+            if new_chunk.strip():
+                messages.append({"role":"user","content":new_chunk})
+                print("Before sending: ", messages)
+                update_conversation_history(new_chunk)
+                
+                if meetingType == "In Place":
+                    ai_response = analyze_conversation(new_chunk, messages.copy(), total_meeting_minutes, diff_minutes)
+                    print("Response in Server: ",ai_response)
+                elif meetingType == "Telephonic":
+                    ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
 
-            
-            print("Messages array: ",messages)
+                if ai_response['type']=="question":            
+                    messages.append({"role":"assistant","content":ai_response['question']})
+                elif ai_response["type"]=="pain_point":
+                    messages.append({"role":"assistant","content":ai_response['pain_point']})
+                elif ai_response["type"]=="recommendation":
+                    messages.append({"role":"assistant","content":ai_response['recommendation']})
 
-            if ai_response:
-                # logging.info(f"AI Response: {ai_response[:50]}...")
-                socketio.emit('update', {'ai_response': ai_response, 'transcript': new_chunk, 'messages':messages})
+                
+                print("Messages array: ",messages)
 
-            return jsonify({"transcript": transcript})
+                if ai_response:
+                    # logging.info(f"AI Response: {ai_response[:50]}...")
+                    socketio.emit('update', {'ai_response': ai_response, 'transcript': new_chunk, 'messages':messages})
+            else:
+                socketio.emit('update', {'ai_response': {'type': 'question', 'question': 'Tell me more about this?'}, 'transcript': "No Speech", 'messages':messages})
+
+            return jsonify({"transcript": new_chunk})
         else:
             logging.error(f"Deepgram API Error: {response.status_code} - {response.text}")
             return jsonify({"error": "Transcription failed"}), 500
@@ -266,6 +290,7 @@ def generate_summary():
         }), 500
 
     return jsonify({"summary": summary}), 200
+
 
 @socketio.on('connect')
 def handle_connect():
