@@ -50,8 +50,8 @@ def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed
 
     if query:
         # Calling RAG endpoint
-        # rag_url = "https://rag.epiphanyadvisor.com/query/"
-        rag_url = "http://0.0.0.0:8000/query/"
+        rag_url = "https://rag.epiphanyadvisor.com/query/"
+        # rag_url = "http://0.0.0.0:8000/query/"
         rag_payload = {"query": query}
         try:
             rag_response = requests.post(rag_url, json=rag_payload)
