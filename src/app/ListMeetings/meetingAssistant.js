@@ -247,6 +247,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("startTime", start_time);
       formData.append("currenTime", formatTime(new Date()));
       formData.append("messages", JSON.stringify(messagesRef.current));
+      formData.append("email",localStorage.getItem("email"));
 
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 
@@ -410,6 +411,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
                                 <br/>
                                 {turn.ai.follow_up[0]}
                                 <br/>
+                                {turn.ai.follow_up[1]}
+                                <br/>
                                 {turn.ai.follow_up[2]}
                               </p>
                             </div>
@@ -429,6 +432,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
                                 {" "}{turn.ai.recommendation}
                                 <br/>
                                 {turn.ai.follow_up[0]}
+                                <br/>
+                                {turn.ai.follow_up[1]}
                                 <br/>
                                 {turn.ai.follow_up[2]}
                               </p>

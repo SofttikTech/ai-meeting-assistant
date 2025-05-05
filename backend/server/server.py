@@ -13,6 +13,9 @@ from datetime import datetime
 import json
 from difflib import SequenceMatcher
 import openai
+from typing import List, Dict
+import re
+
 
 load_dotenv()
 
@@ -37,12 +40,60 @@ MAX_HISTORY = 80
 conversation_history = []
 ai_response = ""
 total_meeting_minutes = 15
+pending_follow_ups = {}
+
 
 def update_conversation_history(new_transcript):
     global conversation_history
     conversation_history.append(new_transcript)
     if len(conversation_history) > MAX_HISTORY:
         conversation_history.pop(0)
+
+
+def parse_ai_response(raw_text: str) -> dict:
+    cleaned = re.sub(r'^\s*```?json\s*', '', raw_text)   
+    cleaned = re.sub(r'```$', '', cleaned, flags=re.MULTILINE)  
+    cleaned = cleaned.strip()
+    if cleaned.endswith('?'):
+        cleaned = cleaned[:-1].strip()
+
+    cleaned = cleaned.replace('**', '')
+    cleaned = re.sub(r'"\s*\n\s*', '"', cleaned)
+
+    # 3) Parse
+    return json.loads(cleaned)
+
+def check_questions_in_transcript(transcript, questions):
+    system_message = {
+        "role": "system",
+        "content": """ 
+            You are an assistant that determines whether specific questions appear
+            in a conversation transcript. Reply with a JSON object where keys are
+            the original questions and values are 'Yes' or 'No'.
+        """
+    }
+
+    user_message = {
+        "role": "user",
+        "content": (
+            f"Transcript:\n```\n{transcript}\n```\n\n"
+            f"Questions:\n{questions}\n\n"
+            "For each, respond 'Yes' if it was asked, otherwise 'No'."
+        )
+    }
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[system_message, user_message],
+        temperature=0
+    )
+
+    print("Responses questions: ",response.choices[0].message.content)
+    parsed = parse_ai_response(response.choices[0].message.content)
+    # result = json.loads(response.choices[0].message.content)
+    # return {q: (result.get(q, "No") == "Yes") for q in questions}
+    return parsed
+
 
 def extract_new_transcript_chunk(old_transcript, full_transcript):
     """
@@ -98,7 +149,10 @@ def transcribe():
         start_str = request.form.get("startTime")
         current_str = request.form.get("currenTime")
         raw = request.form.get("messages")
+        email = request.form.get("email")
         messages =json.loads(raw)
+        pending_follow_ups.setdefault(email, [])
+        logging.info(f"Email: {email}")
         logging.info(f"Messages: {messages}")
         logging.info(f"Meeting Type: {meetingType}")
         logging.info(f"start Time received: {start_str}")
@@ -191,29 +245,41 @@ def transcribe():
             #        new_chunk = transcript[len(last_full_transcript):].lstrip()
 
             if new_chunk.strip():
-                messages.append({"role":"user","content":new_chunk})
-                print("Before sending: ", messages)
-                update_conversation_history(new_chunk)
-                
-                if meetingType == "In Place":
-                    ai_response = analyze_conversation(new_chunk, messages.copy(), total_meeting_minutes, diff_minutes)
-                    print("Response in Server: ",ai_response)
-                elif meetingType == "Telephonic":
-                    ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
+                if pending_follow_ups[email]:
+                    res = check_questions_in_transcript(new_chunk, pending_follow_ups[email])
+                    print("Questions Pending: ",res)
+                    unanswered = [q for q, ans in res.items() if ans == "No"]
+                    if unanswered:
+                        nextQ = unanswered[0]
+                        pending_follow_ups[email] = unanswered[1:]
+                        socketio.emit('update', {'ai_response': {"type":"question","question":nextQ}, 'transcript': new_chunk, 'messages':messages})
+                else:
+                    messages.append({"role":"user","content":new_chunk})
+                    print("Before sending: ", messages)
+                    update_conversation_history(new_chunk)
+                    
+                    if meetingType == "In Place":
+                        ai_response = analyze_conversation(new_chunk, messages.copy(), total_meeting_minutes, diff_minutes)
+                        print("Response in Server: ",ai_response)
+                    elif meetingType == "Telephonic":
+                        ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
 
-                if ai_response['type']=="question":            
-                    messages.append({"role":"assistant","content":ai_response['question']})
-                elif ai_response["type"]=="pain_point":
-                    messages.append({"role":"assistant","content":ai_response['pain_point']})
-                elif ai_response["type"]=="recommendation":
-                    messages.append({"role":"assistant","content":ai_response['recommendation']})
+                    if ai_response['type']=="question":            
+                        messages.append({"role":"assistant","content":ai_response['question']})
+                    elif ai_response["type"]=="pain_point":
+                        messages.append({"role":"assistant","content":ai_response['pain_point']})
+                    elif ai_response["type"]=="recommendation":
+                        messages.append({"role":"assistant","content":ai_response['recommendation']})
 
-                
-                print("Messages array: ",messages)
+                    if ai_response["type"] in ("pain_point", "recommendation"):
+                        pending_follow_ups[email] = ai_response["follow_up"].copy()
 
-                if ai_response:
-                    # logging.info(f"AI Response: {ai_response[:50]}...")
-                    socketio.emit('update', {'ai_response': ai_response, 'transcript': new_chunk, 'messages':messages})
+                    
+                    print("Messages array: ",messages)
+
+                    if ai_response:
+                        # logging.info(f"AI Response: {ai_response[:50]}...")
+                        socketio.emit('update', {'ai_response': ai_response, 'transcript': new_chunk, 'messages':messages})
             else:
                 socketio.emit('update', {'ai_response': {'type': 'question', 'question': 'Tell me more about this?'}, 'transcript': "No Speech", 'messages':messages})
 
