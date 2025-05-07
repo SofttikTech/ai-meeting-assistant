@@ -7,15 +7,16 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from io import BytesIO
 from dotenv import load_dotenv
-from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests, analyze_conversation_telephonic
+from conversation_analyzer import analyze_conversation, generate_post_meeting_summary, generate_client_meeting_summary, find_additional_campaign_interests, analyze_conversation_telephonic, generate_conversation_summary
 from ghl_integration import send_data_to_n8n_and_log
 from datetime import datetime
 import json
 from difflib import SequenceMatcher
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 from typing import List, Dict
 import re
-
 
 load_dotenv()
 
@@ -24,7 +25,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'webm'}
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  
 
 DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 
@@ -36,7 +37,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
-MAX_HISTORY = 80
+MAX_HISTORY = 20
 conversation_history = []
 ai_response = ""
 total_meeting_minutes = 15
@@ -48,6 +49,52 @@ def update_conversation_history(new_transcript):
     conversation_history.append(new_transcript)
     if len(conversation_history) > MAX_HISTORY:
         conversation_history.pop(0)
+
+# def trim_and_summarize(messages: list) -> list:
+#     if len(messages) <= MAX_HISTORY:
+#         return messages
+#     half = len(messages) // 2
+#     old_chunk = messages[:half]
+#     old_texts = [turn['content'] for turn in old_chunk]
+#     summary_text = generate_conversation_summary(old_texts)
+#     summary_msg = {"role": "assistant", "content": f"[Summary of earlier conversation] {summary_text}"}
+#     new_history = [summary_msg] + messages[half:]
+#     print("Trimming: ",new_history)
+#     return new_history
+
+from typing import List, Dict
+
+def trim_and_summarize(
+    messages, 
+    num_chunks: int = 4, 
+    max_history: int = MAX_HISTORY):
+
+    if len(messages) <= max_history:
+        return messages
+
+    chunk_size = max(1, len(messages) // num_chunks)
+    chunks = [
+        messages[i:i + chunk_size]
+        for i in range(0, len(messages), chunk_size)
+    ]
+
+    summaries = []
+    for chunk in chunks:
+        texts = [turn["content"] for turn in chunk]
+        summary_text = generate_conversation_summary(texts)
+        summaries.append({
+            "role": "assistant",
+            "content": f"[Chunk summary] {summary_text}"
+        })
+
+    if len(summaries) > max_history:
+        return chunked_summarize_messages(summaries, num_chunks, max_history)
+
+    # 4) Otherwise, return the summaries + the very last few original messages
+    #    so you keep the freshest details intact:
+    recent = messages[-(max_history - len(summaries)):]
+    return summaries + recent
+
 
 
 def parse_ai_response(raw_text: str) -> dict:
@@ -82,11 +129,9 @@ def check_questions_in_transcript(transcript, questions):
         )
     }
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[system_message, user_message],
-        temperature=0
-    )
+    response = client.chat.completions.create(model="gpt-4o",
+    messages=[system_message, user_message],
+    temperature=0)
 
     print("Responses questions: ",response.choices[0].message.content)
     parsed = parse_ai_response(response.choices[0].message.content)
@@ -117,20 +162,18 @@ def extract_new_transcript_chunk(old_transcript, full_transcript):
         - If there is no new text, return an empty string.
     """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4.1",
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You are a precise text differencer. "
-                    "Your job is to find and return only the delta between two versions of a transcript."
-                )
-            },
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.0,
-    )
+    response = client.chat.completions.create(model="gpt-4.1",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "You are a precise text differencer. "
+                "Your job is to find and return only the delta between two versions of a transcript."
+            )
+        },
+        {"role": "user", "content": prompt}
+    ],
+    temperature=0.0)
 
     return response.choices[0].message.content
 
@@ -153,7 +196,7 @@ def transcribe():
         messages =json.loads(raw)
         pending_follow_ups.setdefault(email, [])
         logging.info(f"Email: {email}")
-        logging.info(f"Messages: {messages}")
+        # logging.info(f"Messages: {messages}")
         logging.info(f"Meeting Type: {meetingType}")
         logging.info(f"start Time received: {start_str}")
         logging.info(f"current Time received: {current_str}")
@@ -229,20 +272,8 @@ def transcribe():
             # print("last_full_transcript: ", last_full_transcript)
             # print("new Transcript:", transcript)
 
-            # separate new transcript using LLM 
             new_chunk = extract_new_transcript_chunk(last_full_transcript, transcript)
-            print("NEW CHUNK", new_chunk)
-
-            # method without LLM
-            # if transcript.startswith(last_full_transcript):
-            #     new_chunk = transcript[len(last_full_transcript):].lstrip()
-            # else:
-            #     matcher = SequenceMatcher(None, last_full_transcript, transcript)
-            #     match = matcher.find_longest_match(0, len(last_full_transcript), 0, len(transcript))
-            #     if match.a == 0 and match.b == 0:
-            #         new_chunk = transcript[match.size:].lstrip()
-            #     else:
-            #        new_chunk = transcript[len(last_full_transcript):].lstrip()
+            
 
             if new_chunk.strip():
                 if pending_follow_ups[email]:
@@ -250,32 +281,42 @@ def transcribe():
                     print("Questions Pending: ",res)
                     unanswered = [q for q, ans in res.items() if ans == "No"]
                     if unanswered:
-                        nextQ = unanswered[0]
-                        pending_follow_ups[email] = unanswered[1:]
+                        nextQ = unanswered.pop(0)
+                        pending_follow_ups[email] = unanswered
                         socketio.emit('update', {'ai_response': {"type":"question","question":nextQ}, 'transcript': new_chunk, 'messages':messages})
+                    else:
+                        pending_follow_ups[email] = []
                 else:
-                    messages.append({"role":"user","content":new_chunk})
-                    print("Before sending: ", messages)
-                    update_conversation_history(new_chunk)
-                    
-                    if meetingType == "In Place":
-                        ai_response = analyze_conversation(new_chunk, messages.copy(), total_meeting_minutes, diff_minutes)
-                        print("Response in Server: ",ai_response)
-                    elif meetingType == "Telephonic":
-                        ai_response = analyze_conversation_telephonic(transcript, messages.copy(), total_meeting_minutes, diff_minutes)
+                    # messages.append({"role":"user","content":new_chunk})
+                    # messages = trim_and_summarize(messages)
+                    # print("Before sending: ", messages)
 
-                    if ai_response['type']=="question":            
-                        messages.append({"role":"assistant","content":ai_response['question']})
-                    elif ai_response["type"]=="pain_point":
-                        messages.append({"role":"assistant","content":ai_response['pain_point']})
-                    elif ai_response["type"]=="recommendation":
-                        messages.append({"role":"assistant","content":ai_response['recommendation']})
+                    if meetingType == "In Place":
+                        response = analyze_conversation(new_chunk,email, total_meeting_minutes, diff_minutes)
+                        ai_response = response[0]
+                        prev_history = response[1]
+                        print("Response in Server: ",ai_response)
+                        print("History in Server: ",prev_history)
+                        messages = prev_history
+                    elif meetingType == "Telephonic":
+                        response = analyze_conversation_telephonic(new_chunk, email, total_meeting_minutes, diff_minutes)
+                        ai_response = response[0]
+                        prev_history = response[1]
+                        print("Response in Server: ",ai_response)
+                        print("History in Server: ",prev_history)
+                        messages = prev_history
+                    # if ai_response['type']=="question":            
+                    #     messages.append({"role":"assistant","content":ai_response['question']})
+                    # elif ai_response["type"]=="pain_point":
+                    #     messages.append({"role":"assistant","content":ai_response['pain_point']})
+                    # elif ai_response["type"]=="recommendation":
+                    #     messages.append({"role":"assistant","content":ai_response['recommendation']})
 
                     if ai_response["type"] in ("pain_point", "recommendation"):
                         pending_follow_ups[email] = ai_response["follow_up"].copy()
 
-                    
-                    print("Messages array: ",messages)
+
+                    # print("Messages array: ",messages)
 
                     if ai_response:
                         # logging.info(f"AI Response: {ai_response[:50]}...")
@@ -329,7 +370,7 @@ def generate_summary():
         "clientSummary": client_summary,
         "New Actionable": new_data
     }
-    
+
     message = send_data_to_n8n_and_log(data_to_send)
     print(message)
 

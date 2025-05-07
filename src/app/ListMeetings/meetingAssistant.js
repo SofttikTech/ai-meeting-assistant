@@ -47,16 +47,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       minute: "2-digit",
       second: "2-digit"
     });
-  }
-
-  const startTimeRef = useRef(null);
-  const startTimeStrRef = useRef(null);
-  startTimeRef.current = new Date();
-  startTimeStrRef.current = formatTime(startTimeRef.current);
-  const start_time = startTimeStrRef.current;
-
-
-  useEffect(() => {
+  }  useEffect(() => {
     const socket = io(SERVER_URL);
     socket.on("connect", () => {
       console.log("Connected to server");
@@ -113,7 +104,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       if (data["messages"]) {
         console.log("IN socket: ", data["messages"]);
         setMessages(prev => {
-          const updated = [...prev, ...data["messages"]];
+          const updated = data["messages"];
           messagesRef.current = updated;
           return updated;
         });
@@ -133,6 +124,15 @@ const Talk = ({ setIsVisibleAssistant }) => {
       socket.disconnect();
     };
   }, []);
+
+
+  const startTimeRef = useRef(null);
+  const startTimeStrRef = useRef(null);
+  startTimeRef.current = new Date();
+  startTimeStrRef.current = formatTime(startTimeRef.current);
+  const start_time = startTimeStrRef.current;
+
+
 
   // Cleanup on unmount.
   useEffect(() => {
@@ -306,7 +306,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
             );
             sendAudioToBackend();
           }
-        }, 14000);
+        }, 15000);
       } catch (error) {
         console.error("Error starting recording:", error);
         setIsRecording(false);
