@@ -1,23 +1,34 @@
 import os
 import logging
 import requests
-import openai
+from openai import OpenAI
+from flask import jsonify
+
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 from dotenv import load_dotenv
 import time
 import json
 import re
 
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory,ConversationSummaryBufferMemory
+from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain.chat_models import ChatOpenAI
+
 logging.getLogger("openai").setLevel(logging.WARNING)
 
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 logging.basicConfig(level=logging.DEBUG)
 
 campaign = ""
 
 responses = []
+chains = {}
+
 
 # MAX_HISTORY = 10
 # conversation_history = []
@@ -43,7 +54,29 @@ def parse_ai_response(raw_text: str) -> dict:
     # 3) Parse
     return json.loads(cleaned)
 
-def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed):
+def clean_message_history(raw_history):
+    cleaned = []
+    for msg in raw_history:
+        role = 'user' if msg['kwargs'].get('type') == 'human' else 'assistant'
+        content = msg['kwargs'].get('content', '')
+        cleaned.append({
+            'role': role,
+            'content': content
+        })
+    return cleaned
+
+def convert_to_langchain_messages(message_list):
+    lc_messages = []
+    for msg in message_list:
+        role = msg.get("role")
+        content = msg.get("content", "")
+        if role == "user":
+            lc_messages.append(HumanMessage(content=content))
+        elif role == "assistant":
+            lc_messages.append(AIMessage(content=content))
+    return lc_messages
+
+def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     """Analyze the conversation based on the provided query and retrieved documents."""
     retrieved_docs_text = ""
     remaining_time = total_meeting_minutes-minutes_passed
@@ -80,42 +113,42 @@ def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed
         logging.error(f"Error calling campaign endpoint: {e}")
         campaign = "medicare"
 
-
     prompt = f"""
         You are an AI assistant partnering with a sales representative. After each client response, the AI should decide on exactly **one** of the following, based on the flow of the conversation:
 
         **Campaign Context:** This conversation focuses on the **{campaign}** campaign, but to fully uncover client needs, interweave questions or insights from other specialties—Wealth Planning, Healthcare (Medicare), Life Insurance, and Long-Term Care—throughout the dialogue.
-        1. **question**: to surface or amplify a pain point  
-        2. **pain_point**: to articulate a client pain or risk they've revealed  
-        3. **recommendation**: to offer a concise, actionable next-step  
+        1. **question**: to surface or amplify a pain point
+        2. **pain_point**: to articulate a client pain or risk they've revealed
+        3. **recommendation**: to offer a concise, actionable next-step
 
         ## Meeting Duration Context
-        - **Total Meeting Time:** {total_meeting_minutes} minutes  
-        - **Minutes Remaining:** {remaining_time} minutes  
+        - **Total Meeting Time:** {total_meeting_minutes} minutes
+        - **Minutes Remaining:** {remaining_time} minutes
 
-        > **If fewer than 5 minutes remain**, switch to closing:  
-        > - Qualify product interest  
-        > - Ask budget and readiness questions  
+        > **If fewer than 5 minutes remain**, switch to closing:
+        > - Qualify product interest
+        > - Ask budget and readiness questions
         > - Propose next steps
 
-        User Query:  
+        User Query:
         {query}
         
-        Conversation History: Always see the previous conversations before responding. Don't repeat from previous responses.
+        Conversation History: **Always see the previous conversations before responding. Don't repeat any Question/Pain Point/Recommendation which have already been addressed**.
         
-        Retrieved Documents:  
+        Retrieved Documents:
         {retrieved_docs_text}
 
         ## Conversation Flow (Modified Fact Finder)
 
         ### Page 1: The 4 Pillars of Personal Planning
+        **Guidance:** Rotate through these pillars when crafting questions; ensure dynamic phrasing and align to pillar context.
         - **Financial Security:** Nest Egg, Savings, Income, Emergency Fund
         - **Medical Bills:** Doctor Visits, Critical Illness, Hospital Stays, Prescriptions
         - **Independence:** Post-Hospital Care, Home Care, Assisted Living, Family Support
         - **Legacy:** Final Expenses, Wills & Trusts, Spousal Support, Taxes
 
         ### Page 2: Immediate Health & Coverage
-        Ask fact‑finder health questions:
+        **Guidance:** Use open-ended, client-focused prompts; vary wording each turn; balance factual and emotional triggers.
         - What made you book this meeting today?
         - What would make this a great value of your time?
         - Immediate healthcare priorities and concerns
@@ -123,31 +156,89 @@ def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed
         - Current insurance: group vs. individual, premiums, copays, deductibles, RX
         - Likes/dislikes and supplemental coverage (dental, vision, etc.)
 
-        ### Page 3: Long-Term Care
-        Explore family history and care needs:
-        - Major conditions in immediate family, parents’ status & ages
-        - Last days context or current living support
-        - Emotional/financial strain from prior care experiences
-        - Contingency planning: caregivers, location, availability
-        - Documented plan with family or advisor?
+        ### Page 3: Detailed Health Question Flow
+        **Guidance:** Follow sequence, but reformulate each question dynamically; prompt for specifics and context.
+        1. **What made you book this meeting today?**
+           _________________________________________________________________
+        2. **What would make this a great value of your time?**
+           _________________________________________________________________
+        3. **What are the most important things when it comes to your immediate health care?**
+           _________________________________________________________________
+        4. **Is there anything that is concerning you right now with your level of health care?**
+           _________________________________________________________________
+        5. **If you could create a new plan from scratch, what would be most important?**
+           - A. Benefits
+           - B. Networks
+           - C. Affordability
+           - D. Company Reliability
+        6. **Do you have health insurance and if so is it group or individual?**
+           Company Name(s): ________________  Plan Type: ________________
+        7. **Do they have co-pays and/or deductibles, if so what are they?**
+           _________________________________________________________________
+        8. **Do you pay a premium, if so how much?**
+           ___________________________________
+        9. **Does that come with RX Drugs as well (Y/N)?**
+           ________________
+        10. **What have you liked best about this plan?**
+           _________________________________________________________________
+        11. **Sometimes people have plans to supplement their medical insurance; like dental, vision, cancer or disability, do you have any of those?**
+           _________________________________________________________________
 
-        ### Page 4: Life Insurance & Estate
-        Cover legacy & protection:
-        - Wills/trusts in place, review date, purpose
-        - Policy details: type, carrier, premiums, death benefit
-        - Dependents and final expense coverage
-        - Satisfaction and perceived value vs. cost
+        ### Page 4: Long-Term Care (LTC)
+        **Guidance:** Sequence chronologically; ask follow-ups based on family status; probe emotional and logistical factors.
+        1. **Let's talk a little about family history—anything major that runs in the immediate family?**
+        2. **Is mom and dad still around (Y/N)?** ____  **If so, how old are they?** ____
+           **If deceased, how old were they when they passed and what did they pass from?**
+           _________________________________________________________________
+           3A. _(If one or more was deceased)_ **How were their last days—at home or in a facility?**
+               _________________________________________________________________
+           3B. _(If both alive)_ **How are they doing—living on their own or in a facility? Any help?**
+               _________________________________________________________________
+        4. **Have you or a family member ever dealt with emotional or financial strain of long-term care?**
+           _________________________________________________________________
+        5. **If you needed care starting yesterday, who would provide it?**
+           Name: __________  Local (Y/N)? ____  Working/Family status: ____  Full-time or Part-time? ____
+        6. **Have you gone over your LTC plan with your family or an attorney/insurer?**
+           _________________________________________________________________
 
-        ### Page 5: Retirement & Income
-        Assess future security:
-        - Social Security, pensions, employment income, investment distributions
-        - Monthly budget surplus/deficit
-        - Concerns about outliving savings
-        - Top retirement risks: Market Volatility, Inflation, Taxes, Legacy, LTC
+        ### Page 5: Life Insurance & Estate
+        **Guidance:** Cover legacy and protection; ask clarifying questions on purpose, beneficiaries, and satisfaction.
+        1. **Do you have a will or trust in place and when was it last reviewed?**
+           Purpose: ___________________________________________
+        2. **Do you own life insurance?** (Y/N) ____  **Purpose at purchase:** ________________
+        3. **Carrier:** ____________________  **Premium:** __________  **Type:** __________  **Death Benefit:** ______
+        4. **Has anything changed since you purchased these policies?**
+           _________________________________________________________________
+        5. **Is it important for you to leave a legacy?** (Y/N) ____
+        6. **Anyone relying on your income if you passed away?** (Y/N) ____  **Who & why?** ________________
+        7. **Are all your final expenses covered?** (Y/N) ____  **Important?** (Y/N) ____
+        8. **Satisfied with coverage vs. cost?**
+           _________________________________________________________________
+
+        ### Page 6: Retirement & Income
+        **Guidance:** Assess income streams and risk appetite; prioritize next-step recommendations.
+        1. **Are you pulling Social Security yet and how much are you receiving?**
+           _________________________________________________________________
+        2. **Receiving any pension income?** (Y/N) ____  Amount: ________________
+        3. **Still earning employment income?** (Y/N) ____  Amount: ________________
+        4. **Taking distributions from investments?** (Y/N) ____  Amount: ________________
+           **If not, will you have funds available later?** (Y/N) ____
+        5. **After bills and fun, do you have money left to save?** (Y/N) ____  **Roughly how much?** ____
+        6. **Concerns about running out of money now or later?** (Y/N) ____  **Why?** ________________
+        7. **Which retirement risk concerns you most?**
+           - Market Volatility / Crash
+           - Inflation
+           - Taxes
+           - Legacy
+           - Long-Term Care
+           **Why that one?** __________________________________________________
+        •- If no pushback, fill out a COMRA
+        •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Rotate** pillars: Financial Security → Medical Bills → Independence → Legacy  
+        - **Rotate** pillars: Financial Security → Medical Bills → Independence → Legacy
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
+        - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
 
         ## Duplicate-Check
@@ -164,7 +255,7 @@ def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed
 
         // Recommendation
         {{"type":"recommendation","follow_up":["<Q1>","<Q2>","<Q3>"],"recommendation":"<actionable next step>"}}
-        ````
+        ```
 
         ## Examples
 
@@ -195,8 +286,8 @@ def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed
         {{"type":"recommendation","follow_up":["Can we run a retirement income projection?","Would you like to model long‐term care costs?","Have you set an emergency fund target?"],"recommendation":"Increase your emergency fund to cover six months of expenses."}}
         {{"type":"recommendation","follow_up":["When can we schedule your policy review?","Do you have premium budget constraints?","Would reminders help you stay on track?"],"recommendation":"Schedule a life insurance policy review this quarter."}}
         ```
-
     """
+
 
     # prompt = f"""
     #     You are an AI assistant partnering with a sales representative. After each client response, the AI should decide on exactly **one** of the following, based on the flow of the conversation:
@@ -571,30 +662,66 @@ def analyze_conversation(query, messages , total_meeting_minutes, minutes_passed
     #     {retrieved_docs_text}
     # """
 
-    messages.append({"role":"system", "content": prompt})
- 
-    print("Inside In Place")
+    if email not in chains or chains[email] is None:
+        summarizer = ChatOpenAI(
+            model="gpt-4o",
+            temperature=0.0,
+            max_tokens=512  # max size per summary call
+        )
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=messages,
-        # messages=[
-        #     {"role": "system", "content": "You are a professional assistant for financial and healthcare planning."},
-        #     {"role": "user", "content": prompt}
-        # ],
-        temperature=0.7
-    )
+        memory = ConversationSummaryBufferMemory(
+            llm=summarizer,
+            memory_key="chat_history",
+            return_messages=True,
+            max_token_limit=4096
+        )
 
-    result = response["choices"][0]["message"]["content"].strip()
-    # return None if result == "NO_ACTION" else result
-    # responses.append(json.loads((result)))
-    print("Responses #####", result)
-    print("Data pasrsed", parse_ai_response(result))
-    return parse_ai_response(result)
+        prompt_template = ChatPromptTemplate.from_messages([
+            SystemMessage(content=prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            HumanMessagePromptTemplate.from_template("{human_input}")
+        ])
 
-def analyze_conversation_telephonic(query, messages, total_meeting_minutes, minutes_passed):
+        llm = ChatOpenAI(
+            model="gpt-4o",
+            temperature=0.7,
+            max_tokens=4096
+        )
+
+        chains[email] = LLMChain(
+            llm=llm,
+            prompt=prompt_template,
+            memory=memory,
+            verbose=True
+        )
+
+    try:
+        response = chains[email].predict(human_input=query)
+        result = response.strip()
+        prev_data = chains[email].memory.chat_memory.messages
+        serialized_messages = [msg.to_json() for msg in prev_data]
+        clean_messages = clean_message_history(serialized_messages)
+
+        print("Responses #####", result)
+        print("MEMORY HISTORY ::::::", prev_data)
+        return [parse_ai_response(result),clean_messages]
+
+    except Exception as e:
+        logging.error(f"LLMChain error: {e}")
+        return None
+
+
+    # result = response["choices"][0]["message"]["content"].strip()
+    # # return None if result == "NO_ACTION" else result
+    # # responses.append(json.loads((result)))
+    # print("Responses #####", result)
+    # print("Data pasrsed", parse_ai_response(result))
+    # return parse_ai_response(result)
+
+def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes_passed):
     """Analyze the conversation based on the provided query and retrieved documents."""
     retrieved_docs_text = ""
+    remaining_time = total_meeting_minutes-minutes_passed
 
     if query:
         # Calling RAG endpoint
@@ -612,7 +739,6 @@ def analyze_conversation_telephonic(query, messages, total_meeting_minutes, minu
             logging.error(f"Error calling RAG endpoint: {e}")
             retrieved_docs_text = "Error retrieving documents."
 
-    context = "\n".join(conversation_history)
 
     # campaign = ""
     try:
@@ -656,13 +782,14 @@ def analyze_conversation_telephonic(query, messages, total_meeting_minutes, minu
         ## Conversation Flow (Modified Fact Finder)
 
         ### Page 1: The 4 Pillars of Personal Planning
-        - **Financial Security:** Nest Egg, Savings, Income, Emergency Fund  
-        - **Medical Bills:** Doctor Visits, Critical Illness, Hospital Stays, Prescriptions  
-        - **Independence:** Post-Hospital Care, Home Care, Assisted Living, Family Support  
-        - **Legacy:** Final Expenses, Wills & Trusts, Spousal Support, Taxes  
+        **Guidance:** Rotate through these pillars when crafting questions; ensure dynamic phrasing and align to pillar context.
+        - **Financial Security:** Nest Egg, Savings, Income, Emergency Fund
+        - **Medical Bills:** Doctor Visits, Critical Illness, Hospital Stays, Prescriptions
+        - **Independence:** Post-Hospital Care, Home Care, Assisted Living, Family Support
+        - **Legacy:** Final Expenses, Wills & Trusts, Spousal Support, Taxes
 
         ### Page 2: Immediate Health & Coverage
-        Ask fact-finder health questions:
+        **Guidance:** Use open-ended, client-focused prompts; vary wording each turn; balance factual and emotional triggers.
         - What made you book this meeting today?
         - What would make this a great value of your time?
         - Immediate healthcare priorities and concerns
@@ -670,31 +797,89 @@ def analyze_conversation_telephonic(query, messages, total_meeting_minutes, minu
         - Current insurance: group vs. individual, premiums, copays, deductibles, RX
         - Likes/dislikes and supplemental coverage (dental, vision, etc.)
 
-        ### Page 3: Long-Term Care
-        Explore family history and care needs:
-        - Major conditions in immediate family, parents’ status & ages
-        - Last days context or current living support
-        - Emotional/financial strain from prior care experiences
-        - Contingency planning: caregivers, location, availability
-        - Documented plan with family or advisor?
+        ### Page 3: Detailed Health Question Flow
+        **Guidance:** Follow sequence, but reformulate each question dynamically; prompt for specifics and context.
+        1. **What made you book this meeting today?**
+           _________________________________________________________________
+        2. **What would make this a great value of your time?**
+           _________________________________________________________________
+        3. **What are the most important things when it comes to your immediate health care?**
+           _________________________________________________________________
+        4. **Is there anything that is concerning you right now with your level of health care?**
+           _________________________________________________________________
+        5. **If you could create a new plan from scratch, what would be most important?**
+           - A. Benefits
+           - B. Networks
+           - C. Affordability
+           - D. Company Reliability
+        6. **Do you have health insurance and if so is it group or individual?**
+           Company Name(s): ________________  Plan Type: ________________
+        7. **Do they have co-pays and/or deductibles, if so what are they?**
+           _________________________________________________________________
+        8. **Do you pay a premium, if so how much?**
+           ___________________________________
+        9. **Does that come with RX Drugs as well (Y/N)?**
+           ________________
+        10. **What have you liked best about this plan?**
+           _________________________________________________________________
+        11. **Sometimes people have plans to supplement their medical insurance; like dental, vision, cancer or disability, do you have any of those?**
+           _________________________________________________________________
 
-        ### Page 4: Life Insurance & Estate
-        Cover legacy & protection:
-        - Wills/trusts in place, review date, purpose
-        - Policy details: type, carrier, premiums, death benefit
-        - Dependents and final expense coverage
-        - Satisfaction and perceived value vs. cost
+        ### Page 4: Long-Term Care (LTC)
+        **Guidance:** Sequence chronologically; ask follow-ups based on family status; probe emotional and logistical factors.
+        1. **Let's talk a little about family history—anything major that runs in the immediate family?**
+        2. **Is mom and dad still around (Y/N)?** ____  **If so, how old are they?** ____
+           **If deceased, how old were they when they passed and what did they pass from?**
+           _________________________________________________________________
+           3A. _(If one or more was deceased)_ **How were their last days—at home or in a facility?**
+               _________________________________________________________________
+           3B. _(If both alive)_ **How are they doing—living on their own or in a facility? Any help?**
+               _________________________________________________________________
+        4. **Have you or a family member ever dealt with emotional or financial strain of long-term care?**
+           _________________________________________________________________
+        5. **If you needed care starting yesterday, who would provide it?**
+           Name: __________  Local (Y/N)? ____  Working/Family status: ____  Full-time or Part-time? ____
+        6. **Have you gone over your LTC plan with your family or an attorney/insurer?**
+           _________________________________________________________________
 
-        ### Page 5: Retirement & Income
-        Assess future security:
-        - Social Security, pensions, employment income, investment distributions
-        - Monthly budget surplus/deficit
-        - Concerns about outliving savings
-        - Top retirement risks: Market Volatility, Inflation, Taxes, Legacy, LTC
+        ### Page 5: Life Insurance & Estate
+        **Guidance:** Cover legacy and protection; ask clarifying questions on purpose, beneficiaries, and satisfaction.
+        1. **Do you have a will or trust in place and when was it last reviewed?**
+           Purpose: ___________________________________________
+        2. **Do you own life insurance?** (Y/N) ____  **Purpose at purchase:** ________________
+        3. **Carrier:** ____________________  **Premium:** __________  **Type:** __________  **Death Benefit:** ______
+        4. **Has anything changed since you purchased these policies?**
+           _________________________________________________________________
+        5. **Is it important for you to leave a legacy?** (Y/N) ____
+        6. **Anyone relying on your income if you passed away?** (Y/N) ____  **Who & why?** ________________
+        7. **Are all your final expenses covered?** (Y/N) ____  **Important?** (Y/N) ____
+        8. **Satisfied with coverage vs. cost?**
+           _________________________________________________________________
+
+        ### Page 6: Retirement & Income
+        **Guidance:** Assess income streams and risk appetite; prioritize next-step recommendations.
+        1. **Are you pulling Social Security yet and how much are you receiving?**
+           _________________________________________________________________
+        2. **Receiving any pension income?** (Y/N) ____  Amount: ________________
+        3. **Still earning employment income?** (Y/N) ____  Amount: ________________
+        4. **Taking distributions from investments?** (Y/N) ____  Amount: ________________
+           **If not, will you have funds available later?** (Y/N) ____
+        5. **After bills and fun, do you have money left to save?** (Y/N) ____  **Roughly how much?** ____
+        6. **Concerns about running out of money now or later?** (Y/N) ____  **Why?** ________________
+        7. **Which retirement risk concerns you most?**
+           - Market Volatility / Crash
+           - Inflation
+           - Taxes
+           - Legacy
+           - Long-Term Care
+           **Why that one?** __________________________________________________
+        •- If no pushback, fill out a COMRA
+        •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Rotate** pillars: Financial Security → Medical Bills → Independence → Legacy  
-        - **Interleave** only within these pillars; do not introduce any topics outside **{campaign}**.  
+        - **Rotate** pillars: Financial Security → Medical Bills → Independence → Legacy
+        - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
+        - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
 
         ## Duplicate-Check
@@ -945,23 +1130,70 @@ def analyze_conversation_telephonic(query, messages, total_meeting_minutes, minu
 
     # """
 
-    
-    messages.append({"role":"system", "content": prompt})
+    if email not in chains or chains[email] is None:
+        summarizer = ChatOpenAI(
+            model="gpt-4o",
+            temperature=0.0,
+            max_tokens=1000
+        )
 
-    print("Inside telephonic")
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=messages,
-        # messages=[
-        #     {"role": "system", "content": "You are a professional assistant for Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning."},
-        #     {"role": "user", "content": prompt}
-        # ],
-        temperature=0.7
-    )
+        memory = ConversationSummaryBufferMemory(
+            llm=summarizer,
+            memory_key="chat_history",
+            return_messages=True,
+            max_token_limit=4096
+        )
 
-    result = response["choices"][0]["message"]["content"].strip()
-    # return None if result == "NO_ACTION" else result
-    return parse_ai_response(result)
+        prompt_template = ChatPromptTemplate.from_messages([
+            SystemMessage(content=prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            HumanMessagePromptTemplate.from_template("{human_input}")
+        ])
+
+        llm = ChatOpenAI(
+            model="gpt-4o",
+            temperature=0.7,
+            max_tokens=4096
+        )
+
+        chains[email] = LLMChain(
+            llm=llm,
+            prompt=prompt_template,
+            memory=memory,
+            verbose=True
+        )
+
+    try:
+        response = chains[email].predict(human_input=query)
+        result = response.strip()
+        prev_data = chains[email].memory.chat_memory.messages
+        serialized_messages = [msg.to_json() for msg in prev_data]
+        clean_messages = clean_message_history(serialized_messages)
+
+        print("Responses #####", result)
+        print("MEMORY HISTORY ::::::", clean_messages)
+        return [parse_ai_response(result),clean_messages]
+
+    except Exception as e:
+        logging.error(f"LLMChain error: {e}")
+        return None
+
+
+
+    # messages.append({"role":"system", "content": prompt})
+
+    # print("Inside telephonic")
+    # response = client.chat.completions.create(model="gpt-4o",
+    # messages=messages,
+    # # messages=[
+    # #     {"role": "system", "content": "You are a professional assistant for Financial (Wealth Planning), Healthcare (Medicare), Life Insurance, and Long-Term Care Planning."},
+    # #     {"role": "user", "content": prompt}
+    # # ],
+    # temperature=0.7)
+
+    # result = response.choices[0].message.content.strip()
+    # # return None if result == "NO_ACTION" else result
+    # return parse_ai_response(result)
 
 
 def generate_post_meeting_summary(conversation_history):
@@ -994,16 +1226,14 @@ def generate_post_meeting_summary(conversation_history):
     """  
 
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4.1",
-        messages=[
-            {"role": "system", "content": "You are an expert in financial and healthcare planning."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7
-    )
+    response = client.chat.completions.create(model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are an expert in financial and healthcare planning."},
+        {"role": "user", "content": prompt}
+    ],
+    temperature=0.7)
 
-    summary = response["choices"][0]["message"]["content"].strip()
+    summary = response.choices[0].message.content.strip()
     return summary
 
 def generate_client_meeting_summary(conversation_history):
@@ -1034,21 +1264,19 @@ def generate_client_meeting_summary(conversation_history):
     3. ...  
     """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4.1",
-        messages=[
-            {"role": "system", "content": "You are an expert in summarizing meetings for clients, with a focus on clear communication and actionable next steps."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7
-    )
+    response = client.chat.completions.create(model="gpt-4.1",
+    messages=[
+        {"role": "system", "content": "You are an expert in summarizing meetings for clients, with a focus on clear communication and actionable next steps."},
+        {"role": "user", "content": prompt}
+    ],
+    temperature=0.7)
 
-    summary = response["choices"][0]["message"]["content"].strip()
+    summary = response.choices[0].message.content.strip()
     return summary
 
 def find_additional_campaign_interests(conversation_history):
     context = "\n".join(conversation_history)
-    
+
     prompt = f"""
     You are a strategic advisor specialized in financial and healthcare planning. Your task is to analyze a client's conversation and identify any topics discussed that are different from the primary campaign focus which is {campaign}. The primary campaign focus of the meeting is "{campaign}".
 
@@ -1069,17 +1297,45 @@ def find_additional_campaign_interests(conversation_history):
     {context}
     """
 
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-4.1",
-        messages=[
-            {"role": "system", "content": "You are a strategic advisor who analyzes client conversations to identify cross-campaign interests."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7
-    )
-    
-    result = response["choices"][0]["message"]["content"].strip()
+
+    response = client.chat.completions.create(model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a strategic advisor who analyzes client conversations to identify cross-campaign interests."},
+        {"role": "user", "content": prompt}
+    ],
+    temperature=0.7)
+
+    result = response.choices[0].message.content.strip()
     print(result)
     return result
 
+
+def generate_conversation_summary(history, 
+                                  model= "gpt-4-turbo", 
+                                  temperature: float = 0.0):
+    conversation_text = "\n".join(history)
+
+    system_message = {
+        "role": "system",
+        "content": (
+            "You are a helpful assistant that reads a meeting transcript "
+            "and produces a clear, concise summary covering key points, "
+            "action items, and decisions made."
+        )
+    }
+
+    user_message = {
+        "role": "user",
+        "content": (
+            f"Please read the following conversation and provide a summary:\n\n"
+            f"{conversation_text}\n\n"
+            "Return the summary as plain text."
+        )
+    }
+
+    response = client.chat.completions.create(model=model,
+    messages=[system_message, user_message],
+    temperature=temperature)
+
+    summary = response.choices[0].message.content.strip()
+    return summary
