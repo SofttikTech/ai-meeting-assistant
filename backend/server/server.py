@@ -347,6 +347,8 @@ def generate_summary():
     history = request.args.get('history')
 
     print("History in Generate Summary: ", history)
+    # print("Transcript in Generate Summary: ", transcript)
+    # print("ai Response in Generate Summary: ", ai_response)
 
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400        
