@@ -55,6 +55,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
     socket.on("update", (data) => {
       if (data.transcript) {
+        fullTranscriptRef.current += (fullTranscriptRef.current ? " " : "") + data.transcript;
         setConversationTurns(prev => [
           // push a new user turn; leave AI blank for now
           ...prev,
@@ -99,6 +100,21 @@ const Talk = ({ setIsVisibleAssistant }) => {
             }
             return updated;
           });
+
+          const text = newAIMessage.type === "question"
+            ? newAIMessage.question
+            : newAIMessage.type === "pain_point"
+              ? newAIMessage.pain_point
+              : newAIMessage.type === "recommendation"
+                ? newAIMessage.recommendation
+                : JSON.stringify(newAIMessage);
+
+          // 2) append
+          setAIResponse(prev => prev
+            ? `${prev}\n\n${text}`
+            : text
+          );
+
         }
       }
       if (data["messages"]) {

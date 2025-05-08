@@ -347,13 +347,15 @@ def generate_summary():
     history = request.args.get('history')
 
     print("History in Generate Summary: ", history)
+    print("Transcript in Generate Summary: ", transcript)
+    print("ai Response in Generate Summary: ", ai_response)
 
     if not transcript:
         return jsonify({"error": "conversation_history is required"}), 400        
 
     summary = generate_post_meeting_summary(history)
-    client_summary = generate_client_meeting_summary(history)
-    new_data = find_additional_campaign_interests(history)
+    # client_summary = generate_client_meeting_summary(history)
+    # new_data = find_additional_campaign_interests(history)
     print("Summary:", summary)
     print("AI response:", ai_response)
     print("Transcript:", transcript)
