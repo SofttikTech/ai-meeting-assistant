@@ -17,6 +17,7 @@ from openai import OpenAI
 client = OpenAI()
 from typing import List, Dict
 import re
+from pydub import AudioSegment
 
 load_dotenv()
 
@@ -43,24 +44,22 @@ ai_response = ""
 total_meeting_minutes = 15
 pending_follow_ups = {}
 
-
 def update_conversation_history(new_transcript):
     global conversation_history
     conversation_history.append(new_transcript)
     if len(conversation_history) > MAX_HISTORY:
         conversation_history.pop(0)
 
-# def trim_and_summarize(messages: list) -> list:
-#     if len(messages) <= MAX_HISTORY:
-#         return messages
-#     half = len(messages) // 2
-#     old_chunk = messages[:half]
-#     old_texts = [turn['content'] for turn in old_chunk]
-#     summary_text = generate_conversation_summary(old_texts)
-#     summary_msg = {"role": "assistant", "content": f"[Summary of earlier conversation] {summary_text}"}
-#     new_history = [summary_msg] + messages[half:]
-#     print("Trimming: ",new_history)
-#     return new_history
+def get_last_n_seconds_webm(webm_bytes: bytes, n_secs: float) -> BytesIO:
+    audio = AudioSegment.from_file(BytesIO(webm_bytes), format="webm")
+    duration_ms = len(audio)
+    # logging.info(f"miliseconds audio size: {duration_ms}")
+    start_ms = max(0, duration_ms - int(n_secs * 1000))
+    tail = audio[start_ms:]
+    out_io = BytesIO()
+    tail.export(out_io, format="webm")
+    out_io.seek(0)
+    return out_io
 
 from typing import List, Dict
 
@@ -237,7 +236,11 @@ def transcribe():
             if not audio_content:
                 logging.error("Empty audio file")
                 return jsonify({"error": "Empty audio file."}), 400
-            audio_data = BytesIO(audio_content)
+            # audio_data = BytesIO(audio_content)
+        
+        last15_io = get_last_n_seconds_webm(audio_content, 15.0)
+        trimmed_size = len(last15_io.getvalue())
+        logging.info(f"Trimmed 15s audio size: {trimmed_size}")
 
         headers = {
             "Authorization": f"Token {DEEPGRAM_API_KEY}",
@@ -246,10 +249,11 @@ def transcribe():
         deepgram_url = "https://api.deepgram.com/v1/listen?async=true&punctuate=true"
 
         logging.info("Sending audio to Deepgram API for transcription")
+        # logging.info(f"Length audio: {len(audio_content)}")
         response = requests.post(
             deepgram_url,
             headers=headers,
-            data=audio_data
+            data=last15_io
         )
 
         if response.status_code == 200:
@@ -258,7 +262,7 @@ def transcribe():
                       .get("channels", [{}])[0] \
                       .get("alternatives", [{}])[0] \
                       .get("transcript", "")
-            # logging.info(f"Transcript received: {transcript[:50]}...")
+            logging.info(f"Transcript received: {transcript}...")
             # print(transcript)
 
             last_full_transcript = str(

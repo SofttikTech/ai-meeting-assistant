@@ -5,7 +5,6 @@ from openai import OpenAI
 from flask import jsonify
 
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 from dotenv import load_dotenv
 import time
 import json
@@ -21,6 +20,7 @@ logging.getLogger("openai").setLevel(logging.WARNING)
 
 load_dotenv()
 
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 logging.basicConfig(level=logging.DEBUG)
 
