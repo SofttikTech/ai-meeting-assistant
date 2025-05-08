@@ -5,3 +5,7 @@ werkzeug==2.2.2
 flask-cors
 python-dotenv==0.21.1
 openai==0.27.0
+langchain
+langchain-openai
+langchain-community
+pydub
