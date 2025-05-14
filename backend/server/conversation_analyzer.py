@@ -138,6 +138,9 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         Retrieved Documents:
         {retrieved_docs_text}
 
+        ## Strict Question Flow
+        You MUST follow this exact sequence of questions. When a pain point or recommendation is identified, mark your position in the sequence and return to it after addressing the pain point/recommendation.
+
         ## Conversation Flow (Modified Fact Finder)
 
         ### Page 1: The 4 Pillars of Personal Planning
@@ -159,13 +162,9 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         ### Page 3: Detailed Health Question Flow
         **Guidance:** Follow sequence, but reformulate each question dynamically; prompt for specifics and context.
         1. **What made you book this meeting today?**
-           _________________________________________________________________
         2. **What would make this a great value of your time?**
-           _________________________________________________________________
         3. **What are the most important things when it comes to your immediate health care?**
-           _________________________________________________________________
         4. **Is there anything that is concerning you right now with your level of health care?**
-           _________________________________________________________________
         5. **If you could create a new plan from scratch, what would be most important?**
            - A. Benefits
            - B. Networks
@@ -174,33 +173,23 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         6. **Do you have health insurance and if so is it group or individual?**
            Company Name(s): ________________  Plan Type: ________________
         7. **Do they have co-pays and/or deductibles, if so what are they?**
-           _________________________________________________________________
         8. **Do you pay a premium, if so how much?**
-           ___________________________________
         9. **Does that come with RX Drugs as well (Y/N)?**
-           ________________
         10. **What have you liked best about this plan?**
-           _________________________________________________________________
         11. **Sometimes people have plans to supplement their medical insurance; like dental, vision, cancer or disability, do you have any of those?**
-           _________________________________________________________________
 
         ### Page 4: Long-Term Care (LTC)
         **Guidance:** Sequence chronologically; ask follow-ups based on family status; probe emotional and logistical factors.
         1. **Let's talk a little about family history—anything major that runs in the immediate family?**
         2. **Is mom and dad still around (Y/N)?** ____  **If so, how old are they?** ____
            **If deceased, how old were they when they passed and what did they pass from?**
-           _________________________________________________________________
            3A. _(If one or more was deceased)_ **How were their last days—at home or in a facility?**
-               _________________________________________________________________
            3B. _(If both alive)_ **How are they doing—living on their own or in a facility? Any help?**
-               _________________________________________________________________
         4. **Have you or a family member ever dealt with emotional or financial strain of long-term care?**
-           _________________________________________________________________
         5. **If you needed care starting yesterday, who would provide it?**
            Name: __________  Local (Y/N)? ____  Working/Family status: ____  Full-time or Part-time? ____
         6. **Have you gone over your LTC plan with your family or an attorney/insurer?**
-           _________________________________________________________________
-
+        
         ### Page 5: Life Insurance & Estate
         **Guidance:** Cover legacy and protection; ask clarifying questions on purpose, beneficiaries, and satisfaction.
         1. **Do you have a will or trust in place and when was it last reviewed?**
@@ -208,17 +197,14 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         2. **Do you own life insurance?** (Y/N) ____  **Purpose at purchase:** ________________
         3. **Carrier:** ____________________  **Premium:** __________  **Type:** __________  **Death Benefit:** ______
         4. **Has anything changed since you purchased these policies?**
-           _________________________________________________________________
         5. **Is it important for you to leave a legacy?** (Y/N) ____
         6. **Anyone relying on your income if you passed away?** (Y/N) ____  **Who & why?** ________________
         7. **Are all your final expenses covered?** (Y/N) ____  **Important?** (Y/N) ____
         8. **Satisfied with coverage vs. cost?**
-           _________________________________________________________________
-
+    
         ### Page 6: Retirement & Income
         **Guidance:** Assess income streams and risk appetite; prioritize next-step recommendations.
         1. **Are you pulling Social Security yet and how much are you receiving?**
-           _________________________________________________________________
         2. **Receiving any pension income?** (Y/N) ____  Amount: ________________
         3. **Still earning employment income?** (Y/N) ____  Amount: ________________
         4. **Taking distributions from investments?** (Y/N) ____  Amount: ________________
@@ -240,6 +226,28 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
         - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
+
+        ## Question Flow Rules
+        1. **Strict Sequence**: Follow the numbered questions in order
+        2. **Progress Tracking**: Keep track of the last question asked
+        3. **Pain Point Handling**: When a pain point is identified:
+           - Address it immediately
+           - Return to the next question in sequence
+           - IGNORE any new topics or concerns raised in the user's response
+        4. **Recommendation Handling**: When a recommendation is needed:
+           - Provide it
+           - Return to the next question in sequence
+           - IGNORE any new topics or concerns raised in the user's response
+        5. **No Skipping**: Don't skip questions unless explicitly answered
+        6. **No Repeating**: Don't repeat questions unless clarification needed
+        7. **Strict Return**: After ANY pain point or recommendation:
+           - ALWAYS return to the next question in sequence
+           - DO NOT follow up on new topics raised by the user
+           - DO NOT deviate from the question sequence
+        8. **User Response Handling**: 
+           - If user raises new concerns during pain point/recommendation response
+           - Acknowledge briefly but return to sequence
+           - Do not explore new topics until sequence is complete
 
         ## Duplicate-Check
         - Re-read prior assistant messages; discard semantically/textually similar questions.
@@ -779,6 +787,9 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         Retrieved Documents:  
         {retrieved_docs_text}
 
+        ## Strict Question Flow
+        You MUST follow this exact sequence of questions. When a pain point or recommendation is identified, mark your position in the sequence and return to it after addressing the pain point/recommendation.
+
         ## Conversation Flow (Modified Fact Finder)
 
         ### Page 1: The 4 Pillars of Personal Planning
@@ -881,6 +892,28 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
         - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
+
+        ## Question Flow Rules
+        1. **Strict Sequence**: Follow the numbered questions in order
+        2. **Progress Tracking**: Keep track of the last question asked
+        3. **Pain Point Handling**: When a pain point is identified:
+           - Address it immediately
+           - Return to the next question in sequence
+           - IGNORE any new topics or concerns raised in the user's response
+        4. **Recommendation Handling**: When a recommendation is needed:
+           - Provide it
+           - Return to the next question in sequence
+           - IGNORE any new topics or concerns raised in the user's response
+        5. **No Skipping**: Don't skip questions unless explicitly answered
+        6. **No Repeating**: Don't repeat questions unless clarification needed
+        7. **Strict Return**: After ANY pain point or recommendation:
+           - ALWAYS return to the next question in sequence
+           - DO NOT follow up on new topics raised by the user
+           - DO NOT deviate from the question sequence
+        8. **User Response Handling**: 
+           - If user raises new concerns during pain point/recommendation response
+           - Acknowledge briefly but return to sequence
+           - Do not explore new topics until sequence is complete
 
         ## Duplicate-Check
         - Re-read prior assistant messages; discard semantically/textually similar questions.
