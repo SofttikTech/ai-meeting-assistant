@@ -195,7 +195,7 @@ def transcribe():
         messages =json.loads(raw)
         pending_follow_ups.setdefault(email, [])
         logging.info(f"Email: {email}")
-        # logging.info(f"Messages: {messages}")
+        logging.info(f"Messages: {messages}")
         logging.info(f"Meeting Type: {meetingType}")
         logging.info(f"start Time received: {start_str}")
         logging.info(f"current Time received: {current_str}")
@@ -416,4 +416,4 @@ def handle_disconnect():
 
 if __name__ == "__main__":
     logging.info("Starting server on port 5000")
-    socketio.run(app, host="0.0.0.0", port=5000, debug=False, allow_unsafe_werkzeug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=False,allow_unsafe_werkzeug=True)
