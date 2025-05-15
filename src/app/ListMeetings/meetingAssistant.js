@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import io from "socket.io-client";
 import { saveAs } from "file-saver";
@@ -52,6 +51,23 @@ const Talk = ({ setIsVisibleAssistant }) => {
     socket.on("connect", () => {
       console.log("Connected to server");
     });
+
+    // Initialize messages with a system message
+    const initialMessage = {
+      role: "system",
+      content: "What made you book this meeting today?"
+    };
+    setMessages([initialMessage]);
+    messagesRef.current = [initialMessage];
+
+    // Add initial AI question to conversation turns
+    setConversationTurns([{
+      user: "",
+      ai: {
+        type: "question",
+        question: "What made you book this meeting today?"
+      }
+    }]);
 
     socket.on("update", (data) => {
       if (data.transcript) {
@@ -129,7 +145,15 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
     // After processing AI response
     setConversationTurns(prev => {
-      return prev.filter(turn => turn.user.trim() !== "" || turn.ai.trim() !== "");
+      return prev.filter(turn => {
+        const hasUserContent = turn.user && turn.user.trim() !== "";
+        const hasAIContent = turn.ai && (
+          (turn.ai.type === "question" && turn.ai.question) ||
+          (turn.ai.type === "pain_point" && turn.ai.pain_point) ||
+          (turn.ai.type === "recommendation" && turn.ai.recommendation)
+        );
+        return hasUserContent || hasAIContent;
+      });
     });
 
     socket.on("status", (data) => {
