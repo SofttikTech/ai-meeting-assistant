@@ -252,6 +252,29 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         ## Duplicate-Check
         - Re-read prior assistant messages; discard semantically/textually similar questions.
 
+        ## Pain Point & Recommendation Repetition Rules
+        1. **No Duplicate Themes:**  
+        - See conversation history to confirm you haven’t used the same `pain_point`, `recommendation`, or follow-up question before.  
+        - Never repeat an entire theme or question—always check prior turns.
+        2. **Addressed-Pain Exclusion:**
+        - If a pain point has already been addressed with a recommendation, do not surface that pain point again.
+        3. **Follow-Up Exclusivity:**
+        - In recommendations, avoid any follow-up question that appeared under a pain point.  
+        - In pain points, avoid any follow-up question that appeared under a recommendation.
+        4. **Semantic Novelty:**
+        - Each new pain_point or recommendation must be distinct in angle or framing—no paraphrases of past content.
+        5. When asked to surface a **new pain point** or **new recommendation**, generate a **semantically distinct** and **contextually relevant** one based on:  
+        - The user's most recent query  
+        - The retrieved documents  
+        - The current campaign  
+        6. Prioritize **new angles or framing** over paraphrasing existing responses.
+        7. If a specific pain point has already been **addressed** (i.e. a recommendation or next step was given for it), **never** surface that same pain point again.
+        8. **Cross-Category Exclusivity:**  
+        - Recommendation follow-ups **must not** include any question previously used in pain_point follow-ups.  
+        - Pain_point follow-ups **must not** include any question previously used in recommendation follow-ups.
+        9. Prioritize **fresh angles, new triggers or fresh framing** over simple paraphrases.
+
+
         ## Output Format
         Emit **exactly one** JSON object:
         ```json
@@ -811,13 +834,13 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         ### Page 3: Detailed Health Question Flow
         **Guidance:** Follow sequence, but reformulate each question dynamically; prompt for specifics and context.
         1. **What made you book this meeting today?**
-           _________________________________________________________________
+           
         2. **What would make this a great value of your time?**
-           _________________________________________________________________
+           
         3. **What are the most important things when it comes to your immediate health care?**
-           _________________________________________________________________
+            
         4. **Is there anything that is concerning you right now with your level of health care?**
-           _________________________________________________________________
+           
         5. **If you could create a new plan from scratch, what would be most important?**
            - A. Benefits
            - B. Networks
@@ -826,51 +849,49 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         6. **Do you have health insurance and if so is it group or individual?**
            Company Name(s): ________________  Plan Type: ________________
         7. **Do they have co-pays and/or deductibles, if so what are they?**
-           _________________________________________________________________
+
         8. **Do you pay a premium, if so how much?**
-           ___________________________________
+           
         9. **Does that come with RX Drugs as well (Y/N)?**
-           ________________
+           
         10. **What have you liked best about this plan?**
-           _________________________________________________________________
+           
         11. **Sometimes people have plans to supplement their medical insurance; like dental, vision, cancer or disability, do you have any of those?**
-           _________________________________________________________________
 
         ### Page 4: Long-Term Care (LTC)
         **Guidance:** Sequence chronologically; ask follow-ups based on family status; probe emotional and logistical factors.
         1. **Let's talk a little about family history—anything major that runs in the immediate family?**
         2. **Is mom and dad still around (Y/N)?** ____  **If so, how old are they?** ____
            **If deceased, how old were they when they passed and what did they pass from?**
-           _________________________________________________________________
+           
            3A. _(If one or more was deceased)_ **How were their last days—at home or in a facility?**
-               _________________________________________________________________
+               
            3B. _(If both alive)_ **How are they doing—living on their own or in a facility? Any help?**
-               _________________________________________________________________
+               
         4. **Have you or a family member ever dealt with emotional or financial strain of long-term care?**
-           _________________________________________________________________
+
         5. **If you needed care starting yesterday, who would provide it?**
            Name: __________  Local (Y/N)? ____  Working/Family status: ____  Full-time or Part-time? ____
         6. **Have you gone over your LTC plan with your family or an attorney/insurer?**
-           _________________________________________________________________
+           
 
         ### Page 5: Life Insurance & Estate
         **Guidance:** Cover legacy and protection; ask clarifying questions on purpose, beneficiaries, and satisfaction.
         1. **Do you have a will or trust in place and when was it last reviewed?**
-           Purpose: ___________________________________________
+           Purpose: 
         2. **Do you own life insurance?** (Y/N) ____  **Purpose at purchase:** ________________
         3. **Carrier:** ____________________  **Premium:** __________  **Type:** __________  **Death Benefit:** ______
         4. **Has anything changed since you purchased these policies?**
-           _________________________________________________________________
+           
         5. **Is it important for you to leave a legacy?** (Y/N) ____
         6. **Anyone relying on your income if you passed away?** (Y/N) ____  **Who & why?** ________________
         7. **Are all your final expenses covered?** (Y/N) ____  **Important?** (Y/N) ____
         8. **Satisfied with coverage vs. cost?**
-           _________________________________________________________________
+           
 
         ### Page 6: Retirement & Income
         **Guidance:** Assess income streams and risk appetite; prioritize next-step recommendations.
         1. **Are you pulling Social Security yet and how much are you receiving?**
-           _________________________________________________________________
         2. **Receiving any pension income?** (Y/N) ____  Amount: ________________
         3. **Still earning employment income?** (Y/N) ____  Amount: ________________
         4. **Taking distributions from investments?** (Y/N) ____  Amount: ________________
@@ -883,7 +904,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
            - Taxes
            - Legacy
            - Long-Term Care
-           **Why that one?** __________________________________________________
+           **Why that one?** 
         •- If no pushback, fill out a COMRA
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
@@ -917,6 +938,16 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
 
         ## Duplicate-Check
         - Re-read prior assistant messages; discard semantically/textually similar questions.
+
+        ## Pain Point & Recommendation Repetition Rules
+        1. **Never Repeat** a pain point or recommendation already generated during this conversation.  
+        2. Maintain an internal history of previously used `pain_point` and `recommendation` values.  
+        3. When asked to surface a **new pain point** or **new recommendation**, generate a **semantically distinct** and **contextually relevant** one based on:  
+        - The user's most recent query  
+        - The retrieved documents  
+        - The current campaign  
+        4. Prioritize **new angles or framing** over paraphrasing existing responses.  
+
 
         ## Output Format
         Emit **exactly one** JSON object:
