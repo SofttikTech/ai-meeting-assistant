@@ -139,7 +139,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         {retrieved_docs_text}
 
         ## Strict Question Flow
-        You MUST follow this exact sequence of questions. When a pain point or recommendation is identified, mark your position in the sequence and return to it after addressing the pain point/recommendation.
+        You MUST progress strictly through the pages in order: start at Page 1, then Page 2, and so on. Only after completing all questions on the current page (or obtaining explicit answers) may you advance to the next page. If a pain_point or recommendation arises mid-page, address it immediately then return to the next question on the same page before advancing pages.
 
         ## Conversation Flow (Modified Fact Finder)
 
@@ -222,7 +222,8 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Rotate** pillars: Financial Security → Medical Bills → Independence → Legacy
+        - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6
+        - **Within Page 1**, rotate pillars: Financial Security → Medical Bills → Independence → Legacy
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
         - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
@@ -811,7 +812,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         {retrieved_docs_text}
 
         ## Strict Question Flow
-        You MUST follow this exact sequence of questions. When a pain point or recommendation is identified, mark your position in the sequence and return to it after addressing the pain point/recommendation.
+        You MUST progress strictly through the pages in order: start at Page 1, then Page 2, and so on. Only after completing all questions on the current page (or obtaining explicit answers) may you advance to the next page. If a pain_point or recommendation arises mid-page, address it immediately then return to the next question on the same page before advancing pages.
 
         ## Conversation Flow (Modified Fact Finder)
 
@@ -909,10 +910,12 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Rotate** pillars: Financial Security → Medical Bills → Independence → Legacy
+        - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6
+        - **Within Page 1**, rotate pillars: Financial Security → Medical Bills → Independence → Legacy
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
         - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
+
 
         ## Question Flow Rules
         1. **Strict Sequence**: Follow the numbered questions in order
