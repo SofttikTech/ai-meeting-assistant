@@ -150,7 +150,20 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         - **Independence:** Post-Hospital Care, Home Care, Assisted Living, Family Support
         - **Legacy:** Final Expenses, Wills & Trusts, Spousal Support, Taxes
 
-        ### Page 2: Immediate Health & Coverage
+        ### Page 2: Client Information
+        **Guidance:** Use this page to gather essential personal and family context. Ask conversationally, not as a form; prioritize warmth and relevance.
+        1. **Tell us a bit about you and your family?**
+        2. **What’s your full legal name—and date of birth?**
+        3. **Where are you currently living?** (Address, City, State, ZIP)
+        4. **Best number to reach you on your cell?**
+        5. **Is this the best email for follow-up?**
+        6. **What kind of appointment is this—and how did you find us?**
+        7. **Do you have children? What are their names and ages?**
+        8. **Any grandkids? Names and ages?**
+         *(If they have children or grandchildren not yet in college, mention the Sage program and how we can help support college savings.)*
+
+
+        ### Page 3: Immediate Health & Coverage
         **Guidance:** Use open-ended, client-focused prompts; vary wording each turn; balance factual and emotional triggers.
         - What made you book this meeting today?
         - What would make this a great value of your time?
@@ -159,7 +172,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         - Current insurance: group vs. individual, premiums, copays, deductibles, RX
         - Likes/dislikes and supplemental coverage (dental, vision, etc.)
 
-        ### Page 3: Detailed Health Question Flow
+        ### Page 4: Detailed Health Question Flow
         **Guidance:** Follow sequence, but reformulate each question dynamically; prompt for specifics and context.
         1. **What made you book this meeting today?**
         2. **What would make this a great value of your time?**
@@ -178,7 +191,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         10. **What have you liked best about this plan?**
         11. **Sometimes people have plans to supplement their medical insurance; like dental, vision, cancer or disability, do you have any of those?**
 
-        ### Page 4: Long-Term Care (LTC)
+        ### Page 5: Long-Term Care (LTC)
         **Guidance:** Sequence chronologically; ask follow-ups based on family status; probe emotional and logistical factors.
         1. **Let's talk a little about family history—anything major that runs in the immediate family?**
         2. **Is mom and dad still around (Y/N)?** ____  **If so, how old are they?** ____
@@ -190,7 +203,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
            Name: __________  Local (Y/N)? ____  Working/Family status: ____  Full-time or Part-time? ____
         6. **Have you gone over your LTC plan with your family or an attorney/insurer?**
         
-        ### Page 5: Life Insurance & Estate
+        ### Page 6: Life Insurance & Estate
         **Guidance:** Cover legacy and protection; ask clarifying questions on purpose, beneficiaries, and satisfaction.
         1. **Do you have a will or trust in place and when was it last reviewed?**
            Purpose: ___________________________________________
@@ -202,7 +215,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         7. **Are all your final expenses covered?** (Y/N) ____  **Important?** (Y/N) ____
         8. **Satisfied with coverage vs. cost?**
     
-        ### Page 6: Retirement & Income
+        ### Page 7: Retirement & Income
         **Guidance:** Assess income streams and risk appetite; prioritize next-step recommendations.
         1. **Are you pulling Social Security yet and how much are you receiving?**
         2. **Receiving any pension income?** (Y/N) ____  Amount: ________________
@@ -222,8 +235,14 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6
+        - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6 → 7
         - **Within Page 1**, rotate pillars: Financial Security → Medical Bills → Independence → Legacy
+        - **Within Page 2**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 3**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 4**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 5**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 6**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 7**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
         - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
@@ -823,7 +842,20 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         - **Independence:** Post-Hospital Care, Home Care, Assisted Living, Family Support
         - **Legacy:** Final Expenses, Wills & Trusts, Spousal Support, Taxes
 
-        ### Page 2: Immediate Health & Coverage
+        ### Page 2: Client Information
+
+        **Guidance:** Use this page to gather essential personal and family context. Ask conversationally, not as a form; prioritize warmth and relevance.
+        1. **Tell us a bit about you and your family?**
+        2. **What’s your full legal name—and date of birth?**
+        3. **Where are you currently living?** (Address, City, State, ZIP)
+        4. **Best number to reach you on your cell?**
+        5. **Is this the best email for follow-up?**
+        6. **What kind of appointment is this—and how did you find us?**
+        7. **Do you have children? What are their names and ages?**
+        8. **Any grandkids? Names and ages?**
+         *(If they have children or grandchildren not yet in college, mention the Sage program and how we can help support college savings.)*
+
+        ### Page 3: Immediate Health & Coverage
         **Guidance:** Use open-ended, client-focused prompts; vary wording each turn; balance factual and emotional triggers.
         - What made you book this meeting today?
         - What would make this a great value of your time?
@@ -832,7 +864,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         - Current insurance: group vs. individual, premiums, copays, deductibles, RX
         - Likes/dislikes and supplemental coverage (dental, vision, etc.)
 
-        ### Page 3: Detailed Health Question Flow
+        ### Page 4: Detailed Health Question Flow
         **Guidance:** Follow sequence, but reformulate each question dynamically; prompt for specifics and context.
         1. **What made you book this meeting today?**
            
@@ -859,7 +891,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
            
         11. **Sometimes people have plans to supplement their medical insurance; like dental, vision, cancer or disability, do you have any of those?**
 
-        ### Page 4: Long-Term Care (LTC)
+        ### Page 5: Long-Term Care (LTC)
         **Guidance:** Sequence chronologically; ask follow-ups based on family status; probe emotional and logistical factors.
         1. **Let's talk a little about family history—anything major that runs in the immediate family?**
         2. **Is mom and dad still around (Y/N)?** ____  **If so, how old are they?** ____
@@ -876,7 +908,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         6. **Have you gone over your LTC plan with your family or an attorney/insurer?**
            
 
-        ### Page 5: Life Insurance & Estate
+        ### Page 6: Life Insurance & Estate
         **Guidance:** Cover legacy and protection; ask clarifying questions on purpose, beneficiaries, and satisfaction.
         1. **Do you have a will or trust in place and when was it last reviewed?**
            Purpose: 
@@ -890,7 +922,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         8. **Satisfied with coverage vs. cost?**
            
 
-        ### Page 6: Retirement & Income
+        ### Page 7: Retirement & Income
         **Guidance:** Assess income streams and risk appetite; prioritize next-step recommendations.
         1. **Are you pulling Social Security yet and how much are you receiving?**
         2. **Receiving any pension income?** (Y/N) ____  Amount: ________________
@@ -910,8 +942,14 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6
+        - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6 → 7
         - **Within Page 1**, rotate pillars: Financial Security → Medical Bills → Independence → Legacy
+        - **Within Page 2**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 3**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 4**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 5**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 6**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
+        - **Within Page 7**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
         - **Interleave** specialties every 2–3 turns; avoid repeats until two others used.
         - **Dynamic Generation:** Wording must vary each time—never repeat the exact same question.
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
