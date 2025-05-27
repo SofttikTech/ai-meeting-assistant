@@ -88,11 +88,10 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     # Check if this is a new meeting and clear history if needed
     if is_new_meeting(minutes_passed):
         if email in memories:
-            chains[email].memory.chat_memory.messages = []
-            logging.info(f"***Cleared memory for email: {email}***")
-            memories.pop(email)
+            del memories[email]
             logging.info(f"***Cleared memory for email: {memories}***")
-            chains.pop(email)
+        if email in chains:
+            del chains[email]
             logging.info(f"***Cleared chain for email: {chains}***")
 
     if query:
@@ -777,15 +776,6 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     except Exception as e:
         logging.error(f"LLMChain error: {e}")
         return None
-
-
-
-    # result = response["choices"][0]["message"]["content"].strip()
-    # # return None if result == "NO_ACTION" else result
-    # # responses.append(json.loads((result)))
-    # print("Responses #####", result)
-    # print("Data pasrsed", parse_ai_response(result))
-    # return parse_ai_response(result)
 
 def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes_passed):
     """Analyze the conversation based on the provided query and retrieved documents."""
