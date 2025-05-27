@@ -152,7 +152,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         {retrieved_docs_text}
 
         ## Strict Question Flow
-        You MUST progress strictly through the pages in order: start at Page 1, then Page 2, and so on. Only after completing all questions on the current page (or obtaining explicit answers) may you advance to the next page. If a pain_point or recommendation arises mid-page, address it immediately then return to the next question on the same page before advancing pages.
+        You MUST progress strictly through the pages in order: **start at Page 2, then Page 3, and so on**. Only after completing all questions on the current page (or obtaining explicit answers) may you advance to the next page. If a pain_point or recommendation arises mid-page, address it immediately then return to the next question on the same page before advancing pages.
 
         ## Conversation Flow (Modified Fact Finder)
 
@@ -248,7 +248,6 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
-        - **Strict Sequence**: Follow the numbered questions in order
         - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6 → 7
         - **Within Page 1**, rotate pillars: Financial Security → Medical Bills → Independence → Legacy
         - **Within Page 2**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
@@ -262,7 +261,6 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         - **Format:** one **bold** question per turn, 7–10 words, optional depth clause.
 
         ## Question Flow Rules
-        - **Strict Sequence**: Follow the numbered questions in order
         1. **Strict Sequence**: Follow the numbered questions in order
         2. **Progress Tracking**: Keep track of the last question asked
         3. **Pain Point Handling**: When a pain point is identified:
