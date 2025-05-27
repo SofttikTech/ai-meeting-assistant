@@ -89,6 +89,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     if is_new_meeting(minutes_passed):
         if email in memories:
             chains[email].memory.chat_memory.messages = []
+            chains.pop(email)
 
 
     if query:
@@ -773,6 +774,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     except Exception as e:
         logging.error(f"LLMChain error: {e}")
         return None
+
 
 
     # result = response["choices"][0]["message"]["content"].strip()
