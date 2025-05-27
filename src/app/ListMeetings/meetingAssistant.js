@@ -141,6 +141,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
           return updated;
         });
       }
+
     });
 
     // After processing AI response
@@ -288,7 +289,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("currenTime", formatTime(new Date()));
       formData.append("messages", JSON.stringify(messagesRef.current));
       formData.append("email",localStorage.getItem("email"));
-
       const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
 
       if (response.data.transcript) {
