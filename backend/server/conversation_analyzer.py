@@ -77,7 +77,7 @@ def convert_to_langchain_messages(message_list):
     return lc_messages
 
 def is_new_meeting(minutes_passed):
-    return minutes_passed < 0.5
+    return minutes_passed < 0 or minutes_passed < 0.5
 
 def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     """Analyze the conversation based on the provided query and retrieved documents."""
@@ -89,10 +89,13 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     if is_new_meeting(minutes_passed):
         if email in memories:
             del memories[email]
-            logging.info(f"***Cleared memory for email: {memories}***")
+            logging.info(f"***Cleared memory for email: {email}***")
         if email in chains:
             del chains[email]
-            logging.info(f"***Cleared chain for email: {chains}***")
+            logging.info(f"***Cleared chain for email: {email}***")
+        # Force recreation of memory and chain
+        memories[email] = None
+        chains[email] = None
 
     if query:
         # Calling RAG endpoint
@@ -784,8 +787,14 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
 
     if is_new_meeting(minutes_passed):
         if email in memories:
-            chains[email].memory.chat_memory.messages = []
-
+            del memories[email]
+            logging.info(f"***Cleared memory for email: {email}***")
+        if email in chains:
+            del chains[email]
+            logging.info(f"***Cleared chain for email: {email}***")
+        # Force recreation of memory and chain
+        memories[email] = None
+        chains[email] = None
 
     if query:
         # Calling RAG endpoint
@@ -955,6 +964,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         •- Go for an advisor referral: schedule time, offer free service, mention helping with investments.
 
         ## Question Rotation & Style Rules
+        - **Strict Sequence**: Follow the numbered questions in order
         - **Rotate** pages: 1 → 2 → 3 → 4 → 5 → 6 → 7
         - **Within Page 1**, rotate pillars: Financial Security → Medical Bills → Independence → Legacy
         - **Within Page 2**, rotate questions: 1 → 2 → 3 → 4 → 5 → 6 → 7
@@ -969,6 +979,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
 
 
         ## Question Flow Rules
+        - **Strict Sequence**: Follow the numbered questions in order
         1. **Strict Sequence**: Follow the numbered questions in order
         2. **Progress Tracking**: Keep track of the last question asked
         3. **Pain Point Handling**: When a pain point is identified:
