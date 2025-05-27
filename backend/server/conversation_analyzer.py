@@ -28,7 +28,7 @@ campaign = ""
 
 responses = []
 chains = {}
-
+memories = {}  # Dictionary to store memory instances per email
 
 # MAX_HISTORY = 10
 # conversation_history = []
@@ -76,10 +76,20 @@ def convert_to_langchain_messages(message_list):
             lc_messages.append(AIMessage(content=content))
     return lc_messages
 
+def is_new_meeting(minutes_passed):
+    return minutes_passed < 0.5
+
 def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     """Analyze the conversation based on the provided query and retrieved documents."""
     retrieved_docs_text = ""
     remaining_time = total_meeting_minutes-minutes_passed
+    print("minutes_passed: ", minutes_passed)
+
+    # Check if this is a new meeting and clear history if needed
+    if is_new_meeting(minutes_passed):
+        if email in memories:
+            chains[email].memory.chat_memory.messages = []
+
 
     if query:
         # Calling RAG endpoint
@@ -712,6 +722,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     #     Retrieved Documents:  
     #     {retrieved_docs_text}
     # """
+    #i am doing it because if new meeting starts i will empty the memory and it will start from scratch
 
     if email not in chains or chains[email] is None:
         summarizer = ChatOpenAI(
@@ -720,12 +731,14 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
             max_tokens=512  # max size per summary call
         )
 
-        memory = ConversationSummaryBufferMemory(
-            llm=summarizer,
-            memory_key="chat_history",
-            return_messages=True,
-            max_token_limit=4096
-        )
+        # Create new memory instance for this email if it doesn't exist
+        if email not in memories:
+            memories[email] = ConversationSummaryBufferMemory(
+                llm=summarizer,
+                memory_key="chat_history",
+                return_messages=True,
+                max_token_limit=4096
+            )
 
         prompt_template = ChatPromptTemplate.from_messages([
             SystemMessage(content=prompt),
@@ -742,7 +755,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         chains[email] = LLMChain(
             llm=llm,
             prompt=prompt_template,
-            memory=memory,
+            memory=memories[email],
             verbose=True
         )
 
@@ -773,6 +786,11 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
     """Analyze the conversation based on the provided query and retrieved documents."""
     retrieved_docs_text = ""
     remaining_time = total_meeting_minutes-minutes_passed
+
+    if is_new_meeting(minutes_passed):
+        if email in memories:
+            chains[email].memory.chat_memory.messages = []
+
 
     if query:
         # Calling RAG endpoint
@@ -1242,12 +1260,14 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
             max_tokens=1000
         )
 
-        memory = ConversationSummaryBufferMemory(
-            llm=summarizer,
-            memory_key="chat_history",
-            return_messages=True,
-            max_token_limit=4096
-        )
+        # Create new memory instance for this email if it doesn't exist
+        if email not in memories:
+            memories[email] = ConversationSummaryBufferMemory(
+                llm=summarizer,
+                memory_key="chat_history",
+                return_messages=True,
+                max_token_limit=4096
+            )
 
         prompt_template = ChatPromptTemplate.from_messages([
             SystemMessage(content=prompt),
@@ -1264,7 +1284,7 @@ def analyze_conversation_telephonic(query, email, total_meeting_minutes, minutes
         chains[email] = LLMChain(
             llm=llm,
             prompt=prompt_template,
-            memory=memory,
+            memory=memories[email],  # Use email-specific memory
             verbose=True
         )
 
