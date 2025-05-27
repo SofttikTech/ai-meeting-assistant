@@ -89,9 +89,11 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
     if is_new_meeting(minutes_passed):
         if email in memories:
             chains[email].memory.chat_memory.messages = []
+            logging.info(f"***Cleared memory for email: {email}***")
             memories.pop(email)
+            logging.info(f"***Cleared memory for email: {memories}***")
             chains.pop(email)
-            logging.info(f"***Cleared memory and chain for email: {email}***")
+            logging.info(f"***Cleared chain for email: {chains}***")
 
     if query:
         # Calling RAG endpoint
