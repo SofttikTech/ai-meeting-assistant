@@ -15,6 +15,17 @@ function formatAIResponse(text) {
   return lines.map(line => `${line}?`).join('\n');
 }
 
+// Add server URL validation
+const validateServerUrl = async () => {
+  try {
+    const response = await axios.get(`${SERVER_URL}/health`, { timeout: 5000 });
+    return response.status === 200;
+  } catch (error) {
+    console.error("Server URL validation failed:", error);
+    return false;
+  }
+};
+
 const Talk = ({ setIsVisibleAssistant }) => {
   const history = useHistory();
   const [summary, setSummary] = useState('');
@@ -23,10 +34,16 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [conversationTurns, setConversationTurns] = useState([]);
+  const [isAutoRecording, setIsAutoRecording] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isNetworkError, setIsNetworkError] = useState(false);
+  const lastQuestionRef = useRef("");
+  const pendingAudioChunksRef = useRef([]);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const intervalIdRef = useRef(null);
+  const recordingCycleIdRef = useRef(null);
   const socketRef = useRef(null);
   const fullTranscriptRef = useRef("");
   const lastMessageRef = useRef("");
@@ -36,8 +53,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const [messages, setMessages] = useState([]);
   const messagesRef = useRef([]);
 
-
-  // time getting 
+  // Add these refs at the top of your component
+  const lastDisplayedTranscriptRef = useRef("");
+  const lastDisplayedAIResponseRef = useRef("");
+  const pendingTranscriptRef = useRef(null);
+  const pendingAIResponseRef = useRef(null);
 
   function formatTime(date) {
     return date.toLocaleTimeString("en-GB", {
@@ -46,10 +66,48 @@ const Talk = ({ setIsVisibleAssistant }) => {
       minute: "2-digit",
       second: "2-digit"
     });
-  }  useEffect(() => {
-    const socket = io(SERVER_URL);
+  }
+
+  // Add debounce function for questions
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  // Modify the socket event handler to prevent duplicate questions
+  useEffect(() => {
+    const socket = io(SERVER_URL, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
+      transports: ['websocket', 'polling'],
+      query: {
+        clientId: localStorage.getItem("user_id")
+      }
+    });
+
     socket.on("connect", () => {
-      console.log("Connected to server");
+      console.log("Connected to server at:", SERVER_URL);
+      setIsNetworkError(false);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error (handled silently):", error);
+      setIsNetworkError(true);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log("Socket disconnected (handled silently):", reason);
+      setIsNetworkError(true);
     });
 
     // Initialize messages with a system message
@@ -70,69 +128,36 @@ const Talk = ({ setIsVisibleAssistant }) => {
     }]);
 
     socket.on("update", (data) => {
+      // Buffer transcript
       if (data.transcript) {
-        fullTranscriptRef.current += (fullTranscriptRef.current ? " " : "") + data.transcript;
-        setConversationTurns(prev => [
-          // push a new user turn; leave AI blank for now
-          ...prev,
-          { user: data.transcript, ai: "" }
-        ]);
-
-        // const newFullTranscript = data.transcript.trim();
-        // let newPortion = newFullTranscript;
-
-        // // Todo: setMessages(data['messsages'])
-    
-        // if (newFullTranscript.startsWith(fullTranscriptRef.current)) {
-        //   newPortion = newFullTranscript.substring(fullTranscriptRef.current.length).trim();
-        // }
-        
-        // fullTranscriptRef.current = newFullTranscript;
-    
-        // if (newPortion) {
-        //   setConversationTurns(prev => {
-        //     // If last turn has no AI response, merge with previous user input
-        //     if (prev.length > 0 && !prev[prev.length - 1].ai) {
-        //       const updated = [...prev];
-        //       updated[updated.length - 1].user += " " + newPortion;
-        //       return updated;
-        //     }
-        //     // Otherwise create new user turn
-        //     return [...prev, { user: newPortion, ai: "" }];
-        //   });
-        // }
-        
-      }
-
-      if (data['ai_response']) {
-        const newAIMessage = data["ai_response"];
-        if (lastMessageRef.current !== newAIMessage) {
-          lastMessageRef.current = newAIMessage;
-          setConversationTurns(prev => {
-            // Add AI response to last user turn
-            const updated = [...prev];
-            if (updated.length > 0) {
-              updated[updated.length - 1].ai = newAIMessage;
-            }
-            return updated;
-          });
-
-          const text = newAIMessage.type === "question"
-            ? newAIMessage.question
-            : newAIMessage.type === "pain_point"
-              ? newAIMessage.pain_point
-              : newAIMessage.type === "recommendation"
-                ? newAIMessage.recommendation
-                : JSON.stringify(newAIMessage);
-
-          // 2) append
-          setAIResponse(prev => prev
-            ? `${prev}\n\n${text}`
-            : text
-          );
-
+        const newTranscript = data.transcript.trim();
+        if (newTranscript && newTranscript !== lastDisplayedTranscriptRef.current) {
+          pendingTranscriptRef.current = newTranscript;
         }
       }
+
+      // Buffer AI response
+      if (data['ai_response']) {
+        const newAIMessage = data["ai_response"];
+        const newAIText = (newAIMessage.question || newAIMessage.pain_point || newAIMessage.recommendation || "").trim();
+        if (newAIText && newAIText !== lastDisplayedAIResponseRef.current) {
+          pendingAIResponseRef.current = newAIMessage;
+        }
+      }
+
+      // Only add to conversationTurns when both transcript and AI response are present
+      if (pendingTranscriptRef.current && pendingAIResponseRef.current) {
+        const aiTime = formatTime(new Date());
+        setConversationTurns(prev => [
+          ...prev,
+          { user: pendingTranscriptRef.current, ai: pendingAIResponseRef.current, aiTime }
+        ]);
+        lastDisplayedTranscriptRef.current = pendingTranscriptRef.current;
+        lastDisplayedAIResponseRef.current = (pendingAIResponseRef.current.question || pendingAIResponseRef.current.pain_point || pendingAIResponseRef.current.recommendation || "").trim();
+        pendingTranscriptRef.current = null;
+        pendingAIResponseRef.current = null;
+      }
+
       if (data["messages"]) {
         console.log("IN socket: ", data["messages"]);
         setMessages(prev => {
@@ -141,7 +166,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
           return updated;
         });
       }
-
     });
 
     // After processing AI response
@@ -166,14 +190,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
   }, []);
 
-
   const startTimeRef = useRef(null);
   const startTimeStrRef = useRef(null);
   startTimeRef.current = new Date();
   startTimeStrRef.current = formatTime(startTimeRef.current);
   const start_time = startTimeStrRef.current;
-
-
 
   // Cleanup on unmount.
   useEffect(() => {
@@ -209,78 +230,137 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
   // }, [conversationTurns]);
 
+  // Function to handle network errors and retries
+  const handleNetworkError = async (error, audioData) => {
+    console.error("Network error occurred (handled silently):", error);
+    setIsNetworkError(true);
+    
+    if (audioData) {
+      pendingAudioChunksRef.current.push(audioData);
+    }
 
-  const stopRecording = () => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state === "recording"
-    ) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach((track) =>
-        track.stop()
-      );
-      if (intervalIdRef.current) {
-        clearInterval(intervalIdRef.current);
-        intervalIdRef.current = null;
+    if (socketRef.current && !socketRef.current.connected) {
+      try {
+        await new Promise((resolve) => {
+          socketRef.current.connect();
+          socketRef.current.on('connect', resolve);
+        });
+        console.log("Socket reconnected successfully");
+      } catch (socketError) {
+        console.error("Socket reconnection failed (handled silently):", socketError);
       }
-      if (audioChunksRef.current.length > 0) {
-        console.log(`Sending final ${audioChunksRef.current.length} chunks`);
-        sendAudioToBackend();
-      }
-      setIsRecording(false);
-      setIsProcessing(true);
+    }
 
-      setTimeout(() => {
-        axios.get(`${SERVER_URL}/generate_summary`, {
-          params: {
-            ai_response: ai_response,
-            transcript: fullTranscriptRef.current,
-            user_id: localStorage.getItem("user_id"),
-            meeting_id: localStorage.getItem("meeting_id"),
-            admin_id: localStorage.getItem("admin_id"),
-            FirstName: localStorage.getItem("FirstName"),
-            LastName: localStorage.getItem("LastName"),
-            Email: localStorage.getItem("email"),
-            phoneNumber: localStorage.getItem("phoneNumber"),
-            campaign: localStorage.getItem("campaign"),
-            meetingType: localStorage.getItem("meetingType"),
-            history: JSON.stringify(messagesRef.current)
-          },
-        })
-          .then((response) => {
-            if (response.data.summary) {
-              console.log("Summary:", response.data.summary);
-              setSummary(response.data.summary);
-              setIsProcessing(false);
-              history.push("/DetailSelect");
-            } else {
-              console.error("Error generating summary:", response.data.error);
-              setIsProcessing(false);
-            }
-          })
-          .catch((error) => {
-            console.error("Error calling summary endpoint:", error);
-            setIsProcessing(false);
-          });
-        setTimeout(() => {
-          history.push("/DetailSelect");
-        }, 18000);
-      }, 4000);
+    // Retry sending pending audio data
+    if (pendingAudioChunksRef.current.length > 0) {
+      try {
+        const retryData = pendingAudioChunksRef.current.shift();
+        await sendAudioToBackend(retryData);
+        setRetryCount(0);
+        setIsNetworkError(false);
+      } catch (retryError) {
+        console.error("Retry failed (handled silently):", retryError);
+        setRetryCount(prev => prev + 1);
+      }
     }
   };
 
-  const sendAudioToBackend = async () => {
+  const stopAndRestartRecording = async () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      try {
+        const stopPromise = new Promise((resolve) => {
+          mediaRecorderRef.current.onstop = () => {
+            console.log("Previous recording stopped");
+            resolve();
+          };
+          mediaRecorderRef.current.stop();
+        });
 
-    if (audioChunksRef.current.length === 0) {
+        await stopPromise;
+        
+        // Stop all tracks
+        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+        
+        if (audioChunksRef.current.length > 0) {
+          const audioData = [...audioChunksRef.current];
+          try {
+            await sendAudioToBackend(audioData);
+            setRetryCount(0);
+            setIsNetworkError(false);
+          } catch (error) {
+            await handleNetworkError(error, audioData);
+          }
+        }
+        
+        audioChunksRef.current = [];
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const newStream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            channelCount: 1,
+            sampleRate: 16000,
+            sampleSize: 16,
+            echoCancellation: true,
+            noiseSuppression: true
+          }
+        });
+        
+        const mimeType = 'audio/webm;codecs=opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          throw new Error('MIME type not supported: ' + mimeType);
+        }
+          
+        const newMediaRecorder = new MediaRecorder(newStream, {
+          mimeType: mimeType,
+          audioBitsPerSecond: 16000
+        });
+        
+        newMediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            console.log(`Received chunk: ${event.data.size} bytes`);
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        // Start new recording
+        newMediaRecorder.start(1000);
+        console.log("New recording started with mimeType:", mimeType);
+        
+        mediaRecorderRef.current = newMediaRecorder;
+        
+        if (conversationTurns.length > 0) {
+          const lastTurn = conversationTurns[conversationTurns.length - 1];
+          if (lastTurn.user) lastDisplayedTranscriptRef.current = lastTurn.user.trim();
+          if (lastTurn.ai) {
+            lastDisplayedAIResponseRef.current = (lastTurn.ai.question || lastTurn.ai.pain_point || lastTurn.ai.recommendation || "").trim();
+          }
+        }
+      } catch (error) {
+        console.error("Error in recording cycle:", error);
+        if (mediaRecorderRef.current) {
+          try {
+            mediaRecorderRef.current.start(1000);
+          } catch (restartError) {
+            console.error("Failed to restart recording:", restartError);
+            setIsRecording(false);
+          }
+        }
+      }
+    }
+  };
+
+  const sendAudioToBackend = async (audioData = audioChunksRef.current) => {
+    if (audioData.length === 0) {
       console.log("No audio chunks to send");
       return;
     }
     try {
-      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-      console.log(`Created blob of size: ${audioBlob.size} bytes`);
-      // if(conversationTurns){
-
-      // }
+      // Create a proper WebM container with all chunks
+      const audioBlob = new Blob(audioData, { 
+        type: 'audio/webm;codecs=opus'
+      });
+      console.log(`Created blob of size: ${audioBlob.size} bytes with type: ${audioBlob.type}`);
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "conversation.webm");
@@ -288,16 +368,36 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("startTime", start_time);
       formData.append("currenTime", formatTime(new Date()));
       formData.append("messages", JSON.stringify(messagesRef.current));
-      formData.append("email",localStorage.getItem("email"));
-      const response = await axios.post(`${SERVER_URL}/transcribe`, formData, { timeout: 1200000 });
+      formData.append("email", localStorage.getItem("email"));
 
-      if (response.data.transcript) {
-        // Optionally, you can handle the transcript here as well.
-        console.log("Transcription received:", response.data.transcript);
+      // Add request configuration with silent error handling
+      const config = {
+        timeout: 1200000,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        withCredentials: true,
+        retry: 3,
+        retryDelay: 1000,
+        validateStatus: function (status) {
+          return status >= 200 && status < 500;
+        }
+      };
+
+      try {
+        const response = await axios.post(`${SERVER_URL}/transcribe`, formData, config);
+        if (response.data.transcript) {
+          console.log("Transcription received:", response.data.transcript);
+        }
+      } catch (error) {
+        console.error("Audio send error (handled silently):", error);
+        if (error.response?.status !== 404) {
+          pendingAudioChunksRef.current.push(audioData);
+        }
       }
-      audioChunksRef.current = [];
     } catch (error) {
-      console.error("Error sending audio:", error);
+      // Handle any other errors silently
+      console.error("Audio processing error (handled silently):", error);
     }
   };
 
@@ -310,7 +410,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
   const handleClickRecording = () => {
     if (isRecording) {
-      stopRecording();
+      stopAndRestartRecording();
     }
     setIsVisibleAssistant(true);
   };
@@ -321,7 +421,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
         setIsProcessing(false);
         setIsRecording(true);
         setAIResponse("");
-        // Reset transcript and full transcript storage on new recording
         setTranscript("Waiting for transcription...");
         fullTranscriptRef.current = "";
         audioChunksRef.current = [];
@@ -339,12 +438,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
         mediaRecorderRef.current.start(1000);
         console.log("Recording started");
 
-        intervalIdRef.current = setInterval(() => {
-          if (audioChunksRef.current.length > 0) {
-            console.log(
-              `Sending ${audioChunksRef.current.length} audio chunks to backend`
-            );
-            sendAudioToBackend();
+        recordingCycleIdRef.current = setInterval(() => {
+          if (isAutoRecording) {
+            stopAndRestartRecording();
           }
         }, 15000);
       } catch (error) {
@@ -354,6 +450,28 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
     startRecording();
     setIsVisibleAssistant(true);
+
+    // Cleanup function
+    return () => {
+      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+      if (recordingCycleIdRef.current) clearInterval(recordingCycleIdRef.current);
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []);
+
+  // Add server status check
+  useEffect(() => {
+    const checkServerStatus = async () => {
+      const isServerAvailable = await validateServerUrl();
+      if (!isServerAvailable) {
+        console.error("Server is not available at:", SERVER_URL);
+        // You might want to show a user-friendly message here
+      }
+    };
+    checkServerStatus();
   }, []);
 
   return (
@@ -431,6 +549,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
                               </i>
                               <p>
                                 {" "}{turn.ai.question}
+                                {turn.aiTime && (
+                                  <span style={{ color: '#fff', fontSize: '0.85em', marginLeft: 8 }}>
+                                    {turn.aiTime}
+                                  </span>
+                                )}
                               </p>
                             </div>
 
@@ -454,6 +577,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
                                 {turn.ai.follow_up[1]}
                                 <br/>
                                 {turn.ai.follow_up[2]}
+                                {turn.aiTime && (
+                                  <span style={{ color: '#888', fontSize: '0.85em', marginLeft: 8 }}>
+                                    {turn.aiTime}
+                                  </span>
+                                )}
                               </p>
                             </div>
                           )}
@@ -476,6 +604,11 @@ const Talk = ({ setIsVisibleAssistant }) => {
                                 {turn.ai.follow_up[1]}
                                 <br/>
                                 {turn.ai.follow_up[2]}
+                                {turn.aiTime && (
+                                  <span style={{ color: '#888', fontSize: '0.85em', marginLeft: 8 }}>
+                                    {turn.aiTime}
+                                  </span>
+                                )}
                               </p>
                             </div>
                           )}
