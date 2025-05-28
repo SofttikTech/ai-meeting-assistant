@@ -273,7 +273,7 @@
 
 .information-sec {
   position: relative;
-  padding: 50px 0 0;
+  padding: 10px 0 0;
   min-height: 91vh;
 }
 
@@ -386,7 +386,7 @@
 .information-sec .voice-area {
   position: relative;
   text-align: center;
-  padding: 50px 0;
+  padding: 10px 0;
 }
 
 .information-sec .voice-area h1 {
@@ -616,17 +616,17 @@
 @media (max-width: 1690px) {
   .information-sec {
     position: relative;
-    padding: 40px 0 0;
+    padding: 10px 0 0;
   }
 
   .information-sec .voice-area {
-    padding: 40px 0;
+    padding: 10px 0;
   }
 }
 
 @media (max-width: 1610px) {
   .information-sec .voice-area {
-    padding: 0px 0 40px;
+    padding: 0px 0 20px;
   }
 
   .information-sec .voice-area .speek-btn img {
@@ -709,7 +709,7 @@
   }
 
   .information-sec {
-    padding: 25px 0 0;
+    padding: 15px 0 0;
   }
 }
 

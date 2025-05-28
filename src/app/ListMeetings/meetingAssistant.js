@@ -68,6 +68,14 @@ const Talk = ({ setIsVisibleAssistant }) => {
     });
   }
 
+  function formatTimeAI(date) {
+    return date.toLocaleTimeString("en-US", {
+      hour12: true,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
   // Add debounce function for questions
   const debounce = (func, wait) => {
     let timeout;
@@ -147,7 +155,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
 
       // Only add to conversationTurns when both transcript and AI response are present
       if (pendingTranscriptRef.current && pendingAIResponseRef.current) {
-        const aiTime = formatTime(new Date());
+        const aiTime = formatTimeAI(new Date());
         setConversationTurns(prev => [
           ...prev,
           { user: pendingTranscriptRef.current, ai: pendingAIResponseRef.current, aiTime }
@@ -212,6 +220,8 @@ const Talk = ({ setIsVisibleAssistant }) => {
   useEffect(() => {
     console.log("messages state now is:", messages);
   }, [messages]);
+
+  
 
   // useEffect(() => {
   //   if (conversationTurns.length === 0) return;
@@ -350,6 +360,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
     }
   };
 
+  
   const sendAudioToBackend = async (audioData = audioChunksRef.current) => {
     if (audioData.length === 0) {
       console.log("No audio chunks to send");
@@ -401,6 +412,72 @@ const Talk = ({ setIsVisibleAssistant }) => {
     }
   };
 
+  const handleClickRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    }
+    setIsVisibleAssistant(true);
+  };
+
+  const stopRecording = () => {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach((track) =>
+        track.stop()
+      );
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+        intervalIdRef.current = null;
+      }
+      if (audioChunksRef.current.length > 0) {
+        console.log(`Sending final ${audioChunksRef.current.length} chunks`);
+        sendAudioToBackend();
+      }
+      setIsRecording(false);
+      setIsProcessing(true);
+
+      setTimeout(() => {
+        axios.get(`${SERVER_URL}/generate_summary`, {
+          params: {
+            ai_response: ai_response,
+            transcript: fullTranscriptRef.current,
+            user_id: localStorage.getItem("user_id"),
+            meeting_id: localStorage.getItem("meeting_id"),
+            admin_id: localStorage.getItem("admin_id"),
+            FirstName: localStorage.getItem("FirstName"),
+            LastName: localStorage.getItem("LastName"),
+            Email: localStorage.getItem("email"),
+            phoneNumber: localStorage.getItem("phoneNumber"),
+            campaign: localStorage.getItem("campaign"),
+            meetingType: localStorage.getItem("meetingType"),
+            history: JSON.stringify(messagesRef.current)
+          },
+        })
+          .then((response) => {
+            if (response.data.summary) {
+              console.log("Summary:", response.data.summary);
+              setSummary(response.data.summary);
+              setIsProcessing(false);
+              history.push("/DetailSelect");
+            } else {
+              console.error("Error generating summary:", response.data.error);
+              setIsProcessing(false);
+            }
+          })
+          .catch((error) => {
+            console.error("Error calling summary endpoint:", error);
+            setIsProcessing(false);
+          });
+        setTimeout(() => {
+          history.push("/DetailSelect");
+        }, 18000);
+      }, 4000);
+    }
+  };
+
   const responseStyle = {
     whiteSpace: "pre-wrap",
     wordWrap: "break-word",
@@ -408,12 +485,12 @@ const Talk = ({ setIsVisibleAssistant }) => {
     padding: "10px",
   };
 
-  const handleClickRecording = () => {
-    if (isRecording) {
-      stopAndRestartRecording();
-    }
-    setIsVisibleAssistant(true);
-  };
+  // const handleClickRecording = () => {
+  //   if (isRecording) {
+  //     stopAndRestartRecording();
+  //   }
+  //   setIsVisibleAssistant(true);
+  // };
 
   useEffect(() => {
     const startRecording = async () => {
@@ -521,19 +598,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
                 <div className="summery-box">
                   {conversationTurns.map((turn, index) => (
                     <div key={index} className="chat-turn">
-                      {turn.user && (
-                        <div className="chat-bubble user">
-                          <div className="chat-ai-box">
-                            <p>{turn.user}</p>
-                            <i className="icon">
-                              <img
-                                src={require("../../static/images/avatar-face.png")}
-                                alt="Speak Button"
-                              />
-                            </i>
-                          </div>
-                        </div>
-                      )}
 
                       {turn.ai && (
                         <div className="chat-bubble ai">
@@ -612,6 +676,19 @@ const Talk = ({ setIsVisibleAssistant }) => {
                               </p>
                             </div>
                           )}
+                        </div>
+                      )}
+                      {turn.user && (
+                        <div className="chat-bubble user">
+                          <div className="chat-ai-box">
+                            <p>{turn.user}</p>
+                            <i className="icon">
+                              <img
+                                src={require("../../static/images/avatar-face.png")}
+                                alt="Speak Button"
+                              />
+                            </i>
+                          </div>
                         </div>
                       )}
                     </div>
