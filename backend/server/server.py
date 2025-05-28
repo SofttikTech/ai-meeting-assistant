@@ -44,55 +44,54 @@ ai_response = ""
 total_meeting_minutes = 15
 pending_follow_ups = {}
 
-def update_conversation_history(new_transcript):
-    global conversation_history
-    conversation_history.append(new_transcript)
-    if len(conversation_history) > MAX_HISTORY:
-        conversation_history.pop(0)
+# def update_conversation_history(new_transcript):
+#     global conversation_history
+#     conversation_history.append(new_transcript)
+#     if len(conversation_history) > MAX_HISTORY:
+#         conversation_history.pop(0)
 
-def get_last_n_seconds_webm(webm_bytes: bytes, n_secs: float) -> BytesIO:
-    audio = AudioSegment.from_file(BytesIO(webm_bytes), format="webm")
-    duration_ms = len(audio)
-    # logging.info(f"miliseconds audio size: {duration_ms}")
-    start_ms = max(0, duration_ms - int(n_secs * 1000))
-    tail = audio[start_ms:]
-    out_io = BytesIO()
-    tail.export(out_io, format="webm")
-    out_io.seek(0)
-    return out_io
+# def get_last_n_seconds_webm(webm_bytes: bytes, n_secs: float) -> BytesIO:
+#     audio = AudioSegment.from_file(BytesIO(webm_bytes), format="webm")
+#     duration_ms = len(audio)
+#     # logging.info(f"miliseconds audio size: {duration_ms}")
+#     start_ms = max(0, duration_ms - int(n_secs * 1000))
+#     tail = audio[start_ms:]
+#     out_io = BytesIO()
+#     tail.export(out_io, format="webm")
+#     out_io.seek(0)
+#     return out_io
 
-from typing import List, Dict
 
-def trim_and_summarize(
-    messages, 
-    num_chunks: int = 4, 
-    max_history: int = MAX_HISTORY):
+# def trim_and_summarize(
+#     messages, 
+#     num_chunks: int = 4, 
+#     max_history: int = MAX_HISTORY):
 
-    if len(messages) <= max_history:
-        return messages
+#     if len(messages) <= max_history:
+#         return messages
 
-    chunk_size = max(1, len(messages) // num_chunks)
-    chunks = [
-        messages[i:i + chunk_size]
-        for i in range(0, len(messages), chunk_size)
-    ]
+#     chunk_size = max(1, len(messages) // num_chunks)
+#     chunks = [
+#         messages[i:i + chunk_size]
+#         for i in range(0, len(messages), chunk_size)
+#     ]
 
-    summaries = []
-    for chunk in chunks:
-        texts = [turn["content"] for turn in chunk]
-        summary_text = generate_conversation_summary(texts)
-        summaries.append({
-            "role": "assistant",
-            "content": f"[Chunk summary] {summary_text}"
-        })
+#     summaries = []
+#     for chunk in chunks:
+#         texts = [turn["content"] for turn in chunk]
+#         summary_text = generate_conversation_summary(texts)
+#         summaries.append({
+#             "role": "assistant",
+#             "content": f"[Chunk summary] {summary_text}"
+#         })
 
-    if len(summaries) > max_history:
-        return chunked_summarize_messages(summaries, num_chunks, max_history)
+#     if len(summaries) > max_history:
+#         return chunked_summarize_messages(summaries, num_chunks, max_history)
 
-    # 4) Otherwise, return the summaries + the very last few original messages
-    #    so you keep the freshest details intact:
-    recent = messages[-(max_history - len(summaries)):]
-    return summaries + recent
+#     # 4) Otherwise, return the summaries + the very last few original messages
+#     #    so you keep the freshest details intact:
+#     recent = messages[-(max_history - len(summaries)):]
+#     return summaries + recent
 
 
 
@@ -139,42 +138,42 @@ def check_questions_in_transcript(transcript, questions):
     return parsed
 
 
-def extract_new_transcript_chunk(old_transcript, full_transcript):
-    """
-    Compare `old_transcript` (already processed) with 
-    `full_transcript` (Deepgram's latest full output) and return 
-    only the newly added portion as plain text. If nothing new, returns "".
-    """
-    prompt = f"""
-        OLD TRANSCRIPT (already processed):
-        ```
-        {old_transcript}
-        ```
+# def extract_new_transcript_chunk(old_transcript, full_transcript):
+#     """
+#     Compare `old_transcript` (already processed) with 
+#     `full_transcript` (Deepgram's latest full output) and return 
+#     only the newly added portion as plain text. If nothing new, returns "".
+#     """
+#     prompt = f"""
+#         OLD TRANSCRIPT (already processed):
+#         ```
+#         {old_transcript}
+#         ```
 
-        FULL TRANSCRIPT (old + new speech):
-        ```
-        {full_transcript}
-        ```
+#         FULL TRANSCRIPT (old + new speech):
+#         ```
+#         {full_transcript}
+#         ```
 
-       Return only the text in FULL TRANSCRIPT that comes after the OLD TRANSCRIPT.  
-        - No repeats, no commentary, no extra formatting.  
-        - If there is no new text, return an empty string.
-    """
+#        Return only the text in FULL TRANSCRIPT that comes after the OLD TRANSCRIPT.  
+#         - No repeats, no commentary, no extra formatting.  
+#         - If there is no new text, return an empty string.
+#     """
 
-    response = client.chat.completions.create(model="gpt-4.1",
-    messages=[
-        {
-            "role": "system",
-            "content": (
-                "You are a precise text differencer. "
-                "Your job is to find and return only the delta between two versions of a transcript."
-            )
-        },
-        {"role": "user", "content": prompt}
-    ],
-    temperature=0.0)
+#     response = client.chat.completions.create(model="gpt-4.1",
+#     messages=[
+#         {
+#             "role": "system",
+#             "content": (
+#                 "You are a precise text differencer. "
+#                 "Your job is to find and return only the delta between two versions of a transcript."
+#             )
+#         },
+#         {"role": "user", "content": prompt}
+#     ],
+#     temperature=0.0)
 
-    return response.choices[0].message.content
+#     return response.choices[0].message.content
 
 
 
@@ -192,7 +191,7 @@ def transcribe():
         current_str = request.form.get("currenTime")
         raw = request.form.get("messages")
         email = request.form.get("email")
-        messages =json.loads(raw)
+        messages = json.loads(raw)
         pending_follow_ups.setdefault(email, [])
         logging.info(f"Email: {email}")
         logging.info(f"Messages: {messages}")
@@ -209,8 +208,6 @@ def transcribe():
             current_time = current_time.replace(day=start_time.day + 1)
 
         diff_seconds = (current_time - start_time).total_seconds()
-
-        # Convert to minutes
         diff_minutes = diff_seconds / 60
         logging.info(f"Difference: {diff_minutes}")
 
@@ -227,20 +224,29 @@ def transcribe():
             logging.error(f"Invalid file extension: {file.filename}")
             return jsonify({"error": "Invalid file extension. Only .webm files allowed."}), 400
 
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+        # filename = secure_filename(file.filename)
+        # filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        # file.save(filepath)
 
-        with open(filepath, 'rb') as f:
-            audio_content = f.read()
-            if not audio_content:
-                logging.error("Empty audio file")
-                return jsonify({"error": "Empty audio file."}), 400
-            # audio_data = BytesIO(audio_content)
-        
-        last15_io = get_last_n_seconds_webm(audio_content, 15.0)
-        trimmed_size = len(last15_io.getvalue())
-        logging.info(f"Trimmed 15s audio size: {trimmed_size}")
+        # with open(filepath, 'rb') as f:
+        #     audio_content = f.read()
+        #     if not audio_content:
+        #         logging.error("Empty audio file")
+        #         return jsonify({"error": "Empty audio file."}), 400
+        #     # audio_data = BytesIO(audio_content)
+
+        # Read audio data directly into memory
+        audio_content = file.read()
+        if not audio_content:
+            logging.error("Empty audio file")
+            return jsonify({"error": "Empty audio file."}), 400
+
+        # last15_io = get_last_n_seconds_webm(audio_content, 15.0)
+        # trimmed_size = len(last15_io.getvalue())
+        # logging.info(f"Trimmed 15s audio size: {trimmed_size}")
+
+        trimmed_size = len(audio_content)
+        logging.info(f"original 15s audio size: {trimmed_size}")
 
         headers = {
             "Authorization": f"Token {DEEPGRAM_API_KEY}",
@@ -249,11 +255,10 @@ def transcribe():
         deepgram_url = "https://api.deepgram.com/v1/listen?async=true&punctuate=true"
 
         logging.info("Sending audio to Deepgram API for transcription")
-        # logging.info(f"Length audio: {len(audio_content)}")
         response = requests.post(
             deepgram_url,
             headers=headers,
-            data=last15_io
+            data=audio_content
         )
 
         if response.status_code == 200:
@@ -276,18 +281,18 @@ def transcribe():
             # print("last_full_transcript: ", last_full_transcript)
             # print("new Transcript:", transcript)
 
-            new_chunk = extract_new_transcript_chunk(last_full_transcript, transcript)
+            # new_chunk = extract_new_transcript_chunk(last_full_transcript, transcript)
             
 
-            if new_chunk.strip():
+            if transcript.strip():
                 if pending_follow_ups[email]:
-                    res = check_questions_in_transcript(new_chunk, pending_follow_ups[email])
+                    res = check_questions_in_transcript(transcript, pending_follow_ups[email])
                     print("Questions Pending: ",res)
                     unanswered = [q for q, ans in res.items() if ans == "No"]
                     if unanswered:
                         nextQ = unanswered.pop(0)
                         pending_follow_ups[email] = unanswered
-                        socketio.emit('update', {'ai_response': {"type":"question","question":nextQ}, 'transcript': new_chunk, 'messages':messages})
+                        socketio.emit('update', {'ai_response': {"type":"question","question":nextQ}, 'transcript': transcript, 'messages':messages})
                     else:
                         pending_follow_ups[email] = []
                 else:
@@ -296,14 +301,14 @@ def transcribe():
                     # print("Before sending: ", messages)
 
                     if meetingType == "In Place":
-                        response = analyze_conversation(new_chunk,email, total_meeting_minutes, diff_minutes)
+                        response = analyze_conversation(transcript,email, total_meeting_minutes, diff_minutes)
                         ai_response = response[0]
                         prev_history = response[1]
                         print("Response in Server: ",ai_response)
                         print("History in Server: ",prev_history)
                         messages = prev_history
                     elif meetingType == "Telephonic":
-                        response = analyze_conversation_telephonic(new_chunk, email, total_meeting_minutes, diff_minutes)
+                        response = analyze_conversation_telephonic(transcript, email, total_meeting_minutes, diff_minutes)
                         ai_response = response[0]
                         prev_history = response[1]
                         print("Response in Server: ",ai_response)
@@ -324,11 +329,11 @@ def transcribe():
 
                     if ai_response:
                         # logging.info(f"AI Response: {ai_response[:50]}...")
-                        socketio.emit('update', {'ai_response': ai_response, 'transcript': new_chunk, 'messages':messages})
+                        socketio.emit('update', {'ai_response': ai_response, 'transcript': transcript, 'messages':messages})
             else:
                 socketio.emit('update', {'ai_response': {'type': 'question', 'question': 'Tell me more about this?'}, 'transcript': "No Speech", 'messages':messages})
 
-            return jsonify({"transcript": new_chunk})
+            return jsonify({"transcript": transcript})
         else:
             logging.error(f"Deepgram API Error: {response.status_code} - {response.text}")
             return jsonify({"error": "Transcription failed"}), 500
