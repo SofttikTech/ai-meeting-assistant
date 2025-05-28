@@ -550,7 +550,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
                               <p>
                                 {" "}{turn.ai.question}
                                 {turn.aiTime && (
-                                  <span style={{ color: '#fff', fontSize: '0.85em', marginLeft: 8 }}>
+                                  <span>
                                     {turn.aiTime}
                                   </span>
                                 )}
