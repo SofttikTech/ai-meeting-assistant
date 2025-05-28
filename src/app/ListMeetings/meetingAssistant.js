@@ -141,6 +141,12 @@ const Talk = ({ setIsVisibleAssistant }) => {
         const newTranscript = data.transcript.trim();
         if (newTranscript && newTranscript !== lastDisplayedTranscriptRef.current) {
           pendingTranscriptRef.current = newTranscript;
+          // Accumulate the full transcript
+          if (fullTranscriptRef.current) {
+            fullTranscriptRef.current += " " + newTranscript;
+          } else {
+            fullTranscriptRef.current = newTranscript;
+          }
         }
       }
 
@@ -420,14 +426,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
   };
 
   const stopRecording = () => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state === "recording"
-    ) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream.getTracks().forEach((track) =>
-        track.stop()
-      );
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
         intervalIdRef.current = null;
@@ -439,13 +440,20 @@ const Talk = ({ setIsVisibleAssistant }) => {
       setIsRecording(false);
       setIsProcessing(true);
 
+      // Wait for the final transcription to be processed
       setTimeout(() => {
+        // Ensure we have a transcript before making the request
+        if (!fullTranscriptRef.current) {
+          console.error("No transcript available for summary generation");
+          setIsProcessing(false);
+          return;
+        }
+
         axios.get(`${SERVER_URL}/generate_summary`, {
           params: {
             ai_response: ai_response,
             transcript: fullTranscriptRef.current,
             user_id: localStorage.getItem("user_id"),
-            meeting_id: localStorage.getItem("meeting_id"),
             admin_id: localStorage.getItem("admin_id"),
             FirstName: localStorage.getItem("FirstName"),
             LastName: localStorage.getItem("LastName"),
