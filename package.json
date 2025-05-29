@@ -91,6 +91,7 @@
     "typewriter-effect": "^2.21.0",
     "url": "latest",
     "use-sound": "^4.0.3",
+    "voice-activity-detection": "^0.0.5",
     "wallet-address-validator": "^0.2.4",
     "web-vitals": "^3.1.0",
     "web3": "^4.15.0",

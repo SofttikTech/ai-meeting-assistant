@@ -18,7 +18,7 @@ function formatAIResponse(text) {
 // Add server URL validation
 const validateServerUrl = async () => {
   try {
-    const response = await axios.get(`${SERVER_URL}/health`, { timeout: 5000 });
+    const response = await axios.get(`${SERVER_URL}/transcribe`, { timeout: 5000 });
     return response.status === 200;
   } catch (error) {
     console.error("Server URL validation failed:", error);
@@ -58,6 +58,18 @@ const Talk = ({ setIsVisibleAssistant }) => {
   const lastDisplayedAIResponseRef = useRef("");
   const pendingTranscriptRef = useRef(null);
   const pendingAIResponseRef = useRef(null);
+
+  // --- Add these refs for audio/silence detection ---
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const sourceRef = useRef(null);
+  const streamRef = useRef(null);
+  const volumeCheckIntervalRef = useRef(null);
+  const silenceStartRef = useRef(null);
+  const shouldRestartRef = useRef(false);
+  const waitingForSpeechRef = useRef(false);
+  const hasSpokenSinceLastSendRef = useRef(false);
+  // --- End audio/silence detection refs ---
 
   function formatTime(date) {
     return date.toLocaleTimeString("en-GB", {
@@ -501,49 +513,124 @@ const Talk = ({ setIsVisibleAssistant }) => {
   // };
 
   useEffect(() => {
-    const startRecording = async () => {
-      try {
-        setIsProcessing(false);
-        setIsRecording(true);
-        setAIResponse("");
-        setTranscript("Waiting for transcription...");
-        fullTranscriptRef.current = "";
-        audioChunksRef.current = [];
-
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderRef.current = new MediaRecorder(stream, {
-          mimeType: "audio/webm",
+    async function cleanupResources() {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        await new Promise(resolve => {
+          mediaRecorderRef.current.onstop = resolve;
+          mediaRecorderRef.current.stop();
         });
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        await audioContextRef.current.close();
+      }
+      audioContextRef.current = null;
+      if (volumeCheckIntervalRef.current) {
+        clearInterval(volumeCheckIntervalRef.current);
+        volumeCheckIntervalRef.current = null;
+      }
+      analyserRef.current = null;
+      sourceRef.current = null;
+      silenceStartRef.current = null;
+      shouldRestartRef.current = false;
+      waitingForSpeechRef.current = false;
+      setIsRecording(false);
+    }
+
+    async function startMediaRecorder() {
+      await cleanupResources();
+      try {
+        streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorderRef.current = new MediaRecorder(streamRef.current, {
+          mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : undefined
+        });
+        audioChunksRef.current = [];
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
-            console.log(`Received chunk: ${event.data.size} bytes`);
             audioChunksRef.current.push(event.data);
           }
         };
-        mediaRecorderRef.current.start(1000);
-        console.log("Recording started");
-
-        recordingCycleIdRef.current = setInterval(() => {
-          if (isAutoRecording) {
-            stopAndRestartRecording();
+        mediaRecorderRef.current.onstop = async () => {
+          try {
+            if (audioChunksRef.current.length > 0) {
+              const audioData = [...audioChunksRef.current];
+              audioChunksRef.current = [];
+              await sendAudioToBackend(audioData);
+            }
+          } catch (err) {
+            // handle error
+          } finally {
+            if (shouldRestartRef.current) {
+              shouldRestartRef.current = false;
+              await startMediaRecorder();
+            }
           }
-        }, 15000);
-      } catch (error) {
-        console.error("Error starting recording:", error);
+        };
+        mediaRecorderRef.current.start(500);
+        setIsRecording(true);
+
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        sourceRef.current = audioContextRef.current.createMediaStreamSource(streamRef.current);
+        analyserRef.current = audioContextRef.current.createAnalyser();
+        analyserRef.current.fftSize = 2048;
+        sourceRef.current.connect(analyserRef.current);
+
+        if (volumeCheckIntervalRef.current) clearInterval(volumeCheckIntervalRef.current);
+        volumeCheckIntervalRef.current = setInterval(() => {
+          if (!mediaRecorderRef.current || mediaRecorderRef.current.state !== 'recording') return;
+          const data = new Uint8Array(analyserRef.current.fftSize);
+          analyserRef.current.getByteTimeDomainData(data);
+          let sum = 0;
+          for (let i = 0; i < data.length; i++) {
+            const val = (data[i] - 128) / 128;
+            sum += val * val;
+          }
+          const rms = Math.sqrt(sum / data.length);
+          //console.log('RMS:', rms);
+          if (rms < 0.05) {
+            if (!silenceStartRef.current) {
+              silenceStartRef.current = Date.now();
+              console.log('Silence started at:', silenceStartRef.current);
+            }
+            if (
+              hasSpokenSinceLastSendRef.current &&
+              !waitingForSpeechRef.current &&
+              Date.now() - silenceStartRef.current > 4000
+            ) {
+              console.log('Silence detected after 4 seconds', Date.now() - silenceStartRef.current);
+              if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+                shouldRestartRef.current = true;
+                waitingForSpeechRef.current = true;
+                hasSpokenSinceLastSendRef.current = false; // Reset after sending
+                mediaRecorderRef.current.stop();
+              }
+              silenceStartRef.current = null;
+            }
+          } else {
+            silenceStartRef.current = null;
+            waitingForSpeechRef.current = false;
+            hasSpokenSinceLastSendRef.current = true; // Mark that user has spoken
+          }
+        }, 1000);
+      } catch (err) {
         setIsRecording(false);
       }
-    };
-    startRecording();
+    }
+
+    setIsProcessing(false);
+    setIsRecording(true);
+    setAIResponse("");
+    setTranscript("Waiting for transcription...");
+    fullTranscriptRef.current = "";
+    audioChunksRef.current = [];
+    startMediaRecorder();
     setIsVisibleAssistant(true);
 
-    // Cleanup function
     return () => {
-      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
-      if (recordingCycleIdRef.current) clearInterval(recordingCycleIdRef.current);
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-        mediaRecorderRef.current.stop();
-        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
-      }
+      cleanupResources();
     };
   }, []);
 
