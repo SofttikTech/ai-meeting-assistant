@@ -88,20 +88,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
     });
   }
 
-  // Add debounce function for questions
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  // Modify the socket event handler to prevent duplicate questions
   useEffect(() => {
     const socket = io(SERVER_URL, {
       reconnection: true,
@@ -240,145 +226,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
   }, [messages]);
 
   
-
-  // useEffect(() => {
-  //   if (conversationTurns.length === 0) return;
-  //   const last = conversationTurns[conversationTurns.length - 1];
-  //   setUser(last.user);
-  //   // pick the right field from last.ai:
-  //   const text =
-  //     last.ai.question     ||
-  //     last.ai.pain_point   ||
-  //     last.ai.recommendation ||
-  //     "";
-  //   setAI(text);
-
-  //   messages.push({"role":"user","content":user});
-  //   messages.push({"role":"assistant","content":ai});
-
-  // }, [conversationTurns]);
-
-  // Function to handle network errors and retries
-  const handleNetworkError = async (error, audioData) => {
-    console.error("Network error occurred (handled silently):", error);
-    setIsNetworkError(true);
-    
-    if (audioData) {
-      pendingAudioChunksRef.current.push(audioData);
-    }
-
-    if (socketRef.current && !socketRef.current.connected) {
-      try {
-        await new Promise((resolve) => {
-          socketRef.current.connect();
-          socketRef.current.on('connect', resolve);
-        });
-        console.log("Socket reconnected successfully");
-      } catch (socketError) {
-        console.error("Socket reconnection failed (handled silently):", socketError);
-      }
-    }
-
-    // Retry sending pending audio data
-    if (pendingAudioChunksRef.current.length > 0) {
-      try {
-        const retryData = pendingAudioChunksRef.current.shift();
-        await sendAudioToBackend(retryData);
-        setRetryCount(0);
-        setIsNetworkError(false);
-      } catch (retryError) {
-        console.error("Retry failed (handled silently):", retryError);
-        setRetryCount(prev => prev + 1);
-      }
-    }
-  };
-
-  const stopAndRestartRecording = async () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-      try {
-        const stopPromise = new Promise((resolve) => {
-          mediaRecorderRef.current.onstop = () => {
-            console.log("Previous recording stopped");
-            resolve();
-          };
-          mediaRecorderRef.current.stop();
-        });
-
-        await stopPromise;
-        
-        // Stop all tracks
-        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
-        
-        if (audioChunksRef.current.length > 0) {
-          const audioData = [...audioChunksRef.current];
-          try {
-            await sendAudioToBackend(audioData);
-            setRetryCount(0);
-            setIsNetworkError(false);
-          } catch (error) {
-            await handleNetworkError(error, audioData);
-          }
-        }
-        
-        audioChunksRef.current = [];
-
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const newStream = await navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            channelCount: 1,
-            sampleRate: 16000,
-            sampleSize: 16,
-            echoCancellation: true,
-            noiseSuppression: true
-          }
-        });
-        
-        const mimeType = 'audio/webm;codecs=opus';
-        if (!MediaRecorder.isTypeSupported(mimeType)) {
-          throw new Error('MIME type not supported: ' + mimeType);
-        }
-          
-        const newMediaRecorder = new MediaRecorder(newStream, {
-          mimeType: mimeType,
-          audioBitsPerSecond: 16000
-        });
-        
-        newMediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            console.log(`Received chunk: ${event.data.size} bytes`);
-            audioChunksRef.current.push(event.data);
-          }
-        };
-
-        // Start new recording
-        newMediaRecorder.start(1000);
-        console.log("New recording started with mimeType:", mimeType);
-        
-        mediaRecorderRef.current = newMediaRecorder;
-        
-        if (conversationTurns.length > 0) {
-          const lastTurn = conversationTurns[conversationTurns.length - 1];
-          if (lastTurn.user) lastDisplayedTranscriptRef.current = lastTurn.user.trim();
-          if (lastTurn.ai) {
-            lastDisplayedAIResponseRef.current = (lastTurn.ai.question || lastTurn.ai.pain_point || lastTurn.ai.recommendation || "").trim();
-          }
-        }
-      } catch (error) {
-        console.error("Error in recording cycle:", error);
-        if (mediaRecorderRef.current) {
-          try {
-            mediaRecorderRef.current.start(1000);
-          } catch (restartError) {
-            console.error("Failed to restart recording:", restartError);
-            setIsRecording(false);
-          }
-        }
-      }
-    }
-  };
-
-  
   const sendAudioToBackend = async (audioData = audioChunksRef.current) => {
     if (audioData.length === 0) {
       console.log("No audio chunks to send");
@@ -498,19 +345,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
     }
   };
 
-  const responseStyle = {
-    whiteSpace: "pre-wrap",
-    wordWrap: "break-word",
-    overflowX: "hidden",
-    padding: "10px",
-  };
-
-  // const handleClickRecording = () => {
-  //   if (isRecording) {
-  //     stopAndRestartRecording();
-  //   }
-  //   setIsVisibleAssistant(true);
-  // };
 
   useEffect(() => {
     async function cleanupResources() {
@@ -561,7 +395,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
               await sendAudioToBackend(audioData);
             }
           } catch (err) {
-            // handle error
+            console.error("Error sending audio to backend:", err);
           } finally {
             if (shouldRestartRef.current) {
               shouldRestartRef.current = false;
@@ -569,7 +403,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
             }
           }
         };
-        mediaRecorderRef.current.start(500);
+        mediaRecorderRef.current.start(1000);
         setIsRecording(true);
 
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -585,12 +419,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
           analyserRef.current.getByteTimeDomainData(data);
           let sum = 0;
           for (let i = 0; i < data.length; i++) {
-            const val = (data[i] - 128) / 128;
+            const val = (data[i] - 128) / 128;  
             sum += val * val;
           }
           const rms = Math.sqrt(sum / data.length);
-          //console.log('RMS:', rms);
-          if (rms < 0.05) {
+          console.log('RMS:', rms);
+          //I have set the pause duration to 2 seconds to delect as silence
+          if (rms < 0.02) {
             if (!silenceStartRef.current) {
               silenceStartRef.current = Date.now();
               console.log('Silence started at:', silenceStartRef.current);
@@ -598,13 +433,13 @@ const Talk = ({ setIsVisibleAssistant }) => {
             if (
               hasSpokenSinceLastSendRef.current &&
               !waitingForSpeechRef.current &&
-              Date.now() - silenceStartRef.current > 4000
+              Date.now() - silenceStartRef.current > 2000
             ) {
-              console.log('Silence detected after 4 seconds', Date.now() - silenceStartRef.current);
+              console.log('Silence detected after 3 seconds', Date.now() - silenceStartRef.current);
               if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
                 shouldRestartRef.current = true;
                 waitingForSpeechRef.current = true;
-                hasSpokenSinceLastSendRef.current = false; // Reset after sending
+                hasSpokenSinceLastSendRef.current = false;
                 mediaRecorderRef.current.stop();
               }
               silenceStartRef.current = null;
@@ -612,7 +447,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
           } else {
             silenceStartRef.current = null;
             waitingForSpeechRef.current = false;
-            hasSpokenSinceLastSendRef.current = true; // Mark that user has spoken
+            hasSpokenSinceLastSendRef.current = true;
           }
         }, 1000);
       } catch (err) {
@@ -634,17 +469,6 @@ const Talk = ({ setIsVisibleAssistant }) => {
     };
   }, []);
 
-  // Add server status check
-  useEffect(() => {
-    const checkServerStatus = async () => {
-      const isServerAvailable = await validateServerUrl();
-      if (!isServerAvailable) {
-        console.error("Server is not available at:", SERVER_URL);
-        // You might want to show a user-friendly message here
-      }
-    };
-    checkServerStatus();
-  }, []);
 
   return (
     <div className="list-page-inner">
