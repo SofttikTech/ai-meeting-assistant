@@ -89,6 +89,35 @@ const Talk = ({ setIsVisibleAssistant }) => {
   }
 
   useEffect(() => {
+    // Reset all necessary fields on page refresh
+    setSummary('');
+    setTranscript("Waiting for transcription...");
+    setAIResponse("");
+    setIsRecording(false);
+    setIsProcessing(false);
+    setConversationTurns([]);
+    setIsAutoRecording(true);
+    setRetryCount(0);
+    setIsNetworkError(false);
+    lastQuestionRef.current = "";
+    pendingAudioChunksRef.current = [];
+    audioChunksRef.current = [];
+    fullTranscriptRef.current = "";
+    lastMessageRef.current = "";
+    setIndex(0);
+    setUser("");
+    setAI("");
+    setMessages([]);
+    messagesRef.current = [];
+    lastDisplayedTranscriptRef.current = "";
+    lastDisplayedAIResponseRef.current = "";
+    pendingTranscriptRef.current = null;
+    pendingAIResponseRef.current = null;
+    silenceStartRef.current = null;
+    shouldRestartRef.current = false;
+    waitingForSpeechRef.current = false;
+    hasSpokenSinceLastSendRef.current = false;
+
     const socket = io(SERVER_URL, {
       reconnection: true,
       reconnectionAttempts: 5,

@@ -152,7 +152,7 @@ def analyze_conversation(query, email, total_meeting_minutes, minutes_passed):
         {retrieved_docs_text}
 
         ## Strict Question Flow
-        You MUST progress strictly through the pages in order: **start at Page 2, then Page 3, and so on**. Only after completing all questions on the current page (or obtaining explicit answers) may you advance to the next page. If a pain_point or recommendation arises mid-page, address it immediately then return to the next question on the same page before advancing pages.
+        You MUST progress strictly through the pages in order: **you must start from Page 2, then Page 3, and so on**. Only after completing all questions on the current page (or obtaining explicit answers) may you advance to the next page. If a pain_point or recommendation arises mid-page, address it immediately then return to the next question on the same page before advancing pages.
 
         ## Conversation Flow (Modified Fact Finder)
 

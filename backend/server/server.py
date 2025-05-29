@@ -39,7 +39,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 MAX_HISTORY = 20
-conversation_history = []
+# conversation_history = []
 ai_response = ""
 total_meeting_minutes = 15
 pending_follow_ups = {}
@@ -193,6 +193,11 @@ def transcribe():
         email = request.form.get("email")
         messages = json.loads(raw)
         pending_follow_ups.setdefault(email, [])
+        
+        # Clear pending follow-ups if messages contain the specific system message
+        if len(messages) == 1 and messages[0].get('role') == 'system' and messages[0].get('content') == 'What made you book this meeting today?':
+            pending_follow_ups[email] = []
+            
         logging.info(f"Email: {email}")
         logging.info(f"Messages: {messages}")
         logging.info(f"Meeting Type: {meetingType}")
