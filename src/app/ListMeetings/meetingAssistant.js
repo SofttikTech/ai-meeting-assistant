@@ -274,6 +274,7 @@ const Talk = ({ setIsVisibleAssistant }) => {
       formData.append("currenTime", formatTime(new Date()));
       formData.append("messages", JSON.stringify(messagesRef.current));
       formData.append("email", localStorage.getItem("email"));
+      formData.append("campaign", localStorage.getItem("campaign"));
 
       // Add request configuration with silent error handling
       const config = {
@@ -462,9 +463,9 @@ const Talk = ({ setIsVisibleAssistant }) => {
             if (
               hasSpokenSinceLastSendRef.current &&
               !waitingForSpeechRef.current &&
-              Date.now() - silenceStartRef.current > 2000
+              Date.now() - silenceStartRef.current > 1500
             ) {
-              console.log('Silence detected after 3 seconds', Date.now() - silenceStartRef.current);
+              console.log('Silence detected after 1.5 seconds', Date.now() - silenceStartRef.current);
               if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
                 shouldRestartRef.current = true;
                 waitingForSpeechRef.current = true;

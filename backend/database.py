@@ -372,7 +372,6 @@ def get_campaign_by_user(user_id):
 # get campaign for prompt
 @app.route('/get_campaign', methods=['GET'])
 def get_campaign():
-
     return jsonify({"campaign": campaign_values})
 
 
