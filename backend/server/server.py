@@ -1,6 +1,7 @@
 import os
 import logging
 import requests
+import time
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 from werkzeug.utils import secure_filename
@@ -184,6 +185,7 @@ def home():
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
     ai_response = ""
+    start_time_total = time.time()
     try:
         logging.info("Received transcription request")
         meetingType = request.form.get("meetingType")
@@ -191,6 +193,7 @@ def transcribe():
         current_str = request.form.get("currenTime")
         raw = request.form.get("messages")
         email = request.form.get("email")
+        campaign = request.form.get("campaign")
         messages = json.loads(raw)
         pending_follow_ups.setdefault(email, [])
         
@@ -253,6 +256,8 @@ def transcribe():
         trimmed_size = len(audio_content)
         logging.info(f"original 15s audio size: {trimmed_size}")
 
+        # Start timing Deepgram transcription
+        start_time_deepgram = time.time()
         headers = {
             "Authorization": f"Token {DEEPGRAM_API_KEY}",
             "Content-Type": "audio/webm"
@@ -263,8 +268,11 @@ def transcribe():
         response = requests.post(
             deepgram_url,
             headers=headers,
-            data=audio_content
+            data=audio_content,
+            timeout=5  # Add timeout to prevent hanging
         )
+        deepgram_time = time.time() - start_time_deepgram
+        logging.info(f"Deepgram transcription took {deepgram_time:.2f} seconds")
 
         if response.status_code == 200:
             json_response = response.json()
@@ -273,7 +281,6 @@ def transcribe():
                       .get("alternatives", [{}])[0] \
                       .get("transcript", "")
             logging.info(f"Transcript received: {transcript}...")
-            # print(transcript)
 
             last_full_transcript = str(
                 next(
@@ -291,7 +298,12 @@ def transcribe():
 
             if transcript.strip():
                 if pending_follow_ups[email]:
+                    # Start timing question checking
+                    start_time_questions = time.time()
                     res = check_questions_in_transcript(transcript, pending_follow_ups[email])
+                    questions_time = time.time() - start_time_questions
+                    logging.info(f"Question checking took {questions_time:.2f} seconds")
+                    
                     print("Questions Pending: ",res)
                     unanswered = [q for q, ans in res.items() if ans == "No"]
                     if unanswered:
@@ -301,19 +313,17 @@ def transcribe():
                     else:
                         pending_follow_ups[email] = []
                 else:
-                    # messages.append({"role":"user","content":new_chunk})
-                    # messages = trim_and_summarize(messages)
-                    # print("Before sending: ", messages)
-
+                    # Start timing conversation analysis
+                    start_time_analysis = time.time()
                     if meetingType == "In Place":
-                        response = analyze_conversation(transcript,email, total_meeting_minutes, diff_minutes)
+                        response = analyze_conversation(transcript,email, total_meeting_minutes, diff_minutes, campaign)
                         ai_response = response[0]
                         prev_history = response[1]
                         print("Response in Server: ",ai_response)
                         print("History in Server: ",prev_history)
                         messages = prev_history
                     elif meetingType == "Telephonic":
-                        response = analyze_conversation_telephonic(transcript, email, total_meeting_minutes, diff_minutes)
+                        response = analyze_conversation_telephonic(transcript, email, total_meeting_minutes, diff_minutes, campaign)
                         ai_response = response[0]
                         prev_history = response[1]
                         print("Response in Server: ",ai_response)
@@ -325,6 +335,14 @@ def transcribe():
                     #     messages.append({"role":"assistant","content":ai_response['pain_point']})
                     # elif ai_response["type"]=="recommendation":
                     #     messages.append({"role":"assistant","content":ai_response['recommendation']})
+                    analysis_time = time.time() - start_time_analysis
+                    logging.info(f"Conversation analysis took {analysis_time:.2f} seconds")
+
+                    ai_response = response[0]
+                    prev_history = response[1]
+                    print("Response in Server: ",ai_response)
+                    print("History in Server: ",prev_history)
+                    messages = prev_history
 
                     if ai_response["type"] in ("pain_point", "recommendation"):
                         pending_follow_ups[email] = ai_response["follow_up"].copy()
@@ -338,13 +356,17 @@ def transcribe():
             else:
                 socketio.emit('update', {'ai_response': {'type': 'question', 'question': 'Tell me more about this?'}, 'transcript': "No Speech", 'messages':messages})
 
+            total_time = time.time() - start_time_total
+            logging.info(f"Total request processing time: {total_time:.2f} seconds")
             return jsonify({"transcript": transcript})
         else:
             logging.error(f"Deepgram API Error: {response.status_code} - {response.text}")
             return jsonify({"error": "Transcription failed"}), 500
 
     except Exception as error:
+        total_time = time.time() - start_time_total
         logging.error(f"Transcription error: {str(error)}")
+        logging.error(f"Request failed after {total_time:.2f} seconds")
         return jsonify({"error": "Processing failed"}), 500
 
 @app.route('/generate_summary', methods=['GET'])
